@@ -34,7 +34,7 @@ namespace NARCO
 
 
 	private:
-		void clearScreen();
+		void clearScreen(const float* clearColor);
 
 		Scene* mSelectedScene;
 

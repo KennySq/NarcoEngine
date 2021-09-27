@@ -15,9 +15,23 @@ namespace NARCO
 		PUBLIC_API NARCO_API virtual void Draw() override;
 		PUBLIC_API NARCO_API virtual void End() override;
 
-		PUBLIC_API NARCO_API void AddGUI(IGUI* gui);
+		PUBLIC_API NARCO_API void AddGUI(const char* name, IGUI* gui);
 		PUBLIC_API NARCO_API void AddGUI(GUI_Canvas*) = delete;
 		PUBLIC_API NARCO_API void AddGUI(GUI_Frame*) = delete;
+
+		PUBLIC_API NARCO_API IGUI* GetGUI(const char* name) const {
+			long long hash = MakeHash(name);
+			auto result = mGuiMap.find(hash);
+
+			if (result != mGuiMap.end())
+			{
+				return result->second;
+			}
+
+			ExceptionError(E_INVALIDARG, "Couldn't find such gui name.");
+			return nullptr;
+		}
+		PRIVATE_PROPERTY std::map<long long, IGUI*> mGuiMap;
 
 		PRIVATE_PROPERTY std::vector<IGUI*> mGuiObjects;
 		PRIVATE_PROPERTY const char* mName;

@@ -57,36 +57,32 @@ namespace NARCO
 		static unsigned int driveCount = driveVector.size();
 		static const char** drives = new const char* [driveCount];
 		static int itemIndex = 0;
+		static ImGuiIO& io = ImGui::GetIO();
+		static int browserDropdownSelectedIndex = -1;
+		int browserDropdownIterateIndex = 0;
 
+		static auto lamda_bDoubleClick = []() -> bool
+		{
+			for (unsigned int i = 0; i < IM_ARRAYSIZE(io.MouseDown); i++)
+			{
+				if (ImGui::IsMouseDoubleClicked(i))
+				{
+					return true;
+				}
+			}
+			return false;
+		};
 
 		for (unsigned int i = 0; i < driveCount; i++)
 		{
 			drives[i] = driveVector[i].c_str();
 		}
 
-		mSearchPath = std::string(drives[0]);
-		static auto rootIteration = directory_iterator("C:/");
-
-		//#ifdef _DEBUG
-		//		
-		//		std::cout << "Iterate root path\n";
-		//
-		//		for(directory_iterator itr("C:/") ;  itr != directory_iterator();itr++)
-		//		{
-		//
-		//			std::cout << "\t¦¦ " << *itr << std::endl;
-		//
-		//
-		//		}
-		//#endif
-
-
-
 		if (ImGui::BeginCombo("", drives[itemIndex]))
 		{
 			for (unsigned int i = 0; i < driveVector.size(); i++)
 			{
-				const bool bSelected = itemIndex == i;
+				static bool bSelected = itemIndex == i;
 
 				if (ImGui::Selectable(drives[i], bSelected))
 				{
@@ -96,12 +92,7 @@ namespace NARCO
 				if (bSelected)
 				{
 					ImGui::SetItemDefaultFocus();
-
-					mSearchPath = drives[itemIndex];
-
-
-
-
+					mSelectedPath = drives[itemIndex];
 
 				}
 
@@ -113,27 +104,63 @@ namespace NARCO
 
 		std::stringstream str = std::stringstream();
 
-		for (directory_iterator itr(mSearchPath); itr != directory_iterator(); itr++)
+
+
+		ImGui::SameLine();
+		if (ImGui::ArrowButton("Browser_UpperDirectory", ImGuiDir_::ImGuiDir_Up))
 		{
-			if (itr->exists())
+			if (mSelectedPath.size() > 3)
 			{
-				str << itr->path() << '\n';
+				mSelectedPath = mSelectedPath.substr(0, mSelectedPath.find_last_of('/'));
+				mSelectedPath = mSelectedPath.substr(0, mSelectedPath.find_last_of('/') + 1);
+
+				std::cout << mSelectedPath << std::endl;
 			}
 
-			const char* label = itr->path().c_str()[0];
+		}
+		ImGui::Separator();
+		
+		for (directory_iterator itr(mSelectedPath); itr != directory_iterator(); ++itr, ++browserDropdownIterateIndex)
+		{
+			static ImVec2 itemRectSize;
+			static ImVec2 itemRectMin;
+			static ImVec2 itemRectMax;
+			str.str("");
 
-			ImGui::Button();
+			str << itr->path().filename().string();
 
+			std::string labelString = str.str();
+			const char* label = labelString.c_str();
+
+			if (ImGui::Selectable(label, browserDropdownSelectedIndex == browserDropdownIterateIndex))
+			{
+				browserDropdownSelectedIndex = browserDropdownIterateIndex;
+
+				itemRectSize = ImGui::GetItemRectSize();
+				itemRectMin = ImGui::GetItemRectMin();
+				itemRectMax = ImGui::GetItemRectMax();
+
+			}
+
+			if (browserDropdownSelectedIndex == browserDropdownIterateIndex)
+			{
+				bool bDirectory = itr->is_directory();
+				bool bExists = itr->exists();
+				bool bHovering = ImGui::IsMouseHoveringRect(itemRectMin, itemRectMax);
+				bool bDoubleClick = lamda_bDoubleClick();
+
+				if (bDirectory && bExists && bHovering && bDoubleClick)
+				{
+					mSelectedPath += label;
+					mSelectedPath += '/';
+				}
+			}
 		}
 
+		std::cout << browserDropdownIterateIndex << std::endl;
 
-		ImGui::TextWrapped("%s", str.str().c_str());
-
-		//ImGui::Combo("")
-
+		//ImGui::TextWrapped("%s", str.str().c_str());
 		ImGui::End();
-		//ImGui::EndCombo();
-
 		return true;
 	}
 	NARCO_API std::vector<std::string> GUI_FileSlot::GetDriveStrings()

@@ -23,10 +23,10 @@ namespace NARCO
 		// 테스트 코드 영역입니다.
 		MeshLoader loader(device);
 
-		loader.SetPath("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/shiba/shiba.fbx");
-		loader.Load();
+		//loader.SetPath("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/shiba/shiba.fbx");
+		//loader.Load();
 
-		Mesh* mesh_shiba = loader.ConvertMesh();
+		//Mesh* mesh_shiba = loader.ConvertMesh();
 
 		mSelectedScene = new Scene("Sample Scene");
 
@@ -38,8 +38,8 @@ namespace NARCO
 		auto frame = mMainCanvas->GetFrame(0);
 		auto frame2 = mMainCanvas->GetFrame(1);
 
-		frame->AddGUI(new GUI_FileSlot());
-		frame2->AddGUI(new GUI_ColorPicker());
+		frame->AddGUI("FileSlot_01", new GUI_FileSlot());
+		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
 		
 		
 	}
@@ -57,8 +57,12 @@ namespace NARCO
 		static ID3D11RenderTargetView* backBuffer[] = { mDisplay->GetRenderTargetView() };
 		static ID3D11DepthStencilView* dsv = mGBuffer->GetDepthStencil();
 		static D3D11_VIEWPORT viewports[] = { mDisplay->GetMainViewport() };
-		//static unsigned int gbufferCount = mTexManager
-		clearScreen();
+
+		static GUI_Canvas* canvas = mMainCanvas;
+		static GUI_Frame* frame_ColorPicker = canvas->GetFrame(1);
+		static GUI_ColorPicker* gui_ColorPicker = static_cast<GUI_ColorPicker*>(frame_ColorPicker->GetGUI("ColorPicker_01"));
+		
+		clearScreen(gui_ColorPicker->GetColor4());
 
 		//context->OMSetRenderTargets(mGBuffer->GetBufferCount(), rtv, dsv);
 		context->OMSetRenderTargets(1, backBuffer , dsv);
@@ -91,12 +95,12 @@ namespace NARCO
 		delete mHardware;
 		delete mDisplay;
 	}
-	void Narco_Core::clearScreen()
+	void Narco_Core::clearScreen(const float* clearColor)
 	{
 		static ID3D11DeviceContext* context = mHardware->GetImmediateContext();
 		static ID3D11RenderTargetView* renderTargetView = mDisplay->GetRenderTargetView();
 		
-		context->ClearRenderTargetView(renderTargetView, DirectX::Colors::Red);
+		context->ClearRenderTargetView(renderTargetView, clearColor);
 
 
 	}

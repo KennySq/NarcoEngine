@@ -11,6 +11,8 @@ namespace NARCO
 		PUBLIC_API NARCO_API virtual void Draw() override;
 		PUBLIC_API NARCO_API virtual void End() override;
 
+		const float* GetColor4() const { return mColor; }
+
 		PRIVATE_PROPERTY float mColor[4];
 	};
 }

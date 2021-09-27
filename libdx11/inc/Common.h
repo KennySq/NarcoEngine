@@ -6,8 +6,10 @@
 
 #define PUBLIC_API public:
 #define PRIVATE_API private:
+#define PROTECTED_API protected:
 #define PUBLIC_PROPERTY public:
 #define PRIVATE_PROPERTY private:
+#define PROTECTED_PROPERTY protected:
 
 
 

@@ -19,6 +19,6 @@ namespace NARCO
 
 		PRIVATE_PROPERTY std::string mPath;
 		PRIVATE_PROPERTY bool mbOpenBrowser = false;
-		PRIVATE_PROPERTY std::string mSearchPath = "C:/";
+		PRIVATE_PROPERTY std::string mSelectedPath = "C:/";
 	};
 }

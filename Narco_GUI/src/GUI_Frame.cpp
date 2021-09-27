@@ -46,8 +46,9 @@ namespace NARCO
 
 	}
 
-	NARCO_API void GUI_Frame::AddGUI(IGUI* gui)
+	NARCO_API void GUI_Frame::AddGUI(const char* name, IGUI* gui)
 	{
+		mGuiMap.insert_or_assign(MakeHash(name), gui);
 		mGuiObjects.emplace_back(gui);
 
 	}
