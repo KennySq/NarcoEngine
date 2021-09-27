@@ -15,9 +15,10 @@ namespace NARCO
 		
 		PRIVATE_API NARCO_API void loadFile(const char* path);
 		PRIVATE_API NARCO_API bool fileBrowse();
+		PRIVATE_API NARCO_API std::vector<std::string> GetDriveStrings();
 
 		PRIVATE_PROPERTY std::string mPath;
-		PRIVATE_PROPERTY bool mbOpenBrowser;
-
+		PRIVATE_PROPERTY bool mbOpenBrowser = false;
+		PRIVATE_PROPERTY std::string mSearchPath = "C:/";
 	};
 }

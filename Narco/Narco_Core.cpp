@@ -23,7 +23,7 @@ namespace NARCO
 		// 테스트 코드 영역입니다.
 		MeshLoader loader(device);
 
-		loader.SetPath("C:/Users/odess/Desktop/Projects/Narco/x64/Debug/resources/skater/skater.fbx");
+		loader.SetPath("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/shiba/shiba.fbx");
 		loader.Load();
 
 		Mesh* mesh_shiba = loader.ConvertMesh();

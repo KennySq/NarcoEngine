@@ -5,7 +5,7 @@
 #include "Narco.h"
 
 #include"inc/Narco_Core.h"
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND winHandle, UINT message, WPARAM wParam, LPARAM lParam);
+extern "C" __declspec(dllimport) LRESULT ImGui_ImplWin32_WndProcHandler(HWND winHandle, UINT message, WPARAM wParam, LPARAM lParam);
 
 #define MAX_LOADSTRING 100
 
