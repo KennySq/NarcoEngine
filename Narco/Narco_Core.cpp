@@ -42,15 +42,17 @@ namespace NARCO
 		mMainCanvas->AddFrame(new GUI_Frame("File Slot", 300,300, ImGuiWindowFlags_NoResize));
 		mMainCanvas->AddFrame(new GUI_Frame("Color Picker", 400,300, ImGuiWindowFlags_NoResize));
 		mMainCanvas->AddFrame(new GUI_Frame("Asset Browser", 1100, 400, ImGuiWindowFlags_NoResize));
-		
+		mMainCanvas->AddFrame(new GUI_Frame("Shader Editor", 600, 800, ImGuiFocusedFlags_None));
+
 		auto frame = mMainCanvas->GetFrame(0);
 		auto frame2 = mMainCanvas->GetFrame(1);
 		auto frame3 = mMainCanvas->GetFrame(2);
+		auto frame4 = mMainCanvas->GetFrame(3);
 
 		frame->AddGUI("FileSlot_01", new GUI_FileSlot());
 		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
 		frame3->AddGUI("AssetBrowser_01", new GUI_AssetManager(assetManager, device));
-		
+		frame4->AddGUI("ShaderEditor_01", new GUI_Material(uberShader));
 		
 	}
 	void Narco_Core::Init()

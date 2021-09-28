@@ -49,12 +49,15 @@ namespace NARCO
 
 		//ID3D11ShaderResourceView* const * GetVertexSRV() const { return mVertexShaderResources.data(); }
 
-		
+		const std::vector<D3D11_SHADER_INPUT_BIND_DESC>& GetInputRegisters() const { return mInputRegisters; }
 
 		void Release();
 	private:
 		HRESULT reflectVertex();
-		
+		HRESULT reflectPixel();
+
+		HRESULT reflectInputLayout(ID3D11Device* device, ID3DBlob* blob);
+
 		eShaderFlag mFlags;
 
 		std::string mPath;
@@ -70,11 +73,14 @@ namespace NARCO
 		ComPtr<ID3D11DomainShader> mDomain = nullptr;
 		ComPtr<ID3D11HullShader> mHull = nullptr;
 		ComPtr<ID3D11PixelShader> mPixel = nullptr;
+		ComPtr<ID3D11InputLayout> mLayout = nullptr;
 
 		ComPtr<ID3D11ShaderReflection> mVertexReflection;
 		ComPtr<ID3D11ShaderReflection> mGeometryReflection;
 		ComPtr<ID3D11ShaderReflection> mDomainReflection;
 		ComPtr<ID3D11ShaderReflection> mHullReflection;
 		ComPtr<ID3D11ShaderReflection> mPixelReflection;
+
+		std::vector<D3D11_SHADER_INPUT_BIND_DESC> mInputRegisters;
 	};
 }

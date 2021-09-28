@@ -28,25 +28,25 @@ namespace NARCO
 		if ((mFlags & SHADER_VERTEX))
 		{
 			result = D3DCompileFromFile(A2W(path), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "vert", "vs_5_0", 0, compileFlag, &blob, &errBlob);
-			
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 				errBlob->Release();
 
 				return result;
 			}
-
 			result = D3DReflect(blob->GetBufferPointer(), blob->GetBufferSize(), __uuidof(ID3D11ShaderReflection), reinterpret_cast<void**>(mVertexReflection.GetAddressOf()));
-
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 
 				errBlob->Release();
 
 				return result;
 			}
+
+			result = reflectInputLayout(device, blob);
+
 
 			result = device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, mVertex.GetAddressOf());
 			ExceptionError(result, "Creating vertex shader");
@@ -60,7 +60,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 				errBlob->Release();
 
 				return result;
@@ -70,7 +70,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 
 				errBlob->Release();
 
@@ -89,7 +89,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 				errBlob->Release();
 				return result;
 			}
@@ -98,7 +98,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 
 				errBlob->Release();
 
@@ -117,7 +117,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 				errBlob->Release();
 
 				return result;
@@ -127,14 +127,12 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 
 				errBlob->Release();
 
 				return result;
 			}
-
-
 
 			result = device->CreateHullShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, mHull.GetAddressOf());
 			ExceptionError(result, "Creating hull shader");
@@ -148,7 +146,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 				return result;
 			}
 
@@ -156,7 +154,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 
 				errBlob->Release();
 
@@ -170,7 +168,7 @@ namespace NARCO
 		}
 
 		reflectVertex();
-		
+		reflectPixel();
 
 		return S_OK;
 	}
@@ -204,8 +202,9 @@ namespace NARCO
 	HRESULT Shader::reflectVertex()
 	{
 		HRESULT result;
-		D3D11_SHADER_DESC desc{};
-		result = mVertexReflection->GetDesc(&desc);
+		D3D11_SHADER_DESC shaderDesc{};
+
+		result = mVertexReflection->GetDesc(&shaderDesc);
 
 		if (result != S_OK)
 		{
@@ -213,14 +212,13 @@ namespace NARCO
 			return result;
 		}
 
-		int parameterIndex = 0;
 		std::vector<D3D11_SIGNATURE_PARAMETER_DESC> inputParameters;
+		std::vector<D3D11_SIGNATURE_PARAMETER_DESC> outputParameters;
 
-		while (result == S_OK)
+		for (unsigned int i = 0; i < shaderDesc.InputParameters; i++)
 		{
 			D3D11_SIGNATURE_PARAMETER_DESC parameterDesc{};
-			result = mVertexReflection->GetInputParameterDesc(parameterIndex, &parameterDesc);
-			parameterIndex++;
+			result = mVertexReflection->GetInputParameterDesc(i, &parameterDesc);
 
 			if (result != S_OK)
 			{
@@ -229,8 +227,154 @@ namespace NARCO
 
 			inputParameters.emplace_back(parameterDesc);
 
-		};
+		}
 
+		for (unsigned int i = 0; i < shaderDesc.OutputParameters; i++)
+		{
+			D3D11_SIGNATURE_PARAMETER_DESC parameterDesc{};
+			result = mVertexReflection->GetOutputParameterDesc(i, &parameterDesc);
+
+			if (result != S_OK)
+			{
+				break;
+			}
+
+			outputParameters.emplace_back(parameterDesc);
+		}
+
+		for (unsigned int i = 0; i < shaderDesc.BoundResources; i++)
+		{
+			D3D11_SHADER_INPUT_BIND_DESC bindDesc{};
+			result = mVertexReflection->GetResourceBindingDesc(i, &bindDesc);
+			if (result != S_OK)
+			{
+				ExceptionError(E_FAIL, "failed to getting bound resource register");
+				return E_FAIL;
+			}
+
+			mInputRegisters.emplace_back(bindDesc);
+		}
+
+		return S_OK;
+	}
+	HRESULT Shader::reflectPixel()
+	{
+		HRESULT result;
+		D3D11_SHADER_DESC shaderDesc{};
+		std::vector<D3D11_SHADER_INPUT_BIND_DESC> inputRegisters;
+
+		result = mPixelReflection->GetDesc(&shaderDesc);
+
+		for (unsigned int i = 0; i < shaderDesc.BoundResources; i++)
+		{
+			D3D11_SHADER_INPUT_BIND_DESC bindDesc{};
+			result = mPixelReflection ->GetResourceBindingDesc(i, &bindDesc);
+			if (result != S_OK)
+			{
+				ExceptionError(E_FAIL, "failed to getting bound resource register");
+				return E_FAIL;
+			}
+
+			inputRegisters.emplace_back(bindDesc);
+		}
+
+		return S_OK;
+	}
+	HRESULT Shader::reflectInputLayout(ID3D11Device* device, ID3DBlob* blob)
+	{
+		HRESULT result;
+		D3D11_SHADER_DESC shaderDesc{};
+
+		std::vector<D3D11_INPUT_ELEMENT_DESC> inputElements;
+
+		result = mVertexReflection->GetDesc(&shaderDesc);
+
+		for (unsigned int i = 0; i < shaderDesc.InputParameters; i++)
+		{
+			D3D11_SIGNATURE_PARAMETER_DESC parameterDesc{};
+
+			mVertexReflection->GetInputParameterDesc(i, &parameterDesc);
+
+			D3D11_INPUT_ELEMENT_DESC elementDesc{};
+
+			elementDesc.SemanticName = parameterDesc.SemanticName;
+			elementDesc.SemanticIndex = parameterDesc.SemanticIndex;
+			elementDesc.InputSlot = 0;
+			elementDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+			elementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			elementDesc.InstanceDataStepRate = 0;
+
+			if (parameterDesc.Mask == 1)
+			{
+				if (parameterDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32)
+				{
+					elementDesc.Format = DXGI_FORMAT_R32_UINT;
+				}
+				else if (parameterDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32)
+				{
+					elementDesc.Format = DXGI_FORMAT_R32_FLOAT;
+				}
+				else if (parameterDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32)
+				{
+					elementDesc.Format = DXGI_FORMAT_R32_SINT;
+				}
+			}
+			else if (parameterDesc.Mask <= 3)
+			{
+				if (parameterDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32)
+				{
+					elementDesc.Format = DXGI_FORMAT_R32G32_UINT;
+				}
+				else if (parameterDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32)
+				{
+					elementDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
+				}
+				else if (parameterDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32)
+				{
+					elementDesc.Format = DXGI_FORMAT_R32G32_SINT;
+				}
+			}
+			else if (parameterDesc.Mask <= 7)
+			{
+				if (parameterDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32)
+				{
+					elementDesc.Format = DXGI_FORMAT_R32G32B32_UINT;
+				}
+				else if (parameterDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32)
+				{
+					elementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				}
+				else if (parameterDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32)
+				{
+					elementDesc.Format = DXGI_FORMAT_R32G32B32_SINT;
+				}
+			}
+			else if (parameterDesc.Mask <= 15)
+			{
+				if (parameterDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32)
+				{
+					elementDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
+				}
+				else if (parameterDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32)
+				{
+					elementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+				}
+				else if (parameterDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32)
+				{
+					elementDesc.Format = DXGI_FORMAT_R32G32B32A32_SINT;
+				}
+			}
+
+			inputElements.emplace_back(elementDesc);
+
+		}
+
+		result = device->CreateInputLayout(inputElements.data(), inputElements.size(), blob->GetBufferPointer(), blob->GetBufferSize(), mLayout.GetAddressOf());
+		if (result != S_OK)
+		{
+			ExceptionError(result, "failed to create input layout");
+			return result;
+		}
 
 		return S_OK;
 	}

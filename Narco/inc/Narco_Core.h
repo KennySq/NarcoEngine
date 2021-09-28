@@ -51,6 +51,7 @@ namespace NARCO
 		GBuffer* mGBuffer;
 
 		GUI_Canvas* mMainCanvas;
+		
 	};
 
 }

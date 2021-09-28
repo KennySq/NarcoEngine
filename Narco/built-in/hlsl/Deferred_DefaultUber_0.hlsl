@@ -1,3 +1,5 @@
+SamplerState defaultSampler : register(s0);
+
 cbuffer Constants : register(b0)
 {
 	float4x4 gWorld;
@@ -5,8 +7,11 @@ cbuffer Constants : register(b0)
 	float4x4 gProjection;
 }
 
-Texture2D gBaseMap : register(t0);
-Texture2D gNormalMap : register(t1);
+Texture2D gBaseMap;
+Texture2D gNormalMap;
+
+RWBuffer<float> gMetallic;
+RWBuffer<float> gSmoothness;
 
 struct Vertex_Input
 {
@@ -31,13 +36,14 @@ struct Buffer_Input
 	float4 mNormal : SV_Target2;
 	float4 mWorldNormal : SV_Target3;
 	float2 mTexcoord : SV_Target4;
+    float4 mAlbedo : SV_Target5;
 };
 
 
 Pixel_Input vert(Vertex_Input input)
 {
 	Pixel_Input output = (Pixel_Input) 0;
-
+	
 	output.mPosition = mul(input.mPosition, gWorld);
 	output.mPosition = mul(output.mPosition, gView);
 	output.mPosition = mul(output.mPosition, gProjection);
@@ -47,7 +53,6 @@ Pixel_Input vert(Vertex_Input input)
 	
 	output.mTexcoord = input.mTexcoord;
 	
-	
 	return output;
 }
 
@@ -55,11 +60,17 @@ Buffer_Input frag(Pixel_Input input)
 {
 	Buffer_Input output = (Buffer_Input) 0;
 	
+	float4 albedo = gBaseMap.Sample(defaultSampler, input.mTexcoord);
+    float4 normal = gNormalMap.Sample(defaultSampler, input.mTexcoord);
+	
 	output.mProjection = input.mPosition;
-	output.mWorldPosition = input.mWorldPosition;
+    output.mWorldPosition = input.mWorldPosition;
+	
 	output.mNormal = input.mNormal;
 	output.mWorldNormal = input.mWorldNormal;
 	output.mTexcoord = input.mTexcoord;
+	
+    output.mAlbedo = gMetallic.Load(0);
 	
 	return output;
 };
