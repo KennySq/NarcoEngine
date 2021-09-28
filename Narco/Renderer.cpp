@@ -3,7 +3,7 @@
 namespace NARCO
 {
 	Renderer::Renderer(ID3D11DeviceContext* context)
-		: Component(typeid(this).name()), mContext(context)
+		: Component(typeid(this).name()), mContext(context), mMesh(nullptr)
 	{
 	}
 	Renderer::~Renderer()
@@ -51,9 +51,10 @@ namespace NARCO
 				mContext->PSSetShader(ps, nullptr, 0);
 			}
 
-			
-			mContext->VSSetShaderResources(0, 1, shader->GetVertexSRV());
-			
+			//mContext->VSSetConstantBuffers(0, )
+
+			//mContext->VSSetShaderResources(0, 1, shader->GetVertexSRV());
+			//mContext->PSSetShaderResources(0,1, shader->Ge)
 		}
 
 	}

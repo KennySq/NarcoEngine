@@ -2,6 +2,7 @@
 #include"Common.h"
 #include<atlbase.h>
 #include<d3dcompiler.h>
+#include<d3d11shader.h>
 
 #pragma comment(lib, "d3dcompiler.lib")
 
@@ -46,38 +47,34 @@ namespace NARCO
 		ID3D11HullShader* GetHS() const { return mHull.Get(); }
 		ID3D11PixelShader* GetPS() const { return mPixel.Get(); }
 
-		ID3D11ShaderResourceView* const * GetVertexSRV() const { return mVertexShaderResources.data(); }
+		//ID3D11ShaderResourceView* const * GetVertexSRV() const { return mVertexShaderResources.data(); }
+
+		
 
 		void Release();
 	private:
+		HRESULT reflectVertex();
+		
 		eShaderFlag mFlags;
 
 		std::string mPath;
 
-		std::vector<ID3D11Buffer*> mVertexBuffers;
-		std::vector<ID3D11Buffer*> mGeometryBuffers;
-		std::vector<ID3D11Buffer*> mDomainBuffers;
-		std::vector<ID3D11Buffer*> mHullBuffers;
-		std::vector<ID3D11Buffer*> mPixelBuffers;
-		
-		std::vector<ID3D11ShaderResourceView*> mVertexShaderResources;
-		std::vector<ID3D11ShaderResourceView*> mGeometryShaderResources;
-		std::vector<ID3D11ShaderResourceView*> mDomainShaderResources;
-		std::vector<ID3D11ShaderResourceView*> mHullShaderResources;
-		std::vector<ID3D11ShaderResourceView*> mPixelShaderResources;
+		std::vector<ID3D11Buffer*> mConstantBuffers; // 8 Max
 
 		std::vector<ID3D11RenderTargetView*> mPixelRenderTargets;
 
-		std::vector<ID3D11UnorderedAccessView*> mVertexUnorderedAccess;
-		std::vector<ID3D11UnorderedAccessView*> mGeometryUnorderedAccess;
-		std::vector<ID3D11UnorderedAccessView*> mDomainUnorderedAccess;
-		std::vector<ID3D11UnorderedAccessView*> mHullUnorderedAccess;
-		std::vector<ID3D11UnorderedAccessView*> mPixelUnorderedAccess;
+		std::vector<ID3D11ShaderResourceView*> mShaderResources;
 
 		ComPtr<ID3D11VertexShader> mVertex = nullptr;
 		ComPtr<ID3D11GeometryShader> mGeometry = nullptr;
 		ComPtr<ID3D11DomainShader> mDomain = nullptr;
 		ComPtr<ID3D11HullShader> mHull = nullptr;
 		ComPtr<ID3D11PixelShader> mPixel = nullptr;
+
+		ComPtr<ID3D11ShaderReflection> mVertexReflection;
+		ComPtr<ID3D11ShaderReflection> mGeometryReflection;
+		ComPtr<ID3D11ShaderReflection> mDomainReflection;
+		ComPtr<ID3D11ShaderReflection> mHullReflection;
+		ComPtr<ID3D11ShaderReflection> mPixelReflection;
 	};
 }

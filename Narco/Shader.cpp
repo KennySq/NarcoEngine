@@ -3,22 +3,7 @@
 namespace NARCO
 {
 	Shader::Shader(const char* path, unsigned int flags)
-		: mPath(path), mFlags((eShaderFlag)flags),
-		mVertexShaderResources(MODEL_5_IN_T_REGISTER),
-		mVertexBuffers(MODEL_5_IN_B_REGISTER),
-		mVertexUnorderedAccess(MODEL_5_OUT_O_REGISTER),
-		mGeometryShaderResources(MODEL_5_IN_T_REGISTER),
-		mGeometryBuffers(MODEL_5_IN_B_REGISTER),
-		mGeometryUnorderedAccess(MODEL_5_OUT_O_REGISTER),
-		mDomainShaderResources(MODEL_5_IN_T_REGISTER),
-		mDomainBuffers(MODEL_5_IN_B_REGISTER),
-		mDomainUnorderedAccess(MODEL_5_OUT_O_REGISTER),
-		mHullShaderResources(MODEL_5_IN_T_REGISTER),
-		mHullBuffers(MODEL_5_IN_B_REGISTER),
-		mHullUnorderedAccess(MODEL_5_OUT_O_REGISTER),
-		mPixelShaderResources(MODEL_5_IN_T_REGISTER),
-		mPixelRenderTargets(MODEL_5_OUT_T_REGISTER),
-		mPixelUnorderedAccess(MODEL_5_OUT_T_REGISTER)
+		: mPath(path), mFlags((eShaderFlag)flags)
 	{
 		
 	}
@@ -52,6 +37,17 @@ namespace NARCO
 				return result;
 			}
 
+			result = D3DReflect(blob->GetBufferPointer(), blob->GetBufferSize(), __uuidof(ID3D11ShaderReflection), reinterpret_cast<void**>(mVertexReflection.GetAddressOf()));
+
+			if (result != S_OK)
+			{
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+
+				errBlob->Release();
+
+				return result;
+			}
+
 			result = device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, mVertex.GetAddressOf());
 			ExceptionError(result, "Creating vertex shader");
 
@@ -65,6 +61,17 @@ namespace NARCO
 			if (result != S_OK)
 			{
 				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+				errBlob->Release();
+
+				return result;
+			}
+
+			result = D3DReflect(blob->GetBufferPointer(), blob->GetBufferSize(), __uuidof(ID3D11ShaderReflection), reinterpret_cast<void**>(mGeometryReflection.GetAddressOf()));
+
+			if (result != S_OK)
+			{
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+
 				errBlob->Release();
 
 				return result;
@@ -87,6 +94,17 @@ namespace NARCO
 				return result;
 			}
 
+			result = D3DReflect(blob->GetBufferPointer(), blob->GetBufferSize(), __uuidof(ID3D11ShaderReflection), reinterpret_cast<void**>(mDomainReflection.GetAddressOf()));
+
+			if (result != S_OK)
+			{
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+
+				errBlob->Release();
+
+				return result;
+			}
+
 			result = device->CreateDomainShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, mDomain.GetAddressOf());
 			ExceptionError(result, "Creating domain shader");
 
@@ -105,6 +123,19 @@ namespace NARCO
 				return result;
 			}
 
+			result = D3DReflect(blob->GetBufferPointer(), blob->GetBufferSize(), __uuidof(ID3D11ShaderReflection), reinterpret_cast<void**>(mHullReflection.GetAddressOf()));
+
+			if (result != S_OK)
+			{
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+
+				errBlob->Release();
+
+				return result;
+			}
+
+
+
 			result = device->CreateHullShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, mHull.GetAddressOf());
 			ExceptionError(result, "Creating hull shader");
 
@@ -121,11 +152,25 @@ namespace NARCO
 				return result;
 			}
 
+			result = D3DReflect(blob->GetBufferPointer(), blob->GetBufferSize(), __uuidof(ID3D11ShaderReflection), reinterpret_cast<void**>(mPixelReflection.GetAddressOf()));
+
+			if (result != S_OK)
+			{
+				ExceptionError(result, reinterpret_cast<const char*>(errBlob));
+
+				errBlob->Release();
+
+				return result;
+			}
+
 			result = device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, mPixel.GetAddressOf());
 			ExceptionError(result, "Creating pixel shader");
 
 			blob->Release();
 		}
+
+		reflectVertex();
+		
 
 		return S_OK;
 	}
@@ -155,5 +200,38 @@ namespace NARCO
 		{
 			mPixel->Release();
 		}
+	}
+	HRESULT Shader::reflectVertex()
+	{
+		HRESULT result;
+		D3D11_SHADER_DESC desc{};
+		result = mVertexReflection->GetDesc(&desc);
+
+		if (result != S_OK)
+		{
+			ExceptionError(E_FAIL, "Faield to getting descriptor from vertex reflection");
+			return result;
+		}
+
+		int parameterIndex = 0;
+		std::vector<D3D11_SIGNATURE_PARAMETER_DESC> inputParameters;
+
+		while (result == S_OK)
+		{
+			D3D11_SIGNATURE_PARAMETER_DESC parameterDesc{};
+			result = mVertexReflection->GetInputParameterDesc(parameterIndex, &parameterDesc);
+			parameterIndex++;
+
+			if (result != S_OK)
+			{
+				break;
+			}
+
+			inputParameters.emplace_back(parameterDesc);
+
+		};
+
+
+		return S_OK;
 	}
 }
