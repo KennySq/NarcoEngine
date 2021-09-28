@@ -11,6 +11,7 @@
 #define PRIVATE_PROPERTY private:
 #define PROTECTED_PROPERTY protected:
 
+#pragma comment(lib, "DirectXTK.lib")
 
 
 #include<Windows.h>
@@ -31,6 +32,7 @@
 #include<DirectXColors.h>
 #include<wrl.h>
 
+#include<Effects.h>
 
 #include"CallStack.h"
 

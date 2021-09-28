@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="DXTK">
+      <UniqueIdentifier>{b76c05c3-aee1-4580-8484-cb804f2f61fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3DHardware.cpp">
@@ -53,8 +56,74 @@
     <ClInclude Include="inc\D3DDepthStencil.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="DXTK\inc\Audio.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\BufferHelpers.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\CommonStates.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\DDSTextureLoader.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\DirectXHelpers.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\Effects.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\GamePad.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\GeometricPrimitive.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\GraphicsMemory.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\Keyboard.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\Model.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\Mouse.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\PostProcess.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\PrimitiveBatch.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\ScreenGrab.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\SimpleMath.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\SpriteBatch.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\SpriteFont.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\VertexTypes.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\WICTextureLoader.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTK\inc\XboxDDSTextureLoader.h">
+      <Filter>DXTK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+    <None Include="DXTK\inc\SimpleMath.inl">
+      <Filter>DXTK</Filter>
+    </None>
   </ItemGroup>
 </Project>
