@@ -8,7 +8,7 @@ namespace NARCO
 	{
 		ImGui::Text("GUI_FileSlot");
 
-		const char* path = mPath.c_str();
+		const char* path = mFilePath.c_str();
 
 		ImGui::Text("File : "); ImGui::SameLine(); ImGui::Text(path);
 		if (ImGui::Button("Load") == true)
@@ -29,7 +29,7 @@ namespace NARCO
 	}
 
 	NARCO_API GUI_FileSlot::GUI_FileSlot()
-		: mPath("")
+		: mFilePath("")
 	{
 	}
 
@@ -47,7 +47,7 @@ namespace NARCO
 	}
 	NARCO_API void GUI_FileSlot::loadFile(const char* path)
 	{
-
+		
 	}
 	NARCO_API bool GUI_FileSlot::fileBrowse()
 	{
@@ -148,17 +148,25 @@ namespace NARCO
 				bool bExists = itr->exists();
 				bool bHovering = ImGui::IsMouseHoveringRect(itemRectMin, itemRectMax);
 				bool bDoubleClick = lamda_bDoubleClick();
+				bool bFile = itr->is_character_file();
 
 				if (bDirectory && bExists && bHovering && bDoubleClick)
 				{
 					mSelectedPath += label;
 					mSelectedPath += '/';
 				}
+
+				else if (!bDirectory && bExists && bHovering && bDoubleClick)
+				{
+					mFilePath = mSelectedPath;
+					mFilePath += label;
+
+					std::cout << "Selected File : " << mFilePath << std::endl;
+
+				}
 			}
 		}
-
-		std::cout << browserDropdownIterateIndex << std::endl;
-
+		
 		//ImGui::TextWrapped("%s", str.str().c_str());
 		ImGui::End();
 		return true;

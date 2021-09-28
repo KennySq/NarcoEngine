@@ -5,7 +5,7 @@ namespace NARCO
 	NARCO_API GUI_Frame::GUI_Frame(const char* name, unsigned int width, unsigned int height, ImGuiWindowFlags winFlags)
 		: mName(name), mWidth(width), mHeight(height), mWindowFlags(winFlags)
 	{
-		
+	//	ImGui::SetNextWindowSize(ImVec2(width, height));
 	}
 	NARCO_API void GUI_Frame::Start()
 	{
@@ -18,6 +18,7 @@ namespace NARCO
 	}
 	NARCO_API void GUI_Frame::Update()
 	{
+		ImGui::SetWindowSize(mName, ImVec2(mWidth, mHeight));
 
 		ImGui::Begin(mName,nullptr, mWindowFlags);
 

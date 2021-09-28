@@ -8,3 +8,4 @@
 #include"inc/GUI_FileSlot.h"
 #include"inc/GUI_Canvas.h"
 #include"inc/GUI_Frame.h"
+#include"inc/GUI_AssetManager.h"
