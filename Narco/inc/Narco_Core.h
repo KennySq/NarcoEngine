@@ -10,6 +10,8 @@
 
 #include"Renderer.h"
 
+#include"AssetManager.h"
+
 #include<GUI_Bundle.h>
 #pragma comment(lib, "Narco_GUI.lib")
 #pragma comment(lib, "libDX11.lib")
