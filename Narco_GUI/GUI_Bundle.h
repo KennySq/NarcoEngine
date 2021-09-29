@@ -9,4 +9,4 @@
 #include"inc/GUI_Canvas.h"
 #include"inc/GUI_Frame.h"
 #include"inc/GUI_AssetManager.h"
-#include"inc/GUI_Shader.h"
+#include"inc/GUI_Material.h"

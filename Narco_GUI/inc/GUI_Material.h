@@ -17,7 +17,7 @@ namespace NARCO
 
 	class GUI_Material : public IGUI
 	{
-		PUBLIC_API NARCO_API GUI_Material(Material* shader);
+		PUBLIC_API NARCO_API GUI_Material(Material* material);
 		PUBLIC_API NARCO_API virtual ~GUI_Material();
 		PUBLIC_API virtual NARCO_API void Start() override;
 		PUBLIC_API virtual NARCO_API void Update() override;
