@@ -15,7 +15,7 @@ WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 HWND hWnd;
 
-NARCO::Narco_Core* gCore;
+NARCO::Narco_Deferred_Legacy* gCore;
 
 
 
@@ -50,7 +50,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg = MSG();
     
-    gCore = new NARCO::Narco_Core(hWnd, hInst);
+    gCore = new NARCO::Narco_Deferred_Legacy(hWnd, hInst);
 
 #ifdef _DEBUG
     AllocConsole();

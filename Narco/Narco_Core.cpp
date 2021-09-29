@@ -4,7 +4,7 @@ using namespace NARCO;
 
 namespace NARCO
 {
-	Narco_Core::Narco_Core(HWND windowHandle, HINSTANCE handleInst)
+	Narco_Deferred_Legacy::Narco_Deferred_Legacy(HWND windowHandle, HINSTANCE handleInst)
 		: mWindowHandle(windowHandle), mHandleInstance(handleInst), mHardware(new D3DHardware()),
 		mDisplay(new D3DDisplay(windowHandle, mHardware->GetDevice(), NARCO_INIT_APP_WIDTH, NARCO_INIT_APP_HEIGHT))
 	{
@@ -20,9 +20,9 @@ namespace NARCO
 
 		mGBuffer = new GBuffer(device, width, height);
 
-		Shader* uberShader = new Shader("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/built-in/hlsl/Deferred_DefaultUber_0.hlsl", SHADER_VERTEX | SHADER_PIXEL);
+		Shader* uberShader = new Shader("built-in/hlsl/Deferred_DefaultUber_0.hlsl", SHADER_VERTEX | SHADER_PIXEL);
 		uberShader->Compile(device);
-		Material* uberMaterial = new Material();
+		Material* uberMaterial = new Material(uberShader, device, context);
 
 		// 테스트 코드 영역입니다.
 		MeshLoader loader(device);
@@ -31,7 +31,6 @@ namespace NARCO
 		loader.Load();
 
 		Mesh* mesh_shiba = loader.ConvertMesh();
-
 		mSelectedScene = new Scene("Sample Scene");
 
 		AssetManager* assetManager = new AssetManager("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/app/assets");
@@ -52,17 +51,17 @@ namespace NARCO
 		frame->AddGUI("FileSlot_01", new GUI_FileSlot());
 		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
 		frame3->AddGUI("AssetBrowser_01", new GUI_AssetManager(assetManager, device));
-		frame4->AddGUI("ShaderEditor_01", new GUI_Material(uberShader));
+		frame4->AddGUI("ShaderEditor_01", new GUI_Material(uberMaterial));
 		
 	}
-	void Narco_Core::Init()
+	void Narco_Deferred_Legacy::Init()
 	{
 		mSelectedScene->start();
 
 		mMainCanvas->Start();
 
 	}
-	void Narco_Core::Update(float delta)
+	void Narco_Deferred_Legacy::Update(float delta)
 	{
 		static ID3D11DeviceContext* context = mHardware->GetImmediateContext();
 		static ID3D11RenderTargetView* const * rtv = mGBuffer->GetRenderTargets();
@@ -76,18 +75,21 @@ namespace NARCO
 		
 		clearScreen(gui_ColorPicker->GetColor4());
 
-		//context->OMSetRenderTargets(mGBuffer->GetBufferCount(), rtv, dsv);
-		context->OMSetRenderTargets(1, backBuffer , dsv);
-		context->RSSetViewports(1, viewports);
+		context->OMSetRenderTargets(mGBuffer->GetBufferCount(), rtv, dsv);
 		
-
+		
+		context->RSSetViewports(1, viewports);
 
 		mSelectedScene->update(delta);
 
+		mGBuffer->DrawScreen(context, backBuffer[0]);
+
 		mMainCanvas->Update();
+		
+		
 
 	}
-	void Narco_Core::Render(float delta)
+	void Narco_Deferred_Legacy::Render(float delta)
 	{
 		mSelectedScene->render(delta);
 		mMainCanvas->Draw();
@@ -98,7 +100,7 @@ namespace NARCO
 
 
 	}
-	void Narco_Core::Release()
+	void Narco_Deferred_Legacy::Release()
 	{
 		mSelectedScene->release();
 
@@ -107,7 +109,7 @@ namespace NARCO
 		delete mHardware;
 		delete mDisplay;
 	}
-	void Narco_Core::clearScreen(const float* clearColor)
+	void Narco_Deferred_Legacy::clearScreen(const float* clearColor)
 	{
 		static ID3D11DeviceContext* context = mHardware->GetImmediateContext();
 		static ID3D11RenderTargetView* renderTargetView = mDisplay->GetRenderTargetView();
@@ -115,5 +117,8 @@ namespace NARCO
 		context->ClearRenderTargetView(renderTargetView, clearColor);
 
 
+	}
+	void Narco_Deferred_Legacy::drawScreen()
+	{
 	}
 }

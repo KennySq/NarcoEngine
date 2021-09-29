@@ -166,10 +166,7 @@ namespace NARCO
 
 			blob->Release();
 		}
-
-		reflectVertex();
-		reflectPixel();
-
+		
 		return S_OK;
 	}
 	void Shader::Release()
@@ -199,87 +196,7 @@ namespace NARCO
 			mPixel->Release();
 		}
 	}
-	HRESULT Shader::reflectVertex()
-	{
-		HRESULT result;
-		D3D11_SHADER_DESC shaderDesc{};
 
-		result = mVertexReflection->GetDesc(&shaderDesc);
-
-		if (result != S_OK)
-		{
-			ExceptionError(E_FAIL, "Faield to getting descriptor from vertex reflection");
-			return result;
-		}
-
-		std::vector<D3D11_SIGNATURE_PARAMETER_DESC> inputParameters;
-		std::vector<D3D11_SIGNATURE_PARAMETER_DESC> outputParameters;
-
-		for (unsigned int i = 0; i < shaderDesc.InputParameters; i++)
-		{
-			D3D11_SIGNATURE_PARAMETER_DESC parameterDesc{};
-			result = mVertexReflection->GetInputParameterDesc(i, &parameterDesc);
-
-			if (result != S_OK)
-			{
-				break;
-			}
-
-			inputParameters.emplace_back(parameterDesc);
-
-		}
-
-		for (unsigned int i = 0; i < shaderDesc.OutputParameters; i++)
-		{
-			D3D11_SIGNATURE_PARAMETER_DESC parameterDesc{};
-			result = mVertexReflection->GetOutputParameterDesc(i, &parameterDesc);
-
-			if (result != S_OK)
-			{
-				break;
-			}
-
-			outputParameters.emplace_back(parameterDesc);
-		}
-
-		for (unsigned int i = 0; i < shaderDesc.BoundResources; i++)
-		{
-			D3D11_SHADER_INPUT_BIND_DESC bindDesc{};
-			result = mVertexReflection->GetResourceBindingDesc(i, &bindDesc);
-			if (result != S_OK)
-			{
-				ExceptionError(E_FAIL, "failed to getting bound resource register");
-				return E_FAIL;
-			}
-
-			mInputRegisters.emplace_back(bindDesc);
-		}
-
-		return S_OK;
-	}
-	HRESULT Shader::reflectPixel()
-	{
-		HRESULT result;
-		D3D11_SHADER_DESC shaderDesc{};
-		std::vector<D3D11_SHADER_INPUT_BIND_DESC> inputRegisters;
-
-		result = mPixelReflection->GetDesc(&shaderDesc);
-
-		for (unsigned int i = 0; i < shaderDesc.BoundResources; i++)
-		{
-			D3D11_SHADER_INPUT_BIND_DESC bindDesc{};
-			result = mPixelReflection ->GetResourceBindingDesc(i, &bindDesc);
-			if (result != S_OK)
-			{
-				ExceptionError(E_FAIL, "failed to getting bound resource register");
-				return E_FAIL;
-			}
-
-			inputRegisters.emplace_back(bindDesc);
-		}
-
-		return S_OK;
-	}
 	HRESULT Shader::reflectInputLayout(ID3D11Device* device, ID3DBlob* blob)
 	{
 		HRESULT result;

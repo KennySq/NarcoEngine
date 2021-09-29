@@ -441,6 +441,8 @@ namespace NARCO
 			vertexDesc.Usage = D3D11_USAGE_DEFAULT;
 
 			vertexSub.pSysMem = mVertices.data();
+
+			mesh->mStride = sizeof(Vertex_Static);
 		}
 
 		indexDesc.ByteWidth = sizeof(unsigned int) * mIndices.size();
