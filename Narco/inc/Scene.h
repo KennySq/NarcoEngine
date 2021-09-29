@@ -5,12 +5,12 @@
 
 namespace NARCO
 {
-	class Narco_Core;
+	class Narco_Deferred_Legacy;
 	typedef unsigned long long SceneID;
 
 	class Scene
 	{
-		friend Narco_Core;
+		friend Narco_Deferred_Legacy;
 
 	public:
 		Scene(const char* name);

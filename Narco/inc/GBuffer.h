@@ -12,7 +12,8 @@ namespace NARCO
 		DXGI_FORMAT_R32G32B32A32_FLOAT, // Normal
 		DXGI_FORMAT_R32G32_FLOAT,		// UV
 	};
-
+	class Mesh;
+	class Shader;
 	class GBuffer
 	{
 	public:
@@ -23,6 +24,8 @@ namespace NARCO
 		ID3D11DepthStencilView* GetDepthStencil() { return mDepth->GetDepthStencilView(); }
 
 		const unsigned int GetBufferCount() const { return mBufferCount; }
+
+		void DrawScreen(ID3D11DeviceContext* context, ID3D11RenderTargetView* backBuffer);
 
 	private:
 		ID3D11Device* mDevice;
@@ -37,5 +40,8 @@ namespace NARCO
 		
 		unsigned int mWidth;
 		unsigned int mHeight;
+
+		Mesh* mScreenQuadMesh;
+		Shader* mScreenQuadShader;
 	};
 }

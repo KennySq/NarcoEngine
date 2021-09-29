@@ -23,11 +23,11 @@ namespace NARCO
 #define NARCO_INIT_APP_WIDTH 1280
 #define NARCO_INIT_APP_HEIGHT 720
 
-	class Narco_Core
+	class Narco_Deferred_Legacy
 	{
 	public:
 
-		Narco_Core(HWND windowHandle, HINSTANCE handleInst);
+		Narco_Deferred_Legacy(HWND windowHandle, HINSTANCE handleInst);
 
 		void Init();
 		void Update(float delta);
@@ -37,6 +37,7 @@ namespace NARCO
 
 	private:
 		void clearScreen(const float* clearColor);
+		void drawScreen();
 
 		Scene* mSelectedScene;
 

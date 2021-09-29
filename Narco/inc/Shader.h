@@ -33,8 +33,10 @@ namespace NARCO
 	static constexpr unsigned int MODEL_5_IN_S_REGISTER = 16;
 	static constexpr unsigned int MODEL_5_OUT_O_REGISTER = 32;
 
+	class Material;
 	class Shader
 	{
+		friend Material;
 	public:
 		Shader(const char* path, unsigned int flags);
 		~Shader();
@@ -46,15 +48,21 @@ namespace NARCO
 		ID3D11DomainShader* GetDS() const { return mDomain.Get(); }
 		ID3D11HullShader* GetHS() const { return mHull.Get(); }
 		ID3D11PixelShader* GetPS() const { return mPixel.Get(); }
+		ID3D11InputLayout* GetIL() const { return mLayout.Get(); }
 
-		//ID3D11ShaderResourceView* const * GetVertexSRV() const { return mVertexShaderResources.data(); }
+		ID3D11ShaderReflection* GetVertexReflection() const { return mVertexReflection.Get(); }
+		ID3D11ShaderReflection* GetGeometryReflection() const { return mGeometryReflection.Get(); }
+		ID3D11ShaderReflection* GetDomainReflection() const { return mDomainReflection.Get(); }
+		ID3D11ShaderReflection* GetHullReflection() const { return mHullReflection.Get(); }
+		ID3D11ShaderReflection* GetPixelReflection() const { return mPixelReflection.Get(); }
 
-		const std::vector<D3D11_SHADER_INPUT_BIND_DESC>& GetInputRegisters() const { return mInputRegisters; }
+		unsigned int GetVertexConstantBufferCount() const { return mVertexConstantBufferCount; }
+		unsigned int GetVertexBoundResourceCount() const { return mVertexBoundResourceCount; }
 
+		unsigned int GetPixelConstantBufferCount() const { return mPixelConstantBufferCount; }
+		unsigned int GetPixelBoundResourceCount() const { return mPixelBoundResourceCount; }
 		void Release();
 	private:
-		HRESULT reflectVertex();
-		HRESULT reflectPixel();
 
 		HRESULT reflectInputLayout(ID3D11Device* device, ID3DBlob* blob);
 
@@ -62,11 +70,7 @@ namespace NARCO
 
 		std::string mPath;
 
-		std::vector<ID3D11Buffer*> mConstantBuffers; // 8 Max
-
 		std::vector<ID3D11RenderTargetView*> mPixelRenderTargets;
-
-		std::vector<ID3D11ShaderResourceView*> mShaderResources;
 
 		ComPtr<ID3D11VertexShader> mVertex = nullptr;
 		ComPtr<ID3D11GeometryShader> mGeometry = nullptr;
@@ -82,5 +86,20 @@ namespace NARCO
 		ComPtr<ID3D11ShaderReflection> mPixelReflection;
 
 		std::vector<D3D11_SHADER_INPUT_BIND_DESC> mInputRegisters;
+
+		unsigned int mVertexConstantBufferCount;
+		unsigned int mVertexBoundResourceCount;
+
+		unsigned int mGeometryConstantBufferCount;
+		unsigned int mGeometryBoundResourceCount;
+
+		unsigned int mDomainConstantBufferCount;
+		unsigned int mDomainBoundResourceCount;
+
+		unsigned int mHullConstantBufferCount;
+		unsigned int mHullBoundResourceCount;
+
+		unsigned int mPixelConstantBufferCount;
+		unsigned int mPixelBoundResourceCount;
 	};
 }

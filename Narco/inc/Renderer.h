@@ -19,6 +19,8 @@ namespace NARCO
 
 		ID3D11DeviceContext* mContext;
 		Mesh* mMesh;
+
+
 		std::vector<Material*> mMaterials;
 		// Mesh Data
 		// Material Data;

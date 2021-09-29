@@ -7,11 +7,13 @@ cbuffer Constants : register(b0)
 	float4x4 gProjection;
 }
 
-Texture2D gBaseMap;
-Texture2D gNormalMap;
+Texture2D<float4> gBaseMap;
+Texture2D<float4> gNormalMap;
 
-RWBuffer<float> gMetallic;
-RWBuffer<float> gSmoothness;
+Buffer<float> gMetallic;
+Buffer<float> gSmoothness;
+Buffer<float2> gSomeFloat2;
+Buffer<float3> gSomeFloat3;
 
 struct Vertex_Input
 {
@@ -71,6 +73,9 @@ Buffer_Input frag(Pixel_Input input)
 	output.mTexcoord = input.mTexcoord;
 	
     output.mAlbedo = gMetallic.Load(0);
+    output.mAlbedo = gSomeFloat3.Load(0).xxxx;
+	
+    output.mNormal = normal;
 	
 	return output;
 };

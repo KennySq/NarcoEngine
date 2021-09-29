@@ -24,10 +24,24 @@ namespace NARCO
 		}
 	};
 
+	struct Vertex_Quad
+	{
+		XMFLOAT3 mPosition;
+		XMFLOAT2 mTexcoord;
+	};
+
 	enum eVertexType
 	{
 		VERTEX_STATIC,
 		VERTEX_SKELETAL,
+	};
+
+	enum eMeshPrimitive
+	{
+		PRIMITIVE_QUAD,
+		PRIMITIVE_SPHERE,
+		PRIMITIVE_QUBE,
+		//...
 	};
 
 	class Mesh
@@ -36,14 +50,19 @@ namespace NARCO
 
 	public:
 		Mesh();
+		Mesh(ID3D11Device* device, eMeshPrimitive primitiveTag);
 		Mesh(const Mesh& mesh) = delete;
 		Mesh(const Mesh&&) = delete;
 
 		ID3D11Buffer* GetVertex() const { return mVertex.Get(); }
 		ID3D11Buffer* GetIndex() const { return mIndex.Get(); }
 
+		unsigned int GetStride() const { return mStride; }
+
 	private:
 		ComPtr<ID3D11Buffer> mVertex;
 		ComPtr<ID3D11Buffer> mIndex;
+
+		unsigned int mStride;
 	};
 }
