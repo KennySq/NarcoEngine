@@ -74,7 +74,16 @@ namespace NARCO
 					return result;
 				}
 
-				MCP* constProperties = new MCP(variableNames, constantBuffer, bufferDesc.ByteWidth, shaderBufferDesc.Variables);
+				long long hash = MakeHash(shaderBufferDesc.Name);
+				
+				if (mInputConstantProperties.find(hash) != mInputConstantProperties.end())
+				{
+					continue;
+				}
+					
+				MCP* constProperties = new MCP(shaderBufferDesc.Name,variableNames, constantBuffer, bufferDesc.ByteWidth, shaderBufferDesc.Variables);
+				
+				
 				mInputConstantProperties.insert_or_assign(MakeHash(shaderBufferDesc.Name), constProperties);
 
 			}
@@ -390,7 +399,16 @@ namespace NARCO
 					return result;
 				}
 
-				MCP* constProperties = new MCP(variableNames, constantBuffer, bufferDesc.ByteWidth, shaderBufferDesc.Variables);
+				long long hash = MakeHash(shaderBufferDesc.Name);
+
+				if (mInputConstantProperties.find(hash) != mInputConstantProperties.end())
+				{
+					continue;
+				}
+
+				MCP* constProperties = new MCP(shaderBufferDesc.Name, variableNames, constantBuffer, bufferDesc.ByteWidth, shaderBufferDesc.Variables);
+
+
 				mInputConstantProperties.insert_or_assign(MakeHash(shaderBufferDesc.Name), constProperties);
 
 			}

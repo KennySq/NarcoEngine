@@ -1,5 +1,6 @@
 #pragma once
 #include"Common.h"
+#include"Super.h"
 
 namespace NARCO
 {
@@ -7,7 +8,7 @@ namespace NARCO
 	typedef unsigned long long ComponentID;
 
 	
-	class Component
+	class Component : public Super
 	{
 		friend GameObject;
 
@@ -17,7 +18,7 @@ namespace NARCO
 		Component(const Component&& c) = delete;
 		virtual ~Component() {}
 
-	private:
+	protected:
 		virtual void start() = 0;
 		virtual void update(float delta) = 0;
 		virtual void render(float delta) = 0;

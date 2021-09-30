@@ -7,7 +7,7 @@ namespace NARCO
 	class Transform : public Component
 	{
 	public:
-		Transform() : Component(typeid(this).name()) {}
+		Transform();
 		~Transform() {}
 
 		XMMATRIX TRS(XMVECTOR translation, XMVECTOR rotation, XMVECTOR scale);
@@ -22,7 +22,11 @@ namespace NARCO
 
 		XMMATRIX GetMatrix() const { return XMLoadFloat4x4(&mMatrix); }
 
+		ID3D11Buffer* GetBuffer() const { return mBuffer.Get(); }
+
 	private:
+		ComPtr<ID3D11Buffer> mBuffer;
+
 		XMFLOAT4X4 mMatrix;
 
 		XMFLOAT4 mPosition;

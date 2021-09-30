@@ -5,11 +5,11 @@ using namespace NARCO;
 namespace NARCO
 {
 	Narco_Deferred_Legacy::Narco_Deferred_Legacy(HWND windowHandle, HINSTANCE handleInst)
-		: mWindowHandle(windowHandle), mHandleInstance(handleInst), mHardware(new D3DHardware()),
+		: mWindowHandle(windowHandle), mHandleInstance(handleInst), mHardware(D3DHardware::GetInstance()),
 		mDisplay(new D3DDisplay(windowHandle, mHardware->GetDevice(), NARCO_INIT_APP_WIDTH, NARCO_INIT_APP_HEIGHT))
 	{
-		ID3D11Device* device = mHardware->GetDevice();
-		ID3D11DeviceContext* context = mHardware->GetImmediateContext();
+		ID3D11Device* device = D3DHardware::GetDevice();
+		ID3D11DeviceContext* context = D3DHardware::GetImmediateContext();
 
 
 
@@ -20,21 +20,34 @@ namespace NARCO
 
 		mGBuffer = new GBuffer(device, width, height);
 
+
+
+		// 테스트 코드 영역입니다.
 		Shader* uberShader = new Shader("built-in/hlsl/Deferred_DefaultUber_0.hlsl", SHADER_VERTEX | SHADER_PIXEL);
 		uberShader->Compile(device);
 		Material* uberMaterial = new Material(uberShader, device, context);
 
-		// 테스트 코드 영역입니다.
 		MeshLoader loader(device);
 
 		loader.SetPath("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/shiba/shiba.fbx");
-		loader.Load();
+		loader.Load();	
 
 		Mesh* mesh_shiba = loader.ConvertMesh();
-		mSelectedScene = new Scene("Sample Scene");
+		mSelectedScene = new Scene("Sample Scene", context);
+
+		GameObject* shiba = mSelectedScene->AddGameObject(new GameObject("Shiba"));
+		GameObject* mainCamera = mSelectedScene->AddGameObject(new GameObject("Main Camera"));
+
+		Renderer* shibaRenderer = shiba->AddComponent<Renderer>();
+
+		Camera* mainCam = mainCamera->AddComponent<Camera>();
+		mainCam->SetDisplay(mDisplay);
+		mainCamera->SetTag("Main Camera");
+
+		shibaRenderer->SetMesh(mesh_shiba);
+		shibaRenderer->SetMaterial(uberMaterial);
 
 		AssetManager* assetManager = new AssetManager("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/app/assets");
-	//	assetManager->AddSystemAsset("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/textures/system/icon_page.png");
 
 		mMainCanvas = new GUI_Canvas(mWindowHandle, mHandleInstance, device, context);
 

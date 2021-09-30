@@ -36,11 +36,12 @@ namespace NARCO
 
 	typedef struct MaterialConstantProperty
 	{
-		MaterialConstantProperty(const std::vector<const char*>& names, const ComPtr<ID3D11Buffer>& buffer, unsigned int size, unsigned int count)
-			: Constant(buffer), Names(names), Size(size), Count(count) {}
+		MaterialConstantProperty(const char* bufferName, const std::vector<const char*>& names, const ComPtr<ID3D11Buffer>& buffer, unsigned int size, unsigned int count)
+			: BufferName(bufferName), Constant(buffer), Names(names), Size(size), Count(count) {}
 
 		const ComPtr<ID3D11Buffer> Constant;
 		
+		const char* BufferName;
 		std::vector<const char*> Names;
 
 		unsigned int Count;
@@ -85,7 +86,8 @@ namespace NARCO
 		std::map<long long, MaterialProperty*> mInputProperties;
 		std::map<long long, MaterialConstantProperty*> mInputConstantProperties;
 
-		std::vector<ComPtr<ID3D11Buffer>> mConstantBuffers;
+
+
 		std::vector<ComPtr<ID3D11Buffer>> mBuffers;
 		std::vector<ComPtr<ID3D11Texture2D>> mTextures;
 		

@@ -2,13 +2,13 @@
 #include"Common.h"
 #include"Component.h"
 #include"Trasnform.h"
-
+#include"Super.h"
 namespace NARCO
 {
 	class Scene;
 	typedef unsigned long long InstanceID;
 
-	class GameObject
+	class GameObject : public Super
 	{
 		friend Scene;
 
@@ -20,16 +20,22 @@ namespace NARCO
 
 		~GameObject();
 
+		const Scene* GetScene() const { return mScene; }
+
+		void SetTag(const char* tag) { mTag = tag; }
+		const char* GetTag() const { return mTag.c_str(); }
+
+
 		template<class _Comp>
 		_Comp* GetComponent()
 		{
-			type_info typeInfo = typeid(_Comp);
+			const type_info& typeInfo = typeid(_Comp);
 			size_t compHash = typeInfo.hash_code();
 			auto result = mComponents.find(compHash);
 
 			if (mComponents.end() != result)
 			{
-				return result->second;
+				return static_cast<_Comp*>(result->second);
 			}
 
 			ExceptionError(E_INVALIDARG, "This gameobject doesn't have such component.");
@@ -37,7 +43,7 @@ namespace NARCO
 		}
 
 		template<class _Comp>
-		void AddComponent()
+		_Comp* AddComponent()
 		{
 			if (this == nullptr)
 			{
@@ -47,8 +53,6 @@ namespace NARCO
 
 			const type_info& typeInfo = typeid(_Comp);
 			size_t compHash = typeInfo.hash_code();
-
-			
 
 			auto result = mComponents.find(compHash);
 
@@ -61,9 +65,10 @@ namespace NARCO
 			Component* newComp = new _Comp(); // preventing non-inherited object creation.
 
 			newComp->mRoot = this;
+
 			mComponents.insert_or_assign(compHash, newComp);
 
-			return;
+			return static_cast<_Comp*>(newComp);
 		}
 
 	private:
@@ -83,5 +88,7 @@ namespace NARCO
 		GameObject* mRoot;
 		GameObject* mParent;
 		std::vector<GameObject*> mChilds;
+
+		std::string mTag;
 	};
 }

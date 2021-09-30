@@ -2,28 +2,55 @@
 
 namespace NARCO
 {
-	Scene::Scene(const char* name)
-		: mName(name), mSceneID(MakeHash(mName))
+	Scene::Scene(const char* name, ID3D11DeviceContext* context)
+		: mName(name), mSceneID(MakeHash(mName)), mContext(context)
 	{
 	}
 	Scene::~Scene()
 	{
 	}
-	void Scene::AddGameObject(GameObject* gameObject)
+	GameObject* Scene::FindGameObjectWithTag(const char* tag) const
+	{
+		for (auto i : mGameObjects)
+		{
+			if (tag == i.second->mTag)
+			{
+				return i.second;
+			}
+		}
+		return nullptr;
+	}
+	GameObject* Scene::AddGameObject(GameObject* gameObject)
 	{
 		InstanceID id = gameObject->mInstanceID;
 
 		if (mGameObjects.find(id) != mGameObjects.end())
 		{
 			ExceptionWarning(E_INVALIDARG, "This gameObject is already in the scene.");
-			return;
+			return nullptr;
 		}
 
 		gameObject->mScene = this;
 		mGameObjects.insert_or_assign(id, gameObject);
 
-		return;
+		return gameObject;
 
+	}
+	GameObject* Scene::AddGameObject(const char* name)
+	{
+		GameObject* gameObject = new GameObject(name);
+		InstanceID id = gameObject->mInstanceID;
+
+		if (mGameObjects.find(id) != mGameObjects.end())
+		{
+			ExceptionWarning(E_INVALIDARG, "This gameObject is already in the scene.");
+			return nullptr;
+		}
+
+		gameObject->mScene = this;
+		mGameObjects.insert_or_assign(id, gameObject);
+
+		return gameObject;
 	}
 	GameObject* Scene::GetGameObject(InstanceID iid) const
 	{

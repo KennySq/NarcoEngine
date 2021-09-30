@@ -2,6 +2,28 @@
 
 namespace NARCO
 {
+	Transform::Transform()
+		: Component(typeid(this).name())
+	{
+		XMMATRIX origin = XMMatrixIdentity();
+
+		XMStoreFloat4x4(&mMatrix, origin);
+
+		D3D11_BUFFER_DESC bufferDesc{};
+		D3D11_SUBRESOURCE_DATA subData{};
+
+		bufferDesc.ByteWidth = sizeof(XMFLOAT4X4);
+		bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		subData.pSysMem = &mMatrix;
+
+		HRESULT result = mDevice->CreateBuffer(&bufferDesc, &subData, mBuffer.GetAddressOf());
+		if (result != S_OK)
+		{
+			ExceptionError(E_INVALIDARG, "failed to create transform buffer.");
+			return;
+		}
+
+	}
 	XMMATRIX Transform::TRS(XMVECTOR translation, XMVECTOR rotation, XMVECTOR scale)
 	{
 		XMVECTOR rotateOrigin = XMLoadFloat4(&mRotation);
@@ -66,6 +88,8 @@ namespace NARCO
 		XMStoreFloat4(&mPosition, translation);
 		XMStoreFloat4(&mRotation, rotQuat);
 		XMStoreFloat4(&mScale, scale);
+
+		mContext->UpdateSubresource(mBuffer.Get(), 0, nullptr, &mMatrix, 0, 0);
 
 	}
 	void Transform::render(float delta)

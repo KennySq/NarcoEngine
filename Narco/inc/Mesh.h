@@ -59,10 +59,13 @@ namespace NARCO
 
 		unsigned int GetStride() const { return mStride; }
 
+		unsigned int GetIndexCount() const { return mIndexCount; }
+
 	private:
 		ComPtr<ID3D11Buffer> mVertex;
 		ComPtr<ID3D11Buffer> mIndex;
 
 		unsigned int mStride;
+		unsigned int mIndexCount;
 	};
 }

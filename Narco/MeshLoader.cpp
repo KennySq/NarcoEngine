@@ -110,12 +110,23 @@ namespace NARCO
 						int controlPointIndex = mesh->GetPolygonVertex(i, j);
 
 						XMFLOAT3& position = mPositions[controlPointIndex];
-					//	XMFLOAT3 normal = fbx_getNormal(mesh, controlPointIndex, vertexCount);
-					//	XMFLOAT3 binormal = fbx_getBinormals(mesh, controlPointIndex, vertexCount);
-					//	XMFLOAT3 tangent = fbx_getTangents(mesh, controlPointIndex, vertexCount);
-					//	XMFLOAT2 uv = fbx_getTexcoords(mesh, controlPointIndex, mesh->GetTextureUVIndex(i, j));
+						XMFLOAT3 normal = fbx_getNormal(mesh, controlPointIndex, vertexCount);
+						XMFLOAT3 binormal = fbx_getBinormals(mesh, controlPointIndex, vertexCount);
+						XMFLOAT3 tangent = fbx_getTangents(mesh, controlPointIndex, vertexCount);
+						XMFLOAT2 uv = fbx_getTexcoords(mesh, controlPointIndex, mesh->GetTextureUVIndex(i, j));
 						
 						vertexCount++;
+
+						Vertex_Static vertex;
+
+						vertex.mPosition = position;
+						vertex.mNormal = normal;
+						vertex.mBinormal = binormal;
+						vertex.mTangent = tangent;
+						vertex.mTexcoord = uv;
+
+						mVertices.emplace_back(vertex);
+						mIndices.emplace_back(vertexCount);
 					}
 				}
 			}
@@ -454,8 +465,20 @@ namespace NARCO
 		HRESULT result = mDevice->CreateBuffer(&vertexDesc, &vertexSub, mesh->mVertex.GetAddressOf());
 		ExceptionWarning(result, "Creating vertex buffer.");
 
+		if (result != S_OK)
+		{
+			delete mesh;
+			return nullptr;
+		}
+
 		result = mDevice->CreateBuffer(&indexDesc, &indexSub, mesh->mIndex.GetAddressOf());
 		ExceptionWarning(result, "Creating index buffer.");
+
+		if (result != S_OK)
+		{
+			delete mesh;
+			return nullptr;
+		}
 
 		return mesh;
 

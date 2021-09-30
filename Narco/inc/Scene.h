@@ -13,11 +13,16 @@ namespace NARCO
 		friend Narco_Deferred_Legacy;
 
 	public:
-		Scene(const char* name);
+		Scene(const char* name, ID3D11DeviceContext* context);
 		~Scene();
 
-		void AddGameObject(GameObject* gameObject);
+		GameObject* FindGameObjectWithTag(const char* tag) const;
+
+		GameObject* AddGameObject(GameObject* gameObject);
+		GameObject* AddGameObject(const char* name);
 		GameObject* GetGameObject(InstanceID iid) const;
+
+		ID3D11DeviceContext* GetContext() const { return mContext; }
 
 	private:
 
@@ -33,6 +38,8 @@ namespace NARCO
 
 		std::map<InstanceID, GameObject*> mGameObjects;
 		
+		ID3D11DeviceContext* mContext;
+
 		// GameObject List
 		// Cached Materials
 		// 
