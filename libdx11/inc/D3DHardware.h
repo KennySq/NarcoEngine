@@ -14,15 +14,30 @@ namespace NARCO
 	typedef class D3DHardware
 	{
 	public:
-		NARCO_API D3DHardware();
+		static NARCO_API D3DHardware* GetInstance()
+		{
+			static D3DHardware* instance = new D3DHardware();
+
+			return instance;
+		}
+		
 
 		NARCO_API D3DHardware(const D3DHardware& h) = delete;
 		NARCO_API D3DHardware(const D3DHardware&& h) = delete;
 
-		NARCO_API ID3D11Device* GetDevice() const { return mDevice.Get(); }
-		NARCO_API ID3D11DeviceContext* GetImmediateContext() const { return mImmediateContext.Get(); }
+		static NARCO_API ID3D11Device* GetDevice()
+		{
+			D3DHW* inst = GetInstance();
+			return inst->mDevice.Get();
+		}
+		static NARCO_API ID3D11DeviceContext* GetImmediateContext()
+		{
+			D3DHW* inst = GetInstance();
+			return inst->mImmediateContext.Get();
+		}
 
 	private:
+		NARCO_API D3DHardware();
 
 		ComPtr<ID3D11Device> mDevice;
 		ComPtr<ID3D11DeviceContext> mImmediateContext;
