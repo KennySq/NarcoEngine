@@ -3,8 +3,10 @@
 namespace NARCO
 {
 	Camera::Camera()
-		: Component(typeid(this).name()), mFieldOfView(XMConvertToRadians(90.0f)), mFar(1000.0f), mNear(0.01f), mAspectRatio(0.0f)
+		: Component(typeid(this).name()), mFieldOfView(XMConvertToRadians(90.0f)), mFar(1000.0f), mNear(0.01f), mAspectRatio(1.333f)
 	{
+		mTransform = new Transform();
+
 		auto hw = D3DHW::GetInstance();
 		
 		D3D11_SUBRESOURCE_DATA subData{};
@@ -38,6 +40,9 @@ namespace NARCO
 		float height = viewport.Height;
 
 		mAspectRatio = width / height;
+		XMMATRIX projection = XMMatrixPerspectiveFovLH(mFieldOfView, mAspectRatio, mNear, mFar);
+		XMStoreFloat4x4(&mProjection, projection);
+
 
 	}
 	void Camera::start()
