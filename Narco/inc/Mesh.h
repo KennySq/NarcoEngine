@@ -12,17 +12,22 @@ namespace NARCO
 		XMFLOAT3 mTangent;
 		XMFLOAT2 mTexcoord;
 
-		bool operator==(const Vertex_Static& v) const
+		friend std::hash<Vertex_Static>;
+		bool operator==(const Vertex_Static& v2) const
 		{
-			bool bPosition = (mPosition.x == v.mPosition.x) && (mPosition.y == v.mPosition.y) && (mPosition.z == v.mPosition.z);
-			bool bNormal = (mNormal.x == v.mNormal.x) && (mNormal.y == v.mNormal.y) && (mNormal.z == v.mNormal.z);
-			bool bBinormal = (mBinormal.x == v.mBinormal.x) && (mBinormal.y && v.mBinormal.y) && (mBinormal.z == v.mBinormal.z);
-			bool bTangent = (mTangent.x == v.mTangent.x) && (mTangent.y && v.mTangent.y) && (mTangent.z == v.mTangent.z);
-			bool bTexcoord = (mTexcoord.x == v.mTexcoord.x) && (mTexcoord.y && v.mTexcoord.y);
+			bool bPosition = (mPosition.x == v2.mPosition.x) && (mPosition.y == v2.mPosition.y) && (mPosition.z == v2.mPosition.z);
+			bool bNormal = (mNormal.x == v2.mNormal.x) && (mNormal.y == v2.mNormal.y) && (mNormal.z == v2.mNormal.z);
+			bool bBinormal = (mBinormal.x == v2.mBinormal.x) && (mBinormal.y == v2.mBinormal.y) && (mBinormal.z == v2.mBinormal.z);
+			bool bTangent = (mTangent.x == v2.mTangent.x) && (mTangent.y == v2.mTangent.y) && (mTangent.z == v2.mTangent.z);
+			bool bTexcoord = (mTexcoord.x == v2.mTexcoord.x) && (mTexcoord.y == v2.mTexcoord.y);
+
 
 			return bPosition && bNormal && bBinormal && bTangent && bTexcoord;
+
 		}
 	};
+
+
 
 	struct Vertex_Quad
 	{
@@ -69,3 +74,43 @@ namespace NARCO
 		unsigned int mIndexCount;
 	};
 }
+
+namespace std
+{
+	template<>
+	class std::hash<NARCO::Vertex_Static>
+	{
+	public:
+		size_t operator()(const NARCO::Vertex_Static& v) const
+		{
+			using std::hash;
+			
+			hash<float> h;
+
+			
+
+			size_t posx = h(v.mPosition.x);
+			size_t posy = h(v.mPosition.y);
+			size_t posz = h(v.mPosition.z);
+
+			size_t normx = h(v.mNormal.x);
+			size_t normy = h(v.mNormal.y);
+			size_t normz = h(v.mNormal.z);
+
+			size_t binormx = h(v.mBinormal.x);
+			size_t binormy = h(v.mBinormal.y);
+			size_t binormz = h(v.mBinormal.z);
+			
+			size_t tanx = h(v.mTangent.x);
+			size_t tany = h(v.mTangent.y);
+			size_t tanz = h(v.mTangent.z);
+			
+			size_t uvx = h(v.mTexcoord.x);
+			size_t uvy = h(v.mTexcoord.y);
+
+			return (posx ^ posy ^ posz ^ normx ^ normy ^ normz ^ binormx ^ binormy ^ binormz ^ tanx ^ tany ^ tanz ^ uvx ^ uvy);
+			//return (posx ^ posy ^ posz);
+		}
+	};
+}
+

@@ -59,7 +59,7 @@ namespace NARCO
 		ID3D11Buffer* projectionBuffer = mRenderCamera->GetProjectionBuffer();
 
 		ID3D11Buffer* cameraBuffers[] = { viewBuffer, projectionBuffer };
-		
+
 		auto shader = mMaterial->GetShader();
 		auto vertReflection = shader->GetVertexReflection();
 		auto geoReflection = shader->GetGeometryReflection();
@@ -181,7 +181,7 @@ namespace NARCO
 			}
 		}
 
-		
+
 
 
 
@@ -213,11 +213,13 @@ namespace NARCO
 		mContext->IASetIndexBuffer(index, DXGI_FORMAT_R32_UINT, 0);
 		mContext->IASetInputLayout(shader->GetIL());
 
-		// 프로퍼티 업데이트
-		for (unsigned int i=0;i<)
-		{
-			
-		}
+		//// 프로퍼티 업데이트
+		//for (unsigned int i = 0; i < constantRegisters.size(); i++)
+		//{
+		//	MCP* reg = constantRegisters[i];
+
+
+		//}
 
 		if (vs != nullptr)
 		{
@@ -252,8 +254,8 @@ namespace NARCO
 			mContext->PSSetShader(ps, nullptr, 0);
 			//	stage_Pixel(material, shader);
 			mContext->PSSetConstantBuffers(0, mPixelConstantBuffers.size(), mPixelConstantBuffers.data());
-			
-			
+
+
 			mContext->PSSetShaderResources(0, mPixelTextures.size(), mPixelTextures.data());
 
 		}

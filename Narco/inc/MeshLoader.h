@@ -5,6 +5,7 @@
 #include"Mesh.h"
 
 #include<fbxsdk.h>
+
 #pragma comment(lib, "libfbxsdk.lib")
 
 namespace NARCO
@@ -36,6 +37,7 @@ namespace NARCO
 		XMFLOAT3 fbx_getBinormals(const FbxMesh* mesh, int controlPoint, int vertex);
 		XMFLOAT3 fbx_getTangents(const FbxMesh* mesh, int controlPoint, int vertex);
 		XMFLOAT2 fbx_getTexcoords(const FbxMesh* mesh, int controlPoint, int texcoordIndex);
+		void fbx_insertVertex(const XMFLOAT3& position, const XMFLOAT3& normal, const XMFLOAT3& binormal, const XMFLOAT3& tangent, const XMFLOAT2& uv);
 
 		std::string mPath;
 		eMeshType mMeshType;
@@ -49,7 +51,13 @@ namespace NARCO
 
 		std::vector<Vertex_Static> mVertices;
 		std::vector<unsigned int> mIndices;
+
+		std::unordered_map<Vertex_Static, unsigned int> mIndexMap;
 		
+		unsigned int mMeshCount = 0;
+		unsigned int mTotalTriangles = 0;
+		unsigned int mTotalVertices = 0;
+		unsigned int mIndexCount = 0;
 
 		ID3D11Device* mDevice;
 

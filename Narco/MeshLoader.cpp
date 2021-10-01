@@ -6,7 +6,7 @@ namespace NARCO
 		mPath = path;
 
 		std::string extend = mPath.substr(mPath.find_last_of("."));
-		
+
 		if (extend == ".fbx")
 		{
 			mMeshType = eMeshType::MESH_FBX;
@@ -67,19 +67,23 @@ namespace NARCO
 		FbxScene* scene = FbxScene::Create(manager, "Scene");
 		importer->Import(scene);
 
+		FbxGeometryConverter geometryConverter(manager);
+		geometryConverter.Triangulate(scene, true);
+		//fbxsdk::FbxAxisSystem sceneAxis = scene->GetGlobalSettings().GetAxisSystem();
+		//fbxsdk::FbxAxisSystem::MayaYUp.ConvertScene(scene);
+
+
+
+
 		FbxNode* rootNode = scene->GetRootNode();
 
 		fbx_loadNode(rootNode);
-		
+
 
 
 		// misc codes
-		//FbxAxisSystem sceneAxis = scene->GetGlobalSettings().GetAxisSystem();
-		//FbxAxisSystem::MayaYUp.ConvertScene(scene);
-		//FbxGeometryConverter geometryConverter(manager);
-		//geometryConverter.Triangulate(scene, true);
 
-
+		importer->Destroy();
 
 
 
@@ -95,11 +99,16 @@ namespace NARCO
 		{
 			if (nodeAttribute->GetAttributeType() == FbxNodeAttribute::eMesh)
 			{
+				mMeshCount++;
+
 				FbxMesh* mesh = node->GetMesh();
 				fbx_getControlPoints(mesh);
 
+
 				unsigned int triCount = mesh->GetPolygonCount();
 				unsigned int vertexCount = 0;
+
+				mTotalTriangles += triCount;
 
 				for (unsigned int i = 0; i < triCount; i++)
 				{
@@ -114,8 +123,6 @@ namespace NARCO
 						XMFLOAT3 binormal = fbx_getBinormals(mesh, controlPointIndex, vertexCount);
 						XMFLOAT3 tangent = fbx_getTangents(mesh, controlPointIndex, vertexCount);
 						XMFLOAT2 uv = fbx_getTexcoords(mesh, controlPointIndex, mesh->GetTextureUVIndex(i, j));
-						
-						vertexCount++;
 
 						Vertex_Static vertex;
 
@@ -125,9 +132,17 @@ namespace NARCO
 						vertex.mTangent = tangent;
 						vertex.mTexcoord = uv;
 
-						mVertices.emplace_back(vertex);
-						mIndices.emplace_back(vertexCount);
+						// 2,547
+						// 4,316
+						fbx_insertVertex(position, normal, binormal, tangent, uv);
+						// 9052
+						//	mVertices.emplace_back(vertex);
+						/*	mVertices.emplace_back(vertex);
+						mIndices.emplace_back(vertexCount);*/
+						vertexCount++;
+
 					}
+				//	mIndices.emplace_back(mIndices.size() + 1);
 				}
 			}
 		}
@@ -165,7 +180,7 @@ namespace NARCO
 	{
 		XMFLOAT3 result = XMFLOAT3(0, 0, 0);
 
-		if(mesh->GetElementNormalCount() < 1)
+		if (mesh->GetElementNormalCount() < 1)
 		{
 			ExceptionLog(E_FAIL, "no normal detected for this mesh.");
 			return result;
@@ -194,12 +209,12 @@ namespace NARCO
 				result.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[0]);
 				result.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[1]);
 				result.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[2]);
-			}	
+			}
 			break;
 			}
 		}
 		break;
-		
+
 		case FbxGeometryElement::eByPolygonVertex:
 		{
 			switch (vertexNormal->GetReferenceMode())
@@ -437,6 +452,25 @@ namespace NARCO
 		return result;
 	}
 
+	void MeshLoader::fbx_insertVertex(const XMFLOAT3& position, const XMFLOAT3& normal, const XMFLOAT3& binormal, const XMFLOAT3& tangent, const XMFLOAT2& uv)
+	{
+		Vertex_Static vertex = { position , normal, binormal, tangent, uv };
+
+		auto lookup = mIndexMap.find(vertex);
+
+		if (lookup != mIndexMap.end())
+		{
+		//	mIndices.push_back(lookup->second);
+		}
+		else
+		{
+			unsigned int index = mVertices.size();
+			mIndexMap[vertex] = index;
+		//	mIndices.push_back(index);
+			mVertices.push_back(vertex);
+		}
+	}
+
 	Mesh* MeshLoader::ConvertMesh() const
 	{
 		Mesh* mesh = new Mesh();
@@ -461,6 +495,8 @@ namespace NARCO
 		indexDesc.Usage = D3D11_USAGE_DEFAULT;
 
 		indexSub.pSysMem = mIndices.data();
+
+		mesh->mIndexCount = mIndices.size();
 
 		HRESULT result = mDevice->CreateBuffer(&vertexDesc, &vertexSub, mesh->mVertex.GetAddressOf());
 		ExceptionWarning(result, "Creating vertex buffer.");
