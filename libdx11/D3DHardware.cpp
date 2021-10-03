@@ -15,10 +15,15 @@ namespace NARCO
 		const unsigned int featureLevelCount = ARRAYSIZE(featureLevels);
 
 		D3D_FEATURE_LEVEL succeededLevel;
+		DWORD flags = 0;
+#ifdef _DEBUG
+		flags |= D3D11_CREATE_DEVICE_DEBUG;
+
+#endif
 
 		HRESULT result;
 
-		result = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
+		result = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, flags,
 			featureLevels, featureLevelCount, D3D11_SDK_VERSION,
 			mDevice.GetAddressOf(), &succeededLevel, mImmediateContext.GetAddressOf());
 	
