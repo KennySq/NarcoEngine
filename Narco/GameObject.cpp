@@ -29,6 +29,19 @@ namespace NARCO
 	GameObject::~GameObject()
 	{
 	}
+	void GameObject::awake()
+	{
+		auto transform = GetComponent<Transform>();
+
+		transform->SetMatrix(XMMatrixIdentity());
+
+		for (auto c : mComponents)
+		{
+			Component* comp = c.second;
+
+			comp->awake();
+		}
+	}
 	void GameObject::start()
 	{
 		for (auto c : mComponents)

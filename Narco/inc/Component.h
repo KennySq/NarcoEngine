@@ -19,6 +19,7 @@ namespace NARCO
 		virtual ~Component() {}
 
 	protected:
+		virtual void awake() = 0;
 		virtual void start() = 0;
 		virtual void update(float delta) = 0;
 		virtual void render(float delta) = 0;

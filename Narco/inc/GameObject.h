@@ -18,7 +18,7 @@ namespace NARCO
 		GameObject(const GameObject& gameObject);
 		GameObject(const GameObject&& gameObject);
 
-		~GameObject();
+		virtual ~GameObject();
 
 		const Scene* GetScene() const { return mScene; }
 
@@ -71,13 +71,14 @@ namespace NARCO
 			return static_cast<_Comp*>(newComp);
 		}
 
-	private:
+	protected:
 		static long long mInstanceIDCount;
 
-		void start();
-		void update(float delta);
-		void render(float delta);
-		void release();
+		virtual void awake();
+		virtual void start();
+		virtual void update(float delta);
+		virtual void render(float delta);
+		virtual void release();
 
 		std::string mName;
 		std::map<ComponentID, Component*> mComponents;

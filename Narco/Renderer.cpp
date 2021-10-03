@@ -46,19 +46,31 @@ namespace NARCO
 	void Renderer::stage_Pixel(const Material* material, const Shader* shader)
 	{
 	}
-	void Renderer::start()
+
+	void Renderer::awake()
 	{
 		const Scene* scene = mRoot->GetScene();
 		mContext = scene->GetContext();
+		mRenderCamera = scene->FindGameObjectWithTag("Main Camera")->GetComponent<Camera>();
 
 		mTransform = mRoot->GetComponent<Transform>();
-		mRenderCamera = scene->FindGameObjectWithTag("Main Camera")->GetComponent<Camera>();
+
+	}
+
+	void Renderer::start()
+	{
+		const Scene* scene = mRoot->GetScene();
+
+		mTransform = mRoot->GetComponent<Transform>();
 
 		ID3D11Buffer* transformBuffer = mTransform->GetBuffer();
 		ID3D11Buffer* viewBuffer = mRenderCamera->GetViewBuffer();
 		ID3D11Buffer* projectionBuffer = mRenderCamera->GetProjectionBuffer();
 
 		ID3D11Buffer* cameraBuffers[] = { viewBuffer, projectionBuffer };
+
+		Narco_Deferred_Legacy* rp = scene->GetRP();
+		GBuffer* gbuffer = rp->GetGBuffer();
 
 		auto shader = mMaterial->GetShader();
 		auto vertReflection = shader->GetVertexReflection();
@@ -132,9 +144,12 @@ namespace NARCO
 		// Pixel Stage
 		if (pixReflection != nullptr)
 		{
+			pixReflection->GetDesc(&pixShaderDesc);
+
 			unsigned int pixCbCount = pixShaderDesc.ConstantBuffers;
 			unsigned int pixTexCount = pixShaderDesc.BoundResources;
-
+			unsigned int pixOutCount = pixShaderDesc.OutputParameters;
+			//unsigned int pixSmpCount = pixShaderDesc.Sample
 			for (unsigned int i = 0; i < pixCbCount; i++)
 			{
 				auto pixCbRf = pixReflection->GetConstantBufferByIndex(i);
@@ -160,6 +175,11 @@ namespace NARCO
 					continue;
 				}
 
+				if (pixTexDesc.Dimension == D3D_SRV_DIMENSION_BUFFER)
+				{
+					continue;
+				}
+
 				auto lookup = textureProperties.find(MakeHash(pixTexDesc.Name));
 
 				if (lookup == textureProperties.end())
@@ -171,14 +191,31 @@ namespace NARCO
 				mPixelTextures.emplace_back(reg->Register.Get());
 			}
 
+			for (unsigned int i = 0; i < pixOutCount; i++)
+			{
+				D3D11_SIGNATURE_PARAMETER_DESC outParam{};
+
+				pixReflection->GetOutputParameterDesc(i, &outParam);
+			
+				
+				
+			}
+
+			mContext->OMSetRenderTargets(gbuffer->GetBufferCount(), gbuffer->GetRenderTargets(), gbuffer->GetDepthStencil());
+
+
 			if (pixCbCount > 0)
 			{
 				mContext->PSSetConstantBuffers(0, pixCbCount, mPixelConstantBuffers.data());
 			}
 			if (pixTexCount > 0)
 			{
-				mContext->PSSetShaderResources(0, pixTexCount - pixCbCount, mPixelTextures.data());
+				mContext->PSSetShaderResources(0, mPixelTextures.size(), mPixelTextures.data());
+				
 			}
+
+
+
 		}
 
 
@@ -197,13 +234,22 @@ namespace NARCO
 		ID3D11HullShader* hs = shader->GetHS();
 		ID3D11PixelShader* ps = shader->GetPS();
 
+
+
 		static ID3D11Buffer* vertex[] = { mMesh->GetVertex() };
 		static ID3D11Buffer* index = mMesh->GetIndex();
 		static unsigned int strides[] = { mMesh->GetStride() };
 		static unsigned int offsets[] = { 0 };
 
+		static ID3D11ShaderResourceView* nullSrv[] = { nullptr };
+		static ID3D11RenderTargetView* nullRtv[] = { nullptr };
+
 		auto textureRegisters = material->GetInputTextureRegisters();
 		auto constantRegisters = material->GetInputConstantRegisters();
+
+		ID3D11RasterizerState* rsState = material->GetRasterizerState();
+
+		MCP* defaultConstProperty = constantRegisters.begin()->second;
 
 		unsigned int vertexConstantBuffers = shader->GetVertexConstantBufferCount();
 		unsigned int vertexBoundResources = shader->GetVertexBoundResourceCount();
@@ -212,14 +258,17 @@ namespace NARCO
 		mContext->IASetVertexBuffers(0, 1, vertex, strides, offsets);
 		mContext->IASetIndexBuffer(index, DXGI_FORMAT_R32_UINT, 0);
 		mContext->IASetInputLayout(shader->GetIL());
+		mContext->RSSetState(rsState);
 
-		//// 프로퍼티 업데이트
-		//for (unsigned int i = 0; i < constantRegisters.size(); i++)
-		//{
-		//	MCP* reg = constantRegisters[i];
+		auto defaultBuffer = defaultConstProperty->Constant.Get();
 
+		auto world = mTransform->GetBuffer();
+		auto proj = mRenderCamera->GetProjectionBuffer();
+		auto view = mRenderCamera->GetViewBuffer();
 
-		//}
+		mContext->CopySubresourceRegion(defaultBuffer, 0, 0, 0, 0, world, 0, nullptr);
+		mContext->CopySubresourceRegion(defaultBuffer, 0, sizeof(float) * 16, 0, 0, view, 0, nullptr);
+		mContext->CopySubresourceRegion(defaultBuffer, 0, sizeof(float) * 32, 0, 0, proj, 0, nullptr);
 
 		if (vs != nullptr)
 		{
@@ -227,32 +276,26 @@ namespace NARCO
 			mContext->VSSetConstantBuffers(0, mVertexConstantBuffers.size(), mVertexConstantBuffers.data());
 			mContext->VSSetShaderResources(0, mVertexTextures.size(), mVertexTextures.data());
 
-			//	stage_Vertex(material, shader);
-
 		}
 
 		if (gs != nullptr)
 		{
 			mContext->GSSetShader(gs, nullptr, 0);
-			//	stage_Geometry(material, shader);
 		}
 
 		if (ds != nullptr)
 		{
 			mContext->DSSetShader(ds, nullptr, 0);
-			//	stage_Domain(material, shader);
 		}
 
 		if (hs != nullptr)
 		{
 			mContext->HSSetShader(hs, nullptr, 0);
-			//	stage_Hull(material, shader);
 		}
 
 		if (ps != nullptr)
 		{
 			mContext->PSSetShader(ps, nullptr, 0);
-			//	stage_Pixel(material, shader);
 			mContext->PSSetConstantBuffers(0, mPixelConstantBuffers.size(), mPixelConstantBuffers.data());
 
 
@@ -262,6 +305,8 @@ namespace NARCO
 
 		mContext->DrawIndexed(mMesh->GetIndexCount(), 0, 0);
 
+		mContext->PSSetShaderResources(0, 1, nullSrv);
+		mContext->OMSetRenderTargets(1, nullRtv, nullptr);
 
 	}
 
@@ -272,4 +317,5 @@ namespace NARCO
 	void Renderer::release()
 	{
 	}
+
 }

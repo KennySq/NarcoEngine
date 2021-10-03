@@ -6,11 +6,14 @@
 
 namespace NARCO
 {
-	static DXGI_FORMAT GBufferFormats[] =
+	static std::vector<DXGI_FORMAT> GBufferFormats =
 	{
 		DXGI_FORMAT_R32G32B32A32_FLOAT, // Position
+		DXGI_FORMAT_R32G32B32A32_FLOAT, // WorldPosition
 		DXGI_FORMAT_R32G32B32A32_FLOAT, // Normal
+		DXGI_FORMAT_R32G32B32A32_FLOAT, // WorldNormal
 		DXGI_FORMAT_R32G32_FLOAT,		// UV
+		DXGI_FORMAT_R32G32B32A32_FLOAT, // Albedo
 	};
 	class Mesh;
 	class Shader;
@@ -26,7 +29,7 @@ namespace NARCO
 		const unsigned int GetBufferCount() const { return mBufferCount; }
 
 		void DrawScreen(ID3D11DeviceContext* context, ID3D11RenderTargetView* backBuffer);
-
+		void ClearBuffer(ID3D11DeviceContext* context);
 	private:
 		ID3D11Device* mDevice;
 

@@ -17,8 +17,10 @@ Buffer<float3> gSomeFloat3;
 
 struct Vertex_Input
 {
-	float4 mPosition : POSITION0;
+	float3 mPosition : POSITION0;
 	float3 mNormal : NORMAL0;
+    float3 mBinormal : BINORMAL0;
+    float3 mTangent : TANGENT0;
 	float2 mTexcoord : TEXCOORD0;
 };
 
@@ -46,7 +48,7 @@ Pixel_Input vert(Vertex_Input input)
 {
 	Pixel_Input output = (Pixel_Input) 0;
 	
-	output.mPosition = mul(input.mPosition, gWorld);
+    output.mPosition = mul(float4(input.mPosition, 1.0f), gWorld);
 	output.mPosition = mul(output.mPosition, gView);
 	output.mPosition = mul(output.mPosition, gProjection);
 	
@@ -72,8 +74,8 @@ Buffer_Input frag(Pixel_Input input)
 	output.mWorldNormal = input.mWorldNormal;
 	output.mTexcoord = input.mTexcoord;
 	
-    output.mAlbedo = gMetallic.Load(0);
-    output.mAlbedo = gSomeFloat3.Load(0).xxxx;
+    output.mAlbedo = 0;
+    output.mAlbedo = 0;
 	
     output.mNormal = normal;
 	

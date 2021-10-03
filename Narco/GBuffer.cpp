@@ -4,7 +4,7 @@
 namespace NARCO
 {
 	GBuffer::GBuffer(ID3D11Device* device, unsigned int width, unsigned int height)
-		: mBufferCount(ARRAYSIZE(GBufferFormats)), mDevice(device), mWidth(width), mHeight(height),
+		: mBufferCount(GBufferFormats.size()), mDevice(device), mWidth(width), mHeight(height),
 		mRenderTargets(8), mShaderResources(128)
 	{
 		
@@ -39,6 +39,17 @@ namespace NARCO
 		static ID3D11InputLayout* il = mScreenQuadShader->GetIL();
 		static unsigned int strides[] = { sizeof(Vertex_Quad) };
 		static unsigned int offsets[] = { 0 };
+		static ID3D11ShaderResourceView* nullSrv[] = { nullptr };
+		static ID3D11RenderTargetView* nullRtv[] = { nullptr };
+		static std::vector<ID3D11ShaderResourceView*> srv;
+
+		for (unsigned int i = 0; i < mBufferCount; i++)
+		{
+			srv.push_back(mBuffers[i]->GetShaderResource());
+		}
+
+
+
 		context->VSSetShader(vs, nullptr, 0);
 		context->PSSetShader(ps, nullptr, 0);
 
@@ -48,10 +59,25 @@ namespace NARCO
 
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+		context->PSSetShaderResources(0, mBufferCount, srv.data());
+
 		context->OMSetRenderTargets(1, &backBuffer, nullptr);
 
 		context->DrawIndexed(6, 0, 0);
 
-		//context->ClearState();
+		context->PSSetShaderResources(0, 1, nullSrv);
+
+		srv.clear();
+	}
+	void GBuffer::ClearBuffer(ID3D11DeviceContext* context)
+	{
+		for (unsigned int i = 0; i < mBufferCount; i++)
+		{
+			context->ClearRenderTargetView(mBuffers[i]->GetRenderTarget(), DirectX::Colors::Red);
+
+			context->ClearDepthStencilView(mDepth->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+		}
+
 	}
 }

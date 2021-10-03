@@ -2,8 +2,8 @@
 
 namespace NARCO
 {
-	Scene::Scene(const char* name, ID3D11DeviceContext* context)
-		: mName(name), mSceneID(MakeHash(mName)), mContext(context)
+	Scene::Scene(const char* name, ID3D11DeviceContext* context, Narco_Deferred_Legacy* rp)
+		: mName(name), mSceneID(MakeHash(mName)), mContext(context), mRenderPipeline(rp)
 	{
 	}
 	Scene::~Scene()
@@ -60,6 +60,26 @@ namespace NARCO
 		}
 
 		return nullptr;
+	}
+	void Scene::awake()
+	{
+		for (auto i : mGameObjects)
+		{
+			Prefab* prefab = reinterpret_cast<Prefab*>(i.second);
+
+			if (prefab != nullptr)
+			{
+				prefab->awake();
+			}
+			else
+			{
+				GameObject* inst = i.second;
+
+				inst->awake();
+			}
+
+
+		}
 	}
 	void Scene::start()
 	{

@@ -12,6 +12,10 @@
 
 #include"AssetManager.h"
 
+#include"Prefab.h"
+#include"Shiba.h"
+
+
 #include<GUI_Bundle.h>
 #pragma comment(lib, "Narco_GUI.lib")
 #pragma comment(lib, "libDX11.lib")
@@ -29,11 +33,13 @@ namespace NARCO
 
 		Narco_Deferred_Legacy(HWND windowHandle, HINSTANCE handleInst);
 
+		void PreInit();
 		void Init();
 		void Update(float delta);
 		void Render(float delta);
 		void Release();
 
+		GBuffer* GetGBuffer() const { return mGBuffer; }
 
 	private:
 		void clearScreen(const float* clearColor);

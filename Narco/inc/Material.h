@@ -48,6 +48,18 @@ namespace NARCO
 		unsigned int Size;
 	} MCP;
 
+	typedef struct MaterialOutputProperty
+	{
+		MaterialOutputProperty(const char* name, const ComPtr<ID3D11RenderTargetView>& rtv, ePropertyDimension dimension)
+			: Name(name), Register(rtv), Dimension(dimension)
+		{}
+
+		const char* Name;
+		const ComPtr<ID3D11RenderTargetView> Register;
+		ePropertyDimension Dimension;
+
+	} MOP;
+
 	class Material
 	{
 	public:

@@ -36,7 +36,6 @@ namespace NARCO
 			if (bindDesc.Type == D3D_SIT_CBUFFER)
 			{
 				bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-
 				ID3D11ShaderReflectionConstantBuffer* buffer = reflection->GetConstantBufferByIndex(bindDesc.BindPoint);
 
 				D3D11_SHADER_BUFFER_DESC shaderBufferDesc{};
@@ -416,6 +415,18 @@ namespace NARCO
 			inputRegisters.emplace_back(bindDesc);
 		}
 
+		for (unsigned int i = 0; i < shaderDesc.OutputParameters; i++)
+		{
+			D3D11_SIGNATURE_PARAMETER_DESC outParam{};
+
+			reflection->GetOutputParameterDesc(i, &outParam);
+
+			if (outParam.SystemValueType == D3D_NAME_TARGET)
+			{
+			//	MOP* outputProperty = new MOP()
+			}
+
+		}
 
 
 		return S_OK;
@@ -426,6 +437,20 @@ namespace NARCO
 	{
 		reflectVertex(shader->mVertexReflection.Get());
 		reflectPixel(shader->mPixelReflection.Get());
+
+		D3D11_RASTERIZER_DESC rasterizerDesc = CD3D11_RASTERIZER_DESC();;
+
+		rasterizerDesc.CullMode = D3D11_CULL_NONE;
+		rasterizerDesc.DepthClipEnable = true;
+		rasterizerDesc.MultisampleEnable = false;
+		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+
+		HRESULT result = mDevice->CreateRasterizerState(&rasterizerDesc, mRasterState.GetAddressOf());
+		if (result != S_OK)
+		{
+			ExceptionError(result, "invalid argument during creating rasterizer state.");
+			return;
+		}
 	}
 	Material::~Material()
 	{

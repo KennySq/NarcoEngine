@@ -5,13 +5,11 @@ namespace NARCO
 	Camera::Camera()
 		: Component(typeid(this).name()), mFieldOfView(XMConvertToRadians(90.0f)), mFar(1000.0f), mNear(0.01f), mAspectRatio(1.333f)
 	{
-		mTransform = new Transform();
-
 		auto hw = D3DHW::GetInstance();
 		
 		D3D11_SUBRESOURCE_DATA subData{};
 		XMMATRIX projection = XMMatrixPerspectiveFovLH(mFieldOfView, mAspectRatio, mNear, mFar);
-		XMStoreFloat4x4(&mProjection, projection);
+		XMStoreFloat4x4(&mProjection, XMMatrixTranspose(projection));
 		
 		D3D11_BUFFER_DESC bufferDesc{};
 
@@ -41,13 +39,28 @@ namespace NARCO
 
 		mAspectRatio = width / height;
 		XMMATRIX projection = XMMatrixPerspectiveFovLH(mFieldOfView, mAspectRatio, mNear, mFar);
-		XMStoreFloat4x4(&mProjection, projection);
+		XMStoreFloat4x4(&mProjection, XMMatrixTranspose(projection));
 
 
 	}
-	void Camera::start()
+
+	void Camera::awake()
 	{
 		mTransform = mRoot->GetComponent<Transform>();
+		
+		XMVECTOR eye, up, at;
+
+		eye = XMVectorSet(-1, 0, 0, 0);
+		up = XMVectorSet(0, 1, 0, 0);
+		at = XMVectorSet(0, 0, 0, 0);
+		XMMATRIX view = XMMatrixTranspose(XMMatrixLookAtLH(eye, at, up));
+
+		mTransform->SetMatrix(view);
+
+	}
+
+	void Camera::start()
+	{
 
 		
 		
@@ -60,7 +73,7 @@ namespace NARCO
 
 
 		mContext->UpdateSubresource(proj, 0, nullptr, &mProjection, 0, 0);
-
+		
 	}
 	void Camera::render(float delta)
 	{
@@ -68,4 +81,5 @@ namespace NARCO
 	void Camera::release()
 	{
 	}
+
 }

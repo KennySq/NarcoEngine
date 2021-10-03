@@ -6,7 +6,11 @@
 #include"Mesh.h"
 #include"Material.h"
 
+#include"GBuffer.h"
+
 #include"Camera.h"
+
+#include"Narco_Core.h"
 
 namespace NARCO
 {
@@ -16,6 +20,8 @@ namespace NARCO
 		void SetMaterial(Material* material);
 		void SetMesh(Mesh* mesh);
 
+		Material* GetMaterial() const { return mMaterial; }
+		Mesh* GetMesh() const { return mMesh; }
 		Renderer();
 		virtual ~Renderer();
 	private:
@@ -25,6 +31,7 @@ namespace NARCO
 		void stage_Hull(const Material* material, const Shader* shader);
 		void stage_Pixel(const Material* material, const Shader* shader);
 
+		virtual void awake() override;
 		virtual void start() override;
 		virtual void update(float delta) override;
 		virtual void render(float delta) override;
@@ -35,6 +42,7 @@ namespace NARCO
 
 
 		Material* mMaterial;
+		Transform* mTransform;
 
 		std::vector<ID3D11Buffer*> mVertexConstantBuffers;
 		std::vector<ID3D11ShaderResourceView*> mVertexTextures;
@@ -52,7 +60,10 @@ namespace NARCO
 		std::vector<ID3D11ShaderResourceView*> mPixelTextures;
 
 		Camera* mRenderCamera;
-		Transform* mTransform;
+
+		GBuffer* mGBuffer;
+
+		// Component을(를) 통해 상속됨
 		// Mesh Data
 		// Material Data;
 	}; 

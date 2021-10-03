@@ -98,4 +98,7 @@ namespace NARCO
 	void Transform::release()
 	{
 	}
+	void Transform::awake()
+	{
+	}
 }

@@ -21,7 +21,7 @@ namespace NARCO
 		void SetScale(float x, float y, float z);
 
 		XMMATRIX GetMatrix() const { return XMLoadFloat4x4(&mMatrix); }
-
+		void SetMatrix(XMMATRIX matrix) { XMStoreFloat4x4(&mMatrix, matrix); }
 		ID3D11Buffer* GetBuffer() const { return mBuffer.Get(); }
 
 	private:
@@ -33,10 +33,10 @@ namespace NARCO
 		XMFLOAT4 mRotation;
 		XMFLOAT4 mScale;
 
+		virtual void awake() override;
 		virtual void start() override;
 		virtual void update(float delta) override;
 		virtual void render(float delta) override;
 		virtual void release() override;
-
 	};
 }

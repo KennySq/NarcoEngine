@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="헤더 파일\Component">
+      <UniqueIdentifier>{4bc01657-3da0-49d8-9c4f-92ba0336c005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Prefabs">
+      <UniqueIdentifier>{746ef863-e3fd-43a5-8693-816e58430702}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -27,9 +33,6 @@
     <ClInclude Include="inc\Narco_Core.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Component.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="inc\GameObject.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -40,9 +43,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="inc\MeshLoader.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\Renderer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="inc\Scene.h">
@@ -60,9 +60,6 @@
     <ClInclude Include="inc\Narco_Scene.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Trasnform.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="inc\GBuffer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -70,7 +67,22 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="inc\Camera.h">
+      <Filter>헤더 파일\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Component.h">
+      <Filter>헤더 파일\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Renderer.h">
+      <Filter>헤더 파일\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Trasnform.h">
+      <Filter>헤더 파일\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Prefab.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Shiba.h">
+      <Filter>Prefabs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +131,12 @@
     <ClCompile Include="Camera.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Prefab.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Shiba.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Narco.rc">
@@ -138,5 +156,8 @@
       <Filter>리소스 파일</Filter>
     </None>
     <None Include="cpp.hint" />
+    <None Include="built-in\hlsl\Deferred_FinalPass.hlsl">
+      <Filter>리소스 파일</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -23,9 +23,6 @@ namespace NARCO
 
 
 		// 테스트 코드 영역입니다.
-		Shader* uberShader = new Shader("built-in/hlsl/Deferred_DefaultUber_0.hlsl", SHADER_VERTEX | SHADER_PIXEL);
-		uberShader->Compile(device);
-		Material* uberMaterial = new Material(uberShader, device, context);
 
 		//MeshLoader debugLoader(device);
 
@@ -34,29 +31,18 @@ namespace NARCO
 
 		//Mesh* mesh_dragon = debugLoader.ConvertMesh();
 
-		MeshLoader loader(device);
+		mSelectedScene = new Scene("Sample Scene", context, this);
 
-		loader.SetPath("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/shiba/shiba.fbx");
-		loader.Load();	
-
-		Mesh* mesh_shiba = loader.ConvertMesh();
-
-
-		mSelectedScene = new Scene("Sample Scene", context);
-
-		GameObject* shiba = mSelectedScene->AddGameObject(new GameObject("Shiba"));
+		GameObject* shiba = mSelectedScene->AddGameObject(new Shiba());
 		GameObject* mainCamera = mSelectedScene->AddGameObject(new GameObject("Main Camera"));
 
-		Renderer* shibaRenderer = shiba->AddComponent<Renderer>();
 
 		Camera* mainCam = mainCamera->AddComponent<Camera>();
 		mainCam->SetDisplay(mDisplay);
 		mainCamera->SetTag("Main Camera");
 
-		shibaRenderer->SetMesh(mesh_shiba);
-		shibaRenderer->SetMaterial(uberMaterial);
 
-		AssetManager* assetManager = new AssetManager("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/app/assets");
+
 
 		mMainCanvas = new GUI_Canvas(mWindowHandle, mHandleInstance, device, context);
 
@@ -65,16 +51,28 @@ namespace NARCO
 		mMainCanvas->AddFrame(new GUI_Frame("Asset Browser", 1100, 400, ImGuiWindowFlags_NoResize));
 		mMainCanvas->AddFrame(new GUI_Frame("Shader Editor", 600, 800, ImGuiFocusedFlags_None));
 
+
+	}
+	void Narco_Deferred_Legacy::PreInit()
+	{
+		ID3D11Device* device = D3DHardware::GetDevice();
+
+		mSelectedScene->awake();
+
 		auto frame = mMainCanvas->GetFrame(0);
 		auto frame2 = mMainCanvas->GetFrame(1);
 		auto frame3 = mMainCanvas->GetFrame(2);
 		auto frame4 = mMainCanvas->GetFrame(3);
 
+		AssetManager* assetManager = new AssetManager("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/app/assets");
+
+
 		frame->AddGUI("FileSlot_01", new GUI_FileSlot());
 		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
 		frame3->AddGUI("AssetBrowser_01", new GUI_AssetManager(assetManager, device));
-		frame4->AddGUI("ShaderEditor_01", new GUI_Material(uberMaterial));
-		
+	//	frame4->AddGUI("ShaderEditor_01", new GUI_Material(shiba->GetComponent<Renderer>()->GetMaterial()));
+
+
 	}
 	void Narco_Deferred_Legacy::Init()
 	{
@@ -96,7 +94,7 @@ namespace NARCO
 		static GUI_ColorPicker* gui_ColorPicker = static_cast<GUI_ColorPicker*>(frame_ColorPicker->GetGUI("ColorPicker_01"));
 		
 		clearScreen(gui_ColorPicker->GetColor4());
-
+		mGBuffer->ClearBuffer(context);
 		context->OMSetRenderTargets(mGBuffer->GetBufferCount(), rtv, dsv);
 		
 		
