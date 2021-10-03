@@ -69,13 +69,7 @@
     <ClInclude Include="inc\Asset.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="inc\AssetManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="inc\Camera.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\Super.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -143,8 +137,6 @@
     <None Include="built-in\hlsl\Deferred_DefaultUber_0.hlsl">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="built-in\hlsl\Deferred_FinalPass.hlsl">
-      <Filter>리소스 파일</Filter>
-    </None>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

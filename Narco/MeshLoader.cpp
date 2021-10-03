@@ -71,13 +71,11 @@ namespace NARCO
 		geometryConverter.Triangulate(scene, true);
 		//fbxsdk::FbxAxisSystem sceneAxis = scene->GetGlobalSettings().GetAxisSystem();
 		//fbxsdk::FbxAxisSystem::MayaYUp.ConvertScene(scene);
-
-
-
-
+		auto nodeCount = scene->GetNodeCount();
 		FbxNode* rootNode = scene->GetRootNode();
 
 		fbx_loadNode(rootNode);
+
 
 
 
@@ -97,10 +95,9 @@ namespace NARCO
 
 		if (nodeAttribute != nullptr)
 		{
-			if (nodeAttribute->GetAttributeType() == FbxNodeAttribute::eMesh)
+			FbxNodeAttribute::EType attr = nodeAttribute->GetAttributeType();
+			if (attr == FbxNodeAttribute::eMesh)
 			{
-				mMeshCount++;
-
 				FbxMesh* mesh = node->GetMesh();
 				fbx_getControlPoints(mesh);
 
@@ -118,11 +115,31 @@ namespace NARCO
 					{
 						int controlPointIndex = mesh->GetPolygonVertex(i, j);
 
+						XMFLOAT3 normal{};
+						XMFLOAT3 binormal{};
 						XMFLOAT3& position = mPositions[controlPointIndex];
-						XMFLOAT3 normal = fbx_getNormal(mesh, controlPointIndex, vertexCount);
-						XMFLOAT3 binormal = fbx_getBinormals(mesh, controlPointIndex, vertexCount);
-						XMFLOAT3 tangent = fbx_getTangents(mesh, controlPointIndex, vertexCount);
-						XMFLOAT2 uv = fbx_getTexcoords(mesh, controlPointIndex, mesh->GetTextureUVIndex(i, j));
+						XMFLOAT3 tangent{};
+						XMFLOAT2 uv{};
+
+						if (mesh->GetElementNormalCount() >= 1)
+						{
+							normal = fbx_getNormal(mesh, controlPointIndex, vertexCount);
+						}
+
+						if (mesh->GetElementBinormalCount() >= 1)
+						{
+							binormal = fbx_getBinormals(mesh, controlPointIndex, vertexCount);
+						}
+
+						if (mesh->GetElementTangentCount() >= 1)
+						{
+							tangent = fbx_getTangents(mesh, controlPointIndex, vertexCount);
+						}
+
+						if (mesh->GetElementUVCount() >= 1)
+						{
+							uv = fbx_getTexcoords(mesh, controlPointIndex, mesh->GetTextureUVIndex(i, j));
+						}
 
 						Vertex_Static vertex;
 
@@ -132,18 +149,14 @@ namespace NARCO
 						vertex.mTangent = tangent;
 						vertex.mTexcoord = uv;
 
-						// 2,547
-						// 4,316
-						fbx_insertVertex(position, normal, binormal, tangent, uv);
-						// 9052
-						//	mVertices.emplace_back(vertex);
-						/*	mVertices.emplace_back(vertex);
-						mIndices.emplace_back(vertexCount);*/
+						fbx_insertVertex(position, normal, binormal, tangent, uv,vertexCount);
 						vertexCount++;
 
+
 					}
-				//	mIndices.emplace_back(mIndices.size() + 1);
 				}
+				mPositions.clear();
+				mMeshCount++;
 			}
 		}
 
@@ -412,6 +425,7 @@ namespace NARCO
 				result.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(controlPoint).mData[0]);
 				result.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(controlPoint).mData[1]);
 			}
+			break;
 
 			case FbxGeometryElement::eIndexToDirect:
 			{
@@ -421,6 +435,7 @@ namespace NARCO
 				result.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[1]);
 			}
 			break;
+
 			}
 		}
 		break;
@@ -452,7 +467,7 @@ namespace NARCO
 		return result;
 	}
 
-	void MeshLoader::fbx_insertVertex(const XMFLOAT3& position, const XMFLOAT3& normal, const XMFLOAT3& binormal, const XMFLOAT3& tangent, const XMFLOAT2& uv)
+	void MeshLoader::fbx_insertVertex(const XMFLOAT3& position, const XMFLOAT3& normal, const XMFLOAT3& binormal, const XMFLOAT3& tangent, const XMFLOAT2& uv, unsigned int vertexCount)
 	{
 		Vertex_Static vertex = { position , normal, binormal, tangent, uv };
 
@@ -460,13 +475,13 @@ namespace NARCO
 
 		if (lookup != mIndexMap.end())
 		{
-		//	mIndices.push_back(lookup->second);
+			mIndices.push_back(lookup->second);
 		}
 		else
 		{
 			unsigned int index = mVertices.size();
 			mIndexMap[vertex] = index;
-		//	mIndices.push_back(index);
+			mIndices.push_back(index);
 			mVertices.push_back(vertex);
 		}
 	}

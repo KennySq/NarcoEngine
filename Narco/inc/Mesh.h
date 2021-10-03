@@ -15,14 +15,14 @@ namespace NARCO
 		friend std::hash<Vertex_Static>;
 		bool operator==(const Vertex_Static& v2) const
 		{
-			bool bPosition = (mPosition.x == v2.mPosition.x) && (mPosition.y == v2.mPosition.y) && (mPosition.z == v2.mPosition.z);
-			bool bNormal = (mNormal.x == v2.mNormal.x) && (mNormal.y == v2.mNormal.y) && (mNormal.z == v2.mNormal.z);
-			bool bBinormal = (mBinormal.x == v2.mBinormal.x) && (mBinormal.y == v2.mBinormal.y) && (mBinormal.z == v2.mBinormal.z);
-			bool bTangent = (mTangent.x == v2.mTangent.x) && (mTangent.y == v2.mTangent.y) && (mTangent.z == v2.mTangent.z);
-			bool bTexcoord = (mTexcoord.x == v2.mTexcoord.x) && (mTexcoord.y == v2.mTexcoord.y);
+			bool bPosition =	(mPosition.x == v2.mPosition.x) && (mPosition.y ==	v2.mPosition.y) && (mPosition.z ==	v2.mPosition.z);
+			bool bNormal =		(mNormal.x ==	v2.mNormal.x)	&& (mNormal.y ==	v2.mNormal.y) && (mNormal.z ==		v2.mNormal.z);
+			//bool bBinormal =	(mBinormal.x == v2.mBinormal.x) && (mBinormal.y ==	v2.mBinormal.y) && (mBinormal.z ==	v2.mBinormal.z);
+			//bool bTangent =			(mTangent.x ==	v2.mTangent.x)	&& (mTangent.y ==	v2.mTangent.y) && (mTangent.z ==	v2.mTangent.z);
+			//bool bTexcoord =	(mTexcoord.x == v2.mTexcoord.x) && (mTexcoord.y ==	v2.mTexcoord.y);
 
 
-			return bPosition && bNormal && bBinormal && bTangent && bTexcoord;
+			return bPosition && bNormal; //&& bBinormal && bTangent && bTexcoord;
 
 		}
 	};
@@ -109,6 +109,7 @@ namespace std
 			size_t uvy = h(v.mTexcoord.y);
 
 			return (posx ^ posy ^ posz ^ normx ^ normy ^ normz ^ binormx ^ binormy ^ binormz ^ tanx ^ tany ^ tanz ^ uvx ^ uvy);
+			//return (uvy ^ uvx ^ tanz ^ tany ^ tanx ^ binormz ^ binormy ^ binormx ^ normz ^ normy ^ normx ^ posz ^ posy ^ posx) << 1;
 			//return (posx ^ posy ^ posz);
 		}
 	};

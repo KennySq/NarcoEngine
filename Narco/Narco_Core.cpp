@@ -27,12 +27,21 @@ namespace NARCO
 		uberShader->Compile(device);
 		Material* uberMaterial = new Material(uberShader, device, context);
 
+		//MeshLoader debugLoader(device);
+
+		//debugLoader.SetPath("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/ice_dragon/ice_dragon.fbx");
+		//debugLoader.Load();
+
+		//Mesh* mesh_dragon = debugLoader.ConvertMesh();
+
 		MeshLoader loader(device);
 
 		loader.SetPath("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/shiba/shiba.fbx");
 		loader.Load();	
 
 		Mesh* mesh_shiba = loader.ConvertMesh();
+
+
 		mSelectedScene = new Scene("Sample Scene", context);
 
 		GameObject* shiba = mSelectedScene->AddGameObject(new GameObject("Shiba"));
