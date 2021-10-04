@@ -1,7 +1,7 @@
 #pragma once
 #include"Common.h"
 #include"Component.h"
-#include"Trasnform.h"
+#include"Transform.h"
 #include"Super.h"
 namespace NARCO
 {
@@ -88,6 +88,9 @@ namespace NARCO
 
 		GameObject* mRoot;
 		GameObject* mParent;
+
+		Transform* mTransform;
+
 		std::vector<GameObject*> mChilds;
 
 		std::string mTag;

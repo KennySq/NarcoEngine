@@ -1,6 +1,6 @@
 #pragma once
 #include"Component.h"
-#include"Trasnform.h"
+#include"Transform.h"
 #include"GameObject.h"
 #include<D3DDisplay.h>
 

@@ -1,4 +1,4 @@
-#include"inc/Trasnform.h"
+#include"inc/Transform.h"
 
 namespace NARCO
 {
@@ -39,7 +39,7 @@ namespace NARCO
 
 		origin *= translation;
 
-		XMStoreFloat4x4(&mMatrix, origin);
+		XMStoreFloat4x4(&mMatrix, XMMatrixTranspose(origin));
 	}
 	void Transform::Translate(XMVECTOR offset)
 	{
@@ -49,7 +49,7 @@ namespace NARCO
 
 		origin *= translation;
 
-		XMStoreFloat4x4(&mMatrix, origin);
+		XMStoreFloat4x4(&mMatrix, XMMatrixTranspose(origin));
 	}
 	void Transform::Rotate(float x, float y, float z)
 	{
@@ -58,7 +58,7 @@ namespace NARCO
 
 		origin *= rot;
 
-		XMStoreFloat4x4(&mMatrix, origin);
+		XMStoreFloat4x4(&mMatrix, XMMatrixTranspose(origin));
 	}
 	void Transform::Rotate(XMVECTOR offset)
 	{
@@ -67,7 +67,7 @@ namespace NARCO
 
 		origin *= rot;
 
-		XMStoreFloat4x4(&mMatrix, origin);
+		XMStoreFloat4x4(&mMatrix, XMMatrixTranspose(origin));
 
 	}
 	void Transform::SetScale(float x, float y, float z)
