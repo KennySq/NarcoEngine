@@ -30,6 +30,7 @@
 #include<dxgi.h>
 #include<DirectXMath.h>
 #include<DirectXColors.h>
+#include<d3d11shader.h>
 #include<wrl.h>
 
 #include<Effects.h>
