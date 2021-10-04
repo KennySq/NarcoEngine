@@ -29,11 +29,15 @@ void Shiba::awake()
 	shibaRenderer->SetMesh(mesh_shiba);
 	shibaRenderer->SetMaterial(uberMaterial);
 
+
 	GameObject::awake();
 }
 
 void Shiba::start()
 {
+
+	mTransform->Rotate(0, -90, 0);
+
 	GameObject::start();
 }
 

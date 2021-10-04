@@ -8,23 +8,26 @@ namespace NARCO
 		: mInstanceID(mInstanceIDCount++), mName(std::string("New GameObject ") + std::to_string(mInstanceID))
 		, mTag("No Tag")
 	{
-		AddComponent<Transform>();
+		mTransform = AddComponent<Transform>();
 	}
 	GameObject::GameObject(const char* name)
 		: mInstanceID(mInstanceIDCount++), mName(name), mTag("No Tag")
 	{
-		AddComponent<Transform>();
+		mTransform = AddComponent<Transform>();
+
+		
 
 	}
 	GameObject::GameObject(const GameObject& gameObject)
 		: mInstanceID(mInstanceIDCount++), mTag("No Tag")
 	{
-
+		//mTransform = gameObject.mTransform;
 
 	}
 	GameObject::GameObject(const GameObject&& gameObject)
 		: mInstanceID(mInstanceIDCount++), mTag("No Tag")
 	{
+		mTransform = gameObject.mTransform;
 	}
 	GameObject::~GameObject()
 	{
