@@ -81,18 +81,12 @@ namespace NARCO
 				}
 					
 				MCP* constProperties = new MCP(shaderBufferDesc.Name,variableNames, constantBuffer, bufferDesc.ByteWidth, shaderBufferDesc.Variables);
-				
-				
+
 				mInputConstantProperties.insert_or_assign(MakeHash(shaderBufferDesc.Name), constProperties);
 
 			}
-
-
 			inputRegisters.emplace_back(bindDesc);
 		}
-
-
-
 		return S_OK;
 	}
 	HRESULT Material::reflectPixel(ID3D11ShaderReflection* reflection)
@@ -136,14 +130,12 @@ namespace NARCO
 						if (bindDesc.uFlags == 1)						// 1 Channel
 						{
 							bufferDesc.ByteWidth = sizeof(float);
-							//	srvDesc.Buffer.ElementWidth = sizeof(float);
 							srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
 							dimension = PROPERTY_SCALAR;
 						}
 						else if (bindDesc.uFlags <= 3)
 						{
 							bufferDesc.ByteWidth = sizeof(float) * 2;
-							//	srvDesc.Buffer.ElementWidth = sizeof(float) * 2;
 							srvDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
 							dimension = PROPERTY_VECTOR2;
 
@@ -151,7 +143,6 @@ namespace NARCO
 						else if (bindDesc.uFlags <= 8)
 						{
 							bufferDesc.ByteWidth = sizeof(float) * 3;
-							//	srvDesc.Buffer.ElementWidth = sizeof(float) * 3;
 							srvDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
 							dimension = PROPERTY_VECTOR3;
 
@@ -159,7 +150,6 @@ namespace NARCO
 						else if (bindDesc.uFlags <= 15)
 						{
 							bufferDesc.ByteWidth = sizeof(float) * 4;
-							//	srvDesc.Buffer.ElementWidth = sizeof(float) * 4;
 							srvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 							dimension = PROPERTY_VECTOR4;
 						}
@@ -169,14 +159,12 @@ namespace NARCO
 						if (bindDesc.uFlags == 1)						// 1 Channel
 						{
 							bufferDesc.ByteWidth = sizeof(unsigned int);
-							//	srvDesc.Buffer.ElementWidth = sizeof(unsigned int);
 							srvDesc.Format = DXGI_FORMAT_R32_UINT;
 							dimension = PROPERTY_SCALAR;
 						}
 						else if (bindDesc.uFlags <= 3)
 						{
 							bufferDesc.ByteWidth = sizeof(unsigned int) * 2;
-							//	srvDesc.Buffer.ElementWidth = sizeof(unsigned int) * 2;
 							srvDesc.Format = DXGI_FORMAT_R32G32_UINT;
 							dimension = PROPERTY_VECTOR2;
 
@@ -185,7 +173,6 @@ namespace NARCO
 						else if (bindDesc.uFlags <= 7)
 						{
 							bufferDesc.ByteWidth = sizeof(unsigned int) * 3;
-							//	srvDesc.Buffer.ElementWidth = sizeof(unsigned int) * 3;
 							srvDesc.Format = DXGI_FORMAT_R32G32B32_UINT;
 							dimension = PROPERTY_VECTOR3;
 
@@ -194,7 +181,6 @@ namespace NARCO
 						else if (bindDesc.uFlags <= 15)
 						{
 							bufferDesc.ByteWidth = sizeof(unsigned int) * 4;
-							//	srvDesc.Buffer.ElementWidth = sizeof(unsigned int) * 4;
 							srvDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
 							dimension = PROPERTY_VECTOR4;
 						}
@@ -205,14 +191,12 @@ namespace NARCO
 						if (bindDesc.uFlags == 1)						// 1 Channel
 						{
 							bufferDesc.ByteWidth = sizeof(int);
-							//srvDesc.Buffer.ElementWidth = sizeof(int);
 							srvDesc.Format = DXGI_FORMAT_R32_SINT;
 							dimension = PROPERTY_SCALAR;
 						}
 						else if (bindDesc.uFlags <= 3)
 						{
 							bufferDesc.ByteWidth = sizeof(int) * 2;
-							//	srvDesc.Buffer.ElementWidth = sizeof(int) * 2;
 							srvDesc.Format = DXGI_FORMAT_R32G32_SINT;
 							dimension = PROPERTY_VECTOR2;
 
@@ -221,7 +205,6 @@ namespace NARCO
 						else if (bindDesc.uFlags <= 7)
 						{
 							bufferDesc.ByteWidth = sizeof(int) * 3;
-							//	srvDesc.Buffer.ElementWidth = sizeof(int) * 3;
 							srvDesc.Format = DXGI_FORMAT_R32G32B32_SINT;
 							dimension = PROPERTY_VECTOR3;
 
@@ -230,7 +213,6 @@ namespace NARCO
 						else if (bindDesc.uFlags <= 15)
 						{
 							bufferDesc.ByteWidth = sizeof(int) * 4;
-							//	srvDesc.Buffer.ElementWidth = sizeof(int) * 4;
 							srvDesc.Format = DXGI_FORMAT_R32G32B32A32_SINT;
 							dimension = PROPERTY_VECTOR4;
 
@@ -415,18 +397,18 @@ namespace NARCO
 			inputRegisters.emplace_back(bindDesc);
 		}
 
-		for (unsigned int i = 0; i < shaderDesc.OutputParameters; i++)
-		{
-			D3D11_SIGNATURE_PARAMETER_DESC outParam{};
+		//for (unsigned int i = 0; i < shaderDesc.OutputParameters; i++)
+		//{
+		//	D3D11_SIGNATURE_PARAMETER_DESC outParam{};
 
-			reflection->GetOutputParameterDesc(i, &outParam);
+		//	reflection->GetOutputParameterDesc(i, &outParam);
 
-			if (outParam.SystemValueType == D3D_NAME_TARGET)
-			{
-			//	MOP* outputProperty = new MOP()
-			}
+		//	if (outParam.SystemValueType == D3D_NAME_TARGET)
+		//	{
+		//	//	MOP* outputProperty = new MOP()
+		//	}
 
-		}
+		//}
 
 
 		return S_OK;

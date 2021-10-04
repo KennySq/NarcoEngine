@@ -48,8 +48,6 @@ namespace NARCO
 			srv.push_back(mBuffers[i]->GetShaderResource());
 		}
 
-
-
 		context->VSSetShader(vs, nullptr, 0);
 		context->PSSetShader(ps, nullptr, 0);
 
