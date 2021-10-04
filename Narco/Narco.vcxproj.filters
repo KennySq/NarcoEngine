@@ -75,7 +75,7 @@
     <ClInclude Include="inc\Renderer.h">
       <Filter>헤더 파일\Component</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Trasnform.h">
+    <ClInclude Include="inc\Transform.h">
       <Filter>헤더 파일\Component</Filter>
     </ClInclude>
     <ClInclude Include="inc\Prefab.h">
@@ -83,6 +83,12 @@
     </ClInclude>
     <ClInclude Include="inc\Shiba.h">
       <Filter>Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Light.h">
+      <Filter>헤더 파일\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Reflector.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +141,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Shiba.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Reflector.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
