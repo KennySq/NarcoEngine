@@ -28,22 +28,126 @@ namespace NARCO
 	Renderer::~Renderer()
 	{
 	}
+	void Renderer::stage_UpdateResource(const Material* material)
+	{
+		std::map<long long, MP*> textureRegisters = material->GetInputTextureRegisters();
+		std::map<long long, MCP*> constantRegisters = material->GetInputConstantRegisters();
+		
+		MCP* defaultConstProperty = constantRegisters.begin()->second;
+
+		ID3D11Buffer* destBuffer = defaultConstProperty->Constant.Get();
+		ID3D11Buffer* world = mTransform->GetBuffer();
+		ID3D11Buffer* proj = mRenderCamera->GetProjectionBuffer();
+		ID3D11Buffer* view = mRenderCamera->GetViewBuffer();
+
+		unsigned int viewOffset = sizeof(float) * 16;
+		unsigned int projOffset = sizeof(float) * 32;
+
+		mContext->CopySubresourceRegion(destBuffer, 0, 0, 0, 0, world, 0, nullptr);
+		mContext->CopySubresourceRegion(destBuffer, 0, viewOffset, 0, 0, view, 0, nullptr);
+		mContext->CopySubresourceRegion(destBuffer, 0, projOffset, 0, 0, proj, 0, nullptr);
+	}
+
+	void Renderer::stage_InputAssembly(const Mesh* mesh, const Shader* shader)
+	{
+		ID3D11Buffer* vertex[] = { mesh->GetVertex() };
+		ID3D11Buffer* index = mesh->GetIndex();
+		unsigned int indexCount = mesh->GetIndexCount();
+
+		unsigned int strides[] = { mesh->GetStride() };
+		unsigned int offsets[] = { 0 };
+
+
+
+		mContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		mContext->IASetVertexBuffers(0, 1, vertex, strides, offsets);
+		mContext->IASetIndexBuffer(index, DXGI_FORMAT_R32_UINT, 0);
+		mContext->IASetInputLayout(shader->GetIL());
+
+	}
 	void Renderer::stage_Vertex(const Material* material, const Shader* shader)
 	{
+		ID3D11VertexShader* vs = shader->GetVS();
 
+		unsigned int constBufferCount = mVertexConstantBuffers.size();
+		unsigned int textureCount = mVertexTextures.size();
 
+		ID3D11Buffer* const* constBuffers = mVertexConstantBuffers.data();
+		ID3D11ShaderResourceView* const* textures = mVertexTextures.data();
+
+		if (vs != nullptr)
+		{
+			mContext->VSSetShader(vs, nullptr, 0);
+
+			mContext->VSSetConstantBuffers(0, constBufferCount, constBuffers);
+			mContext->VSSetShaderResources(0, textureCount, textures);
+		}
 	}
 	void Renderer::stage_Geometry(const Material* material, const Shader* shader)
 	{
+		ID3D11GeometryShader* gs = shader->GetGS();
+
+		if (gs != nullptr)
+		{
+			mContext->GSSetShader(gs, nullptr, 0);
+		}
 
 	}
 	void Renderer::stage_Domain(const Material* material, const Shader* shader)
 	{
+		ID3D11DomainShader* ds = shader->GetDS();
+
+		if (ds != nullptr)
+		{
+			mContext->DSSetShader(ds, nullptr, 0);
+		}
+
 	}
 	void Renderer::stage_Hull(const Material* material, const Shader* shader)
 	{
+		ID3D11HullShader* hs = shader->GetHS();
+
+		if (hs != nullptr)
+		{
+			mContext->HSSetShader(hs, nullptr, 0);
+		}
 	}
 	void Renderer::stage_Pixel(const Material* material, const Shader* shader)
+	{
+		ID3D11PixelShader* ps = shader->GetPS();
+
+		unsigned int constCount = mPixelConstantBuffers.size();
+		unsigned int textureCount = mPixelTextures.size();
+		
+		ID3D11Buffer* const* constBuffers = mPixelConstantBuffers.data();
+		ID3D11ShaderResourceView* const* textures = mPixelTextures.data();
+
+		if (ps != nullptr)
+		{
+			mContext->PSSetShader(ps, nullptr, 0);
+
+			mContext->PSSetConstantBuffers(0, constCount, constBuffers);
+			mContext->PSSetShaderResources(0, textureCount, textures);
+		}
+	}
+
+	void Renderer::stage_ReflectVertex(const Material* material, const Shader* shader)
+	{
+	}
+
+	void Renderer::stage_ReflectGeometry(const Material* material, const Shader* shader)
+	{
+	}
+
+	void Renderer::stage_ReflectDomain(const Material* material, const Shader* shader)
+	{
+	}
+
+	void Renderer::stage_ReflectHull(const Material* material, const Shader* shader)
+	{
+	}
+
+	void Renderer::stage_ReflectPixel(const Material* material, const Shader* shader)
 	{
 	}
 
@@ -226,88 +330,35 @@ namespace NARCO
 
 	void Renderer::update(float delta)
 	{
+		static ID3D11ShaderResourceView* nullSrv[] = { nullptr };
+		static ID3D11RenderTargetView* nullRtv[] = { nullptr };
+
 		const Material* material = mMaterial;
 		const Shader* shader = mMaterial->GetShader();
+		const Mesh* mesh = mMesh;
 		ID3D11VertexShader* vs = shader->GetVS();
 		ID3D11GeometryShader* gs = shader->GetGS();
 		ID3D11DomainShader* ds = shader->GetDS();
 		ID3D11HullShader* hs = shader->GetHS();
 		ID3D11PixelShader* ps = shader->GetPS();
-
-
-
-		static ID3D11Buffer* vertex[] = { mMesh->GetVertex() };
-		static ID3D11Buffer* index = mMesh->GetIndex();
-		static unsigned int strides[] = { mMesh->GetStride() };
-		static unsigned int offsets[] = { 0 };
-
-		static ID3D11ShaderResourceView* nullSrv[] = { nullptr };
-		static ID3D11RenderTargetView* nullRtv[] = { nullptr };
-
-		auto textureRegisters = material->GetInputTextureRegisters();
-		auto constantRegisters = material->GetInputConstantRegisters();
-
 		ID3D11RasterizerState* rsState = material->GetRasterizerState();
 
-		MCP* defaultConstProperty = constantRegisters.begin()->second;
+		unsigned int indexCount = mesh->GetIndexCount();
 
-		unsigned int vertexConstantBuffers = shader->GetVertexConstantBufferCount();
-		unsigned int vertexBoundResources = shader->GetVertexBoundResourceCount();
+		stage_UpdateResource(material);
+		stage_InputAssembly(mesh, shader);
+		stage_Vertex(material, shader);
+		stage_Geometry(material, shader);
+		stage_Domain(material, shader);
+		stage_Hull(material, shader);
+		stage_Pixel(material, shader);
 
-		mContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		mContext->IASetVertexBuffers(0, 1, vertex, strides, offsets);
-		mContext->IASetIndexBuffer(index, DXGI_FORMAT_R32_UINT, 0);
-		mContext->IASetInputLayout(shader->GetIL());
 		mContext->RSSetState(rsState);
-
-		auto defaultBuffer = defaultConstProperty->Constant.Get();
-
-		auto world = mTransform->GetBuffer();
-		auto proj = mRenderCamera->GetProjectionBuffer();
-		auto view = mRenderCamera->GetViewBuffer();
-
-		mContext->CopySubresourceRegion(defaultBuffer, 0, 0, 0, 0, world, 0, nullptr);
-		mContext->CopySubresourceRegion(defaultBuffer, 0, sizeof(float) * 16, 0, 0, view, 0, nullptr);
-		mContext->CopySubresourceRegion(defaultBuffer, 0, sizeof(float) * 32, 0, 0, proj, 0, nullptr);
-
-		if (vs != nullptr)
-		{
-			mContext->VSSetShader(vs, nullptr, 0);
-			mContext->VSSetConstantBuffers(0, mVertexConstantBuffers.size(), mVertexConstantBuffers.data());
-			mContext->VSSetShaderResources(0, mVertexTextures.size(), mVertexTextures.data());
-
-		}
-
-		if (gs != nullptr)
-		{
-			mContext->GSSetShader(gs, nullptr, 0);
-		}
-
-		if (ds != nullptr)
-		{
-			mContext->DSSetShader(ds, nullptr, 0);
-		}
-
-		if (hs != nullptr)
-		{
-			mContext->HSSetShader(hs, nullptr, 0);
-		}
-
-		if (ps != nullptr)
-		{
-			mContext->PSSetShader(ps, nullptr, 0);
-			mContext->PSSetConstantBuffers(0, mPixelConstantBuffers.size(), mPixelConstantBuffers.data());
-
-
-			mContext->PSSetShaderResources(0, mPixelTextures.size(), mPixelTextures.data());
-
-		}
-
-		mContext->DrawIndexed(mMesh->GetIndexCount(), 0, 0);
+		
+		mContext->DrawIndexed(indexCount, 0, 0);
 
 		mContext->PSSetShaderResources(0, 1, nullSrv);
 		mContext->OMSetRenderTargets(1, nullRtv, nullptr);
-
 	}
 
 	void Renderer::render(float delta)
