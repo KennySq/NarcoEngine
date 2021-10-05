@@ -13,7 +13,7 @@ namespace NARCO
 		friend GameObject;
 
 	public:
-		Component(const char* name);
+		Component() {}
 		Component(const Component& c) = delete;
 		Component(const Component&& c) = delete;
 		virtual ~Component() {}

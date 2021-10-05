@@ -75,20 +75,29 @@
     <ClInclude Include="inc\Renderer.h">
       <Filter>헤더 파일\Component</Filter>
     </ClInclude>
+    <ClInclude Include="inc\AssetManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Super.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Trasnform.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
     <ClInclude Include="inc\Transform.h">
-      <Filter>헤더 파일\Component</Filter>
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Shiba.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="inc\Prefab.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Shiba.h">
-      <Filter>Prefabs</Filter>
+    <ClInclude Include="inc\Reflector.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="inc\Light.h">
       <Filter>헤더 파일\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\Reflector.h">
-      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -119,9 +128,6 @@
     <ClCompile Include="Shader.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Trasnform.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="GBuffer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -137,16 +143,19 @@
     <ClCompile Include="Camera.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Prefab.cpp">
+    <ClCompile Include="Transform.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Shiba.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
+    <ClCompile Include="Prefab.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Reflector.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -167,7 +176,6 @@
     <None Include="built-in\hlsl\Deferred_DefaultUber_0.hlsl">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="cpp.hint" />
     <None Include="built-in\hlsl\Deferred_FinalPass.hlsl">
       <Filter>리소스 파일</Filter>
     </None>

@@ -3,7 +3,7 @@
 namespace NARCO
 {
 	Camera::Camera()
-		: Component(typeid(this).name()), mFieldOfView(XMConvertToRadians(90.0f)), mFar(1000.0f), mNear(0.01f), mAspectRatio(1.333f)
+		: mFieldOfView(XMConvertToRadians(90.0f)), mFar(1000.0f), mNear(0.01f), mAspectRatio(1.333f)
 	{
 		auto hw = D3DHW::GetInstance();
 		
@@ -21,7 +21,7 @@ namespace NARCO
 		HRESULT result = mDevice->CreateBuffer(&bufferDesc, &subData, mBuffer.GetAddressOf());
 		if (result != S_OK)
 		{
-			ExceptionError(result, "failed to create projection matrix buffer");
+			Debug::Log(mName + "failed to create projection matrix buffer.");
 			return;
 		}
 	}

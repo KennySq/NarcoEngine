@@ -3,7 +3,6 @@
 namespace NARCO
 {
 	Transform::Transform()
-		: Component(typeid(this).name())
 	{
 		XMMATRIX origin = XMMatrixIdentity();
 
@@ -19,7 +18,8 @@ namespace NARCO
 		HRESULT result = mDevice->CreateBuffer(&bufferDesc, &subData, mBuffer.GetAddressOf());
 		if (result != S_OK)
 		{
-			ExceptionError(E_INVALIDARG, "failed to create transform buffer.");
+			Debug::Log("failed to create transform buffer.\n size : " +
+				std::to_string(bufferDesc.ByteWidth));
 			return;
 		}
 

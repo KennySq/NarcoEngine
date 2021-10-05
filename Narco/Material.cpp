@@ -15,7 +15,7 @@ namespace NARCO
 
 		if (result != S_OK)
 		{
-			ExceptionError(E_FAIL, "Faield to getting descriptor from vertex reflection");
+			Debug::Log("failed to get vertex shader descriptor");
 			return result;
 		}
 
@@ -29,7 +29,8 @@ namespace NARCO
 			result = reflection->GetResourceBindingDesc(i, &bindDesc);
 			if (result != S_OK)
 			{
-				ExceptionError(E_FAIL, "failed to getting bound resource register");
+				Debug::Log("failed to getting bound resource register");
+
 				return E_FAIL;
 			}
 
@@ -44,7 +45,7 @@ namespace NARCO
 				result = buffer->GetDesc(&shaderBufferDesc);
 				if (result != S_OK)
 				{
-					ExceptionError(result, "failed to getting descriptor for constant buffer.");
+					Debug::Log("failed to getting descriptor for constant buffer.");
 					return result;
 				}
 
@@ -57,7 +58,7 @@ namespace NARCO
 					result = var->GetDesc(&varDesc);
 					if (result != S_OK)
 					{
-						ExceptionError(result, "failed to getting descriptor for constant buffer member.");
+						Debug::Log("failed to getting descriptor for constant buffer member.");
 						return result;
 					}
 
@@ -69,7 +70,7 @@ namespace NARCO
 				result = mDevice->CreateBuffer(&bufferDesc, nullptr, constantBuffer.GetAddressOf());
 				if (result != S_OK)
 				{
-					ExceptionError(result, "invalid argument for creating constant buffer.");
+					Debug::Log("invalid argument for creating constant buffer.");
 					return result;
 				}
 
@@ -106,7 +107,7 @@ namespace NARCO
 			result = reflection->GetResourceBindingDesc(i, &bindDesc);
 			if (result != S_OK)
 			{
-				ExceptionError(E_FAIL, "failed to getting bound resource register");
+				Debug::Log("failed to getting bound resource register");
 				return E_FAIL;
 			}
 
@@ -225,14 +226,14 @@ namespace NARCO
 					result = mDevice->CreateBuffer(&bufferDesc, nullptr, buffer.GetAddressOf());
 					if (result != S_OK)
 					{
-						ExceptionError(E_INVALIDARG, "failed to create t-register buffer.");
+						Debug::Log("failed to create t-register buffer.");
 						return result;
 					}
 
 					result = mDevice->CreateShaderResourceView(buffer.Get(), &srvDesc, srv.GetAddressOf());
 					if (result != S_OK)
 					{
-						ExceptionError(E_INVALIDARG, "failed to create t-register shader resource view.");
+						Debug::Log("failed to create t-register shader resource view.");
 						return result;
 					}
 
@@ -348,7 +349,7 @@ namespace NARCO
 				result = buffer->GetDesc(&shaderBufferDesc);
 				if (result != S_OK)
 				{
-					ExceptionError(result, "failed to getting descriptor for constant buffer.");
+					Debug::Log("failed to getting descriptor for constant buffer.");
 					return result;
 				}
 
@@ -361,7 +362,7 @@ namespace NARCO
 					result = var->GetDesc(&varDesc);
 					if (result != S_OK)
 					{
-						ExceptionError(result, "failed to getting descriptor for constant buffer member.");
+						Debug::Log("failed to getting descriptor for constant buffer member.");
 						return result;
 					}
 
@@ -376,7 +377,7 @@ namespace NARCO
 				result = mDevice->CreateBuffer(&bufferDesc, nullptr, constantBuffer.GetAddressOf());
 				if (result != S_OK)
 				{
-					ExceptionError(result, "invalid argument for creating constant buffer.");
+					Debug::Log("invalid argument for creating constant buffer.");
 					return result;
 				}
 
@@ -430,7 +431,7 @@ namespace NARCO
 		HRESULT result = mDevice->CreateRasterizerState(&rasterizerDesc, mRasterState.GetAddressOf());
 		if (result != S_OK)
 		{
-			ExceptionError(result, "invalid argument during creating rasterizer state.");
+			Debug::Log("invalid argument during creating rasterizer state.");
 			return;
 		}
 	}

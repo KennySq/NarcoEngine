@@ -6,7 +6,7 @@ namespace NARCO
 	{
 		if (material == nullptr)
 		{
-			ExceptionWarning(E_INVALIDARG, "material was nullptr.");
+			Debug::Log(mName + " material is nullptr.");
 			return;
 		}
 		mMaterial = material;
@@ -15,13 +15,13 @@ namespace NARCO
 	{
 		if (mesh == nullptr)
 		{
-			ExceptionWarning(E_INVALIDARG, "mesh was nullptr.");
+			Debug::Log(mName + " mesh is nullptr.");
 		}
 
 		mMesh = mesh;
 	}
 	Renderer::Renderer()
-		: Component(typeid(this).name()), mMesh(nullptr)
+		: mMesh(nullptr)
 	{
 
 	}
@@ -56,8 +56,6 @@ namespace NARCO
 
 		unsigned int strides[] = { mesh->GetStride() };
 		unsigned int offsets[] = { 0 };
-
-
 
 		mContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		mContext->IASetVertexBuffers(0, 1, vertex, strides, offsets);

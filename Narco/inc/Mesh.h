@@ -17,12 +17,12 @@ namespace NARCO
 		{
 			bool bPosition =	(mPosition.x == v2.mPosition.x) && (mPosition.y ==	v2.mPosition.y) && (mPosition.z ==	v2.mPosition.z);
 			bool bNormal =		(mNormal.x ==	v2.mNormal.x)	&& (mNormal.y ==	v2.mNormal.y) && (mNormal.z ==		v2.mNormal.z);
-			//bool bBinormal =	(mBinormal.x == v2.mBinormal.x) && (mBinormal.y ==	v2.mBinormal.y) && (mBinormal.z ==	v2.mBinormal.z);
-			//bool bTangent =			(mTangent.x ==	v2.mTangent.x)	&& (mTangent.y ==	v2.mTangent.y) && (mTangent.z ==	v2.mTangent.z);
-			//bool bTexcoord =	(mTexcoord.x == v2.mTexcoord.x) && (mTexcoord.y ==	v2.mTexcoord.y);
+			bool bBinormal =	(mBinormal.x == v2.mBinormal.x) && (mBinormal.y ==	v2.mBinormal.y) && (mBinormal.z ==	v2.mBinormal.z);
+			bool bTangent =			(mTangent.x ==	v2.mTangent.x)	&& (mTangent.y ==	v2.mTangent.y) && (mTangent.z ==	v2.mTangent.z);
+			bool bTexcoord =	(mTexcoord.x == v2.mTexcoord.x) && (mTexcoord.y ==	v2.mTexcoord.y);
 
 
-			return bPosition && bNormal; //&& bBinormal && bTangent && bTexcoord;
+			return bPosition && bNormal && bBinormal && bTangent && bTexcoord;
 
 		}
 	};

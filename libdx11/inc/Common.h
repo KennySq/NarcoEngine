@@ -42,9 +42,15 @@ using namespace DirectX;
 
 namespace NARCO
 {
-	NARCO_API void ExceptionError(HRESULT result, const char* description = "");
-	NARCO_API void ExceptionWarning(HRESULT result, const char* description = "");
-	NARCO_API void ExceptionLog(HRESULT result, const char* description = "");
+	//NARCO_API void ExceptionError(HRESULT result, const char* description = "");
+	//NARCO_API void ExceptionWarning(HRESULT result, const char* description = "");
+	//NARCO_API void ExceptionLog(HRESULT result, const char* description = "");
+
+	namespace Debug
+	{
+		NARCO_API void Throw(std::string description);
+		NARCO_API void Log(std::string description);
+	}
 
 #ifdef _DEBUG
 

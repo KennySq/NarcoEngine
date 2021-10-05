@@ -4,7 +4,7 @@
 namespace NARCO
 {
 	Light::Light(eLightType type, eLightMode mode)
-		: Component(typeid(this).name()), mMode(mode), mType(type)
+		: mMode(mode), mType(type)
 	{
 	}
 	Light::~Light()

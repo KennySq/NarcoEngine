@@ -1,13 +1,13 @@
 #include "inc/CallStack.h"
 
-CallStack::CallStack()
+CallStack::CallStack(unsigned int count)
 	: mSymbolHandle(GetCurrentProcess())
 
 {
 	SymInitialize(mSymbolHandle, nullptr, true);
 	SymSetOptions(SYMOPT_LOAD_LINES);
 
-	mCount = CaptureStackBackTrace(0, mMaxStackDepth, mAddresses, &mHash);
+	mCount = CaptureStackBackTrace(0, count, mAddresses, &mHash);
 }
 
 extern "C" __declspec(dllexport) void CallStack::Print()

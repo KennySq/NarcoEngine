@@ -5,10 +5,10 @@ namespace NARCO
 	D3DDisplay::D3DDisplay(HWND windowHandle, ID3D11Device* device, unsigned int width, unsigned int height)
 	{
 		HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), reinterpret_cast<void**>(mFactory.GetAddressOf()));
-		ExceptionError(result, "creating IDXGIFactory");
-		
 		if (result != S_OK)
 		{
+			Debug::Throw("result was not S_OK");
+
 			return;
 		}
 
@@ -29,19 +29,19 @@ namespace NARCO
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
 		result = mFactory->CreateSwapChain(reinterpret_cast<IUnknown*>(device), &swapChainDesc, mSwapChain.GetAddressOf());
-		ExceptionError(result, "Creating IDXGISwapChain");
 		
 		if (result != S_OK)
 		{
+			Debug::Throw("result was not S_OK");
 			mFactory->Release();
 			return;
 		}
 
 		result = mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(mBuffer.GetAddressOf()));
-		ExceptionError(result, "Getting buffer from swapchain");
 
 		if (result != S_OK)
 		{
+			Debug::Throw("result was not S_OK");
 			mFactory->Release();
 			mSwapChain->Release();
 			
@@ -54,10 +54,11 @@ namespace NARCO
 		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 
 		result = device->CreateRenderTargetView(mBuffer.Get(), &rtvDesc, mRenderTargetView.GetAddressOf());
-		ExceptionError(result, "Creating render target view.");
 
 		if (result != S_OK)
 		{
+			Debug::Throw("result was not S_OK");
+
 			mFactory->Release();
 			mSwapChain->Release();
 			mBuffer->Release();

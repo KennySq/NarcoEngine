@@ -180,7 +180,7 @@ namespace NARCO
 		DWORD driveMask = GetLogicalDrives();
 		if (driveMask == 0)
 		{
-			ExceptionError(E_FAIL, "No drive has been detected.");
+			Debug::Throw("No drive has been detected.");
 			throw std::exception("No drive has been detected.");
 		}
 		else

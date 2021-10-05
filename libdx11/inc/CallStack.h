@@ -23,7 +23,7 @@ class CallStack
 public:
 	static const size_t mMaxStackDepth = 16U;
 
-	CallStack();
+	CallStack(unsigned int count);
 	
 	__declspec(dllexport) void Print();
 

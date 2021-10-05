@@ -52,7 +52,9 @@ namespace NARCO
 			HRESULT result = device->CreateBuffer(&vDesc, &subData, mVertex.GetAddressOf());
 			if (result != S_OK)
 			{
-				ExceptionError(E_INVALIDARG, "invalid argument.");
+				Debug::Log(std::string("invalid argument.\n") +
+					"size : " + std::to_string(vDesc.ByteWidth) + '\n'
+					+ "flag : " + std::to_string(vDesc.BindFlags));
 				return;
 			}
 
@@ -61,7 +63,9 @@ namespace NARCO
 			result = device->CreateBuffer(&iDesc, &subData, mIndex.GetAddressOf());
 			if (result != S_OK)
 			{
-				ExceptionError(E_INVALIDARG, "invalid argument.");
+				Debug::Log(std::string("invalid argument.\n") +
+					"size : " + std::to_string(iDesc.ByteWidth) + '\n'
+					+ "flag : " + std::to_string(iDesc.BindFlags));
 				return;
 			}
 

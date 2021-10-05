@@ -28,7 +28,7 @@ namespace NARCO
 				return result->second;
 			}
 
-			ExceptionError(E_INVALIDARG, "Couldn't find such gui name.");
+			Debug::Log(std::string(name) + " is not found");
 			return nullptr;
 		}
 		PRIVATE_PROPERTY std::map<long long, IGUI*> mGuiMap;

@@ -17,7 +17,7 @@ namespace NARCO
 
 		if (result != mAssets.end())
 		{
-			ExceptionWarning(E_INVALIDARG, "This asset has already been loaded.");
+			Debug::Log(std::string("this file is already exist. ") + path);
 			return;
 		}
 
@@ -31,7 +31,7 @@ namespace NARCO
 
 		if (result != mSystemAssets.end())
 		{
-			ExceptionWarning(E_INVALIDARG, "This asset has already been loaded.");
+			Debug::Log(std::string("this file is already exist. ") + path);
 			return;
 		}
 

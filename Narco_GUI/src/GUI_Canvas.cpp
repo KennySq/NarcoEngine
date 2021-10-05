@@ -90,7 +90,7 @@ namespace NARCO
 		unsigned int count = mGuiFrames.size();
 		if (i < 0 || i >= count)
 		{
-			ExceptionError(E_INVALIDARG, "Invalid index");
+			Debug::Log(i + "Invalid index");
 			return nullptr;
 		}
 		

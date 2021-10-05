@@ -30,7 +30,7 @@ namespace NARCO
 			result = D3DCompileFromFile(A2W(path), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "vert", "vs_5_0", 0, compileFlag, &blob, &errBlob);
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
+				Debug::Log(reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 				errBlob->Release();
 
 				return result;
@@ -38,7 +38,7 @@ namespace NARCO
 			result = D3DReflect(blob->GetBufferPointer(), blob->GetBufferSize(), __uuidof(ID3D11ShaderReflection), reinterpret_cast<void**>(mVertexReflection.GetAddressOf()));
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
+				Debug::Log(reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 
 				errBlob->Release();
 
@@ -49,7 +49,7 @@ namespace NARCO
 
 
 			result = device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, mVertex.GetAddressOf());
-			ExceptionError(result, "Creating vertex shader");
+			Debug::Log("faield to vertex shader");
 
 			blob->Release();
 		}
@@ -60,7 +60,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
+				Debug::Log(reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 				errBlob->Release();
 
 				return result;
@@ -70,7 +70,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
+				Debug::Log(reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 
 				errBlob->Release();
 
@@ -78,7 +78,11 @@ namespace NARCO
 			}
 
 			result = device->CreateGeometryShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, mGeometry.GetAddressOf());
-			ExceptionError(result, "Creating geometry shader");
+			
+			if (result != S_OK)
+			{
+				Debug::Log("failed to create geometry shader");
+			}
 
 			blob->Release();
 		}
@@ -89,7 +93,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
+				Debug::Log(reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 				errBlob->Release();
 				return result;
 			}
@@ -98,7 +102,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
+				Debug::Log(reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 
 				errBlob->Release();
 
@@ -106,7 +110,10 @@ namespace NARCO
 			}
 
 			result = device->CreateDomainShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, mDomain.GetAddressOf());
-			ExceptionError(result, "Creating domain shader");
+			if (result != S_OK)
+			{
+				Debug::Log("failed to create domain shader");
+			}
 
 			blob->Release();
 		}
@@ -117,7 +124,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
+				Debug::Log(reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 				errBlob->Release();
 
 				return result;
@@ -127,7 +134,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
+				Debug::Log(reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 
 				errBlob->Release();
 
@@ -135,7 +142,10 @@ namespace NARCO
 			}
 
 			result = device->CreateHullShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, mHull.GetAddressOf());
-			ExceptionError(result, "Creating hull shader");
+			if (result != S_OK)
+			{
+				Debug::Log("failed to create hull shader");
+			}
 
 			blob->Release();
 		}
@@ -146,7 +156,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
+				Debug::Log(reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 				return result;
 			}
 
@@ -154,7 +164,7 @@ namespace NARCO
 
 			if (result != S_OK)
 			{
-				ExceptionError(result, reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
+				Debug::Log(reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 
 				errBlob->Release();
 
@@ -162,7 +172,10 @@ namespace NARCO
 			}
 
 			result = device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, mPixel.GetAddressOf());
-			ExceptionError(result, "Creating pixel shader");
+			if (result != S_OK)
+			{
+				Debug::Log("failed to create pixel shader");
+			}
 
 			blob->Release();
 		}
@@ -289,7 +302,7 @@ namespace NARCO
 		result = device->CreateInputLayout(inputElements.data(), inputElements.size(), blob->GetBufferPointer(), blob->GetBufferSize(), mLayout.GetAddressOf());
 		if (result != S_OK)
 		{
-			ExceptionError(result, "failed to create input layout");
+			Debug::Log("failed to create input layout");
 			return result;
 		}
 

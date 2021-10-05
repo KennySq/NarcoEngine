@@ -26,7 +26,7 @@ namespace NARCO
 
 		if (mGameObjects.find(id) != mGameObjects.end())
 		{
-			ExceptionWarning(E_INVALIDARG, "This gameObject is already in the scene.");
+			Debug::Log(gameObject->mName + " is already in the scene.");
 			return nullptr;
 		}
 
@@ -38,14 +38,16 @@ namespace NARCO
 	}
 	GameObject* Scene::AddGameObject(const char* name)
 	{
-		GameObject* gameObject = new GameObject(name);
-		InstanceID id = gameObject->mInstanceID;
+		
+		InstanceID id = MakeHash(name);
 
 		if (mGameObjects.find(id) != mGameObjects.end())
 		{
-			ExceptionWarning(E_INVALIDARG, "This gameObject is already in the scene.");
+			Debug::Log(std::string(name) + " is already in the scene.");
 			return nullptr;
 		}
+
+		GameObject* gameObject = new GameObject(name);
 
 		gameObject->mScene = this;
 		mGameObjects.insert_or_assign(id, gameObject);

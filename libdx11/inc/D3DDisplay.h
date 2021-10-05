@@ -37,8 +37,7 @@ namespace NARCO
 		{
 			if (index < 0 || index >= mViewports.size())
 			{
-				ExceptionError(E_INVALIDARG, "GetViewport() => invalid index");
-				throw std::invalid_argument("Invalid index");
+				Debug::Log("index out of range.");
 			}
 			
 			return mViewports[index];

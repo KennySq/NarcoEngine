@@ -29,6 +29,11 @@ namespace NARCO
 		template<class _Comp>
 		_Comp* GetComponent()
 		{
+			if (this == nullptr)
+			{
+				Debug::Log( std::to_string(mInstanceID) + ", " + mName + "is not valid.");
+			}
+
 			const type_info& typeInfo = typeid(_Comp);
 			size_t compHash = typeInfo.hash_code();
 			auto result = mComponents.find(compHash);
@@ -37,9 +42,10 @@ namespace NARCO
 			{
 				return static_cast<_Comp*>(result->second);
 			}
+			
+			Debug::Log(std::string(typeInfo.name()) + " not found.");
+			
 
-			ExceptionError(E_INVALIDARG, "This gameobject doesn't have such component.");
-			throw std::invalid_argument("This gameobject doesn't have such component.");
 		}
 
 		template<class _Comp>
@@ -47,8 +53,8 @@ namespace NARCO
 		{
 			if (this == nullptr)
 			{
-				ExceptionError(E_INVALIDARG, "This gameObject is not valid.");
-				throw std::invalid_argument("This gameObject is not valid.");
+				Debug::Log("this GameObject is not valid.");
+
 			}
 
 			const type_info& typeInfo = typeid(_Comp);
@@ -58,13 +64,14 @@ namespace NARCO
 
 			if (mComponents.end() != result)
 			{
-				ExceptionError(E_INVALIDARG, "This component is already exist.");
-				throw std::invalid_argument("This component is already exist.");
+				Debug::Log(std::string(typeInfo.name()) + " is already exist.");
 			}
 
 			Component* newComp = new _Comp(); // preventing non-inherited object creation.
 
 			newComp->mRoot = this;
+			newComp->mComponentID = compHash;
+			newComp->mName = typeid(_Comp).name();
 
 			mComponents.insert_or_assign(compHash, newComp);
 

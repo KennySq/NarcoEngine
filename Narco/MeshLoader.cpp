@@ -22,7 +22,7 @@ namespace NARCO
 	{
 		if (mMeshType == eMeshType::MESH_NONE)
 		{
-			ExceptionWarning(E_INVALIDARG, "MeshLoader path was invalid or haven't been set yet.");
+			Debug::Log(mPath + " is invalid");
 			return;
 		}
 
@@ -60,7 +60,7 @@ namespace NARCO
 		if (result == false)
 		{
 			auto errorStatus = importer->GetStatus();
-			ExceptionWarning(E_FAIL, "FbxImporter initialization failed.");
+			Debug::Log("FbxImporter initialization failed.");
 			throw std::invalid_argument(errorStatus.GetErrorString());
 		}
 
@@ -76,16 +76,7 @@ namespace NARCO
 
 		fbx_loadNode(rootNode);
 
-
-
-
-		// misc codes
-
 		importer->Destroy();
-
-
-
-
 
 		return true;
 	}
@@ -195,7 +186,7 @@ namespace NARCO
 
 		if (mesh->GetElementNormalCount() < 1)
 		{
-			ExceptionLog(E_FAIL, "no normal detected for this mesh.");
+			Debug::Log("no normal detected for this mesh. ");
 			return result;
 		}
 
@@ -266,7 +257,7 @@ namespace NARCO
 
 		if (mesh->GetElementBinormalCount() < 1)
 		{
-			ExceptionLog(E_FAIL, "no normal detected for this mesh.");
+			Debug::Log("no binormal detected for this mesh.");
 			return result;
 		}
 
@@ -337,7 +328,7 @@ namespace NARCO
 
 		if (mesh->GetElementTangentCount() < 1)
 		{
-			ExceptionLog(E_FAIL, "no normal detected for this mesh.");
+			Debug::Log("no tangent detected for this mesh.");
 			return result;
 		}
 
@@ -408,7 +399,7 @@ namespace NARCO
 
 		if (mesh->GetElementUVCount() < 1)
 		{
-			ExceptionLog(E_FAIL, "no texcoord detected for this mesh.");
+			Debug::Log("no texcoord detected for this mesh.");
 			return result;
 		}
 
@@ -514,19 +505,22 @@ namespace NARCO
 		mesh->mIndexCount = mIndices.size();
 
 		HRESULT result = mDevice->CreateBuffer(&vertexDesc, &vertexSub, mesh->mVertex.GetAddressOf());
-		ExceptionWarning(result, "Creating vertex buffer.");
 
 		if (result != S_OK)
 		{
+			Debug::Log("failed to create vertex buffer.\n size : " + vertexDesc.ByteWidth);
+
 			delete mesh;
 			return nullptr;
 		}
 
 		result = mDevice->CreateBuffer(&indexDesc, &indexSub, mesh->mIndex.GetAddressOf());
-		ExceptionWarning(result, "Creating index buffer.");
 
 		if (result != S_OK)
 		{
+			Debug::Log("failed to create index buffer.\n size : " + indexDesc.ByteWidth);
+
+
 			delete mesh;
 			return nullptr;
 		}

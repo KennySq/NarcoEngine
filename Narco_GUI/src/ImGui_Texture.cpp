@@ -55,7 +55,7 @@ ImGui_Texture::ImGui_Texture(ID3D11Device* device, const char* path)
 	bool result = LoadTextureFromFile(device, path, mShaderResourceView.GetAddressOf(), &mWidth, &mHeight);
 	if (result == false)
 	{
-		NARCO::ExceptionError(E_FAIL, "failed to load texture from file.");
+		NARCO::Debug::Log(std::string("failed to load texture from file.\n") + path);
 	}
 
     mFileName = path;

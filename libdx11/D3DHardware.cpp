@@ -27,6 +27,9 @@ namespace NARCO
 			featureLevels, featureLevelCount, D3D11_SDK_VERSION,
 			mDevice.GetAddressOf(), &succeededLevel, mImmediateContext.GetAddressOf());
 	
-		ExceptionError(result, "creating ID3D11Device, ID3D11DeviceContext");
+		if (result != S_OK)
+		{
+			Debug::Throw("result was not S_OK");
+		}
 	}
 }

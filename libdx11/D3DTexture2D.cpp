@@ -20,10 +20,11 @@ namespace NARCO
 		desc.Height = height;
 		
 		HRESULT result = device->CreateTexture2D(&desc, nullptr, mTexture.GetAddressOf());
-		ExceptionError(result, "Creating ID3D11Texture2D");
 
 		if (result != S_OK)
 		{
+			Debug::Log("result was not S_OK");
+
 			return;
 		}
 
@@ -35,9 +36,10 @@ namespace NARCO
 			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 			
 			result = device->CreateRenderTargetView(mTexture.Get(), &rtvDesc, mRenderTargetView.GetAddressOf());
-			ExceptionError(result, "Creating Render Target View");
 			if (result != S_OK)
 			{
+				Debug::Log("result was not S_OK");
+
 				mTexture->Release();
 
 				return;
@@ -56,10 +58,11 @@ namespace NARCO
 			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 
 			result = device->CreateShaderResourceView(mTexture.Get(), &srvDesc, mShaderResourceView.GetAddressOf());
-			ExceptionError(result, "Creating Shader Resource View.");
-
 			if (result != S_OK)
 			{
+				Debug::Log("result was not S_OK");
+
+
 				if (mRenderTargetView != nullptr)
 				{
 					mRenderTargetView->Release();
@@ -79,10 +82,11 @@ namespace NARCO
 			uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
 
 			result = device->CreateUnorderedAccessView(mTexture.Get(), &uavDesc, mUnorderedAccessView.GetAddressOf());
-			ExceptionError(result, "Creating Unordered Access View");
 			
 			if (result != S_OK)
 			{
+				Debug::Log("result was not S_OK");
+
 				if (mRenderTargetView != nullptr)
 				{
 					mRenderTargetView->Release();
