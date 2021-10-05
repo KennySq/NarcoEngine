@@ -11,6 +11,7 @@ namespace NARCO
 	protected:
 	
 		Super() : mDevice(D3DHW::GetDevice()), mContext(D3DHW::GetImmediateContext()) {}
+		virtual ~Super() {}
 		ID3D11Device* mDevice;
 		ID3D11DeviceContext* mContext;
 	};

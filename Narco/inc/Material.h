@@ -8,7 +8,10 @@ namespace NARCO
 	{
 		PROPERTY_CONSTANT,
 		PROPERTY_BUFFER,
+		PROPERTY_TEXTURE1D,
 		PROPERTY_TEXTURE2D,
+		PROPERTY_TEXTURE3D,
+		PROPERTY_BYTEADDRESS,
 		// ...
 	};
 
@@ -36,15 +39,14 @@ namespace NARCO
 
 	typedef struct MaterialConstantProperty
 	{
-		MaterialConstantProperty(const char* bufferName, const std::vector<const char*>& names, const ComPtr<ID3D11Buffer>& buffer, unsigned int size, unsigned int count)
-			: BufferName(bufferName), Constant(buffer), Names(names), Size(size), Count(count) {}
+		MaterialConstantProperty(const char* bufferName, const std::vector<const char*>& names, const ComPtr<ID3D11Buffer>& buffer, unsigned int size)
+			: Name(bufferName), Buffer(buffer), VariableNames(names), Size(size) {}
 
-		const ComPtr<ID3D11Buffer> Constant;
+		const ComPtr<ID3D11Buffer> Buffer;
 		
-		const char* BufferName;
-		std::vector<const char*> Names;
+		const char* Name;
+		std::vector<const char*> VariableNames;
 
-		unsigned int Count;
 		unsigned int Size;
 	} MCP;
 

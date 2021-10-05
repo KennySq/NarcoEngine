@@ -35,7 +35,7 @@ namespace NARCO
 		
 		MCP* defaultConstProperty = constantRegisters.begin()->second;
 
-		ID3D11Buffer* destBuffer = defaultConstProperty->Constant.Get();
+		ID3D11Buffer* destBuffer = defaultConstProperty->Buffer.Get();
 		ID3D11Buffer* world = mTransform->GetBuffer();
 		ID3D11Buffer* proj = mRenderCamera->GetProjectionBuffer();
 		ID3D11Buffer* view = mRenderCamera->GetViewBuffer();
@@ -210,7 +210,7 @@ namespace NARCO
 				}
 
 				MCP* reg = lookup->second;
-				mVertexConstantBuffers.emplace_back(reg->Constant.Get());
+				mVertexConstantBuffers.emplace_back(reg->Buffer.Get());
 			}
 
 			for (unsigned int i = 0; i < vertTexCount; i++)
@@ -265,7 +265,7 @@ namespace NARCO
 				}
 
 				MCP* reg = lookup->second;
-				mGeometryConstantBuffers.emplace_back(reg->Constant.Get());
+				mGeometryConstantBuffers.emplace_back(reg->Buffer.Get());
 			}
 
 			for (unsigned int i = 0; i < pixTexCount; i++)
