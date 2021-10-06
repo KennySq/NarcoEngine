@@ -6,14 +6,28 @@
 
 namespace NARCO
 {
-	enum eMaterialInputType
+
+	/*enum eMaterialInputType
 	{
 		INPUT_SCALAR,
+		INPUT_COLOR2,
 		INPUT_COLOR3,
 		INPUT_COLOR4,
+		INPUT_MATRIX4X4,
 		INPUT_TEXTURE2D,
 		INPUT_TEXTURE3D,
+	};*/
+
+	struct MaterialInput
+	{
+		MaterialInput() {}
+		MaterialInput(void* data, uint size)
+			: Data(data), Size(size) {}
+
+		void* Data;
+		uint Size;
 	};
+
 
 	class GUI_Material : public IGUI
 	{
@@ -25,6 +39,8 @@ namespace NARCO
 		PUBLIC_API virtual NARCO_API void End() override;
 		
 		PRIVATE_PROPERTY Material* mMaterial = nullptr;
+
+		std::map<ID3D11Buffer*, MaterialInput> mConstantBytes;
 
 	};
 }
