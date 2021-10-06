@@ -1,35 +1,154 @@
 #pragma once
 #include<Common.h>
-#include"Material.h"
+#include<d3d11shader.h>
+#include<d3dcompiler.h>
+#include<D3DTexture2D.h>
+
+
 namespace NARCO
 {
+
+	enum ePropertyType
+	{
+		PROPERTY_UNKNOWN,
+		PROPERTY_CONSTANT,
+		PROPERTY_BUFFER,
+		PROPERTY_TEXTURE1D,
+		PROPERTY_TEXTURE2D,
+		PROPERTY_TEXTURE3D,
+		PROPERTY_BYTEADDRESS,
+		PROPERTY_STRUCTURED,
+		// ...
+	};
+
+	enum ePropertyDimension
+	{
+		DIMENSION_UNKNOWN,
+		DIMENSION_FLOAT,
+		DIMENSION_FLOAT2,
+		DIMENSION_FLOAT3,
+		DIMENSION_FLOAT4,
+		DIMENSION_UINT,
+		DIMENSION_UINT2,
+		DIMENSION_UINT3,
+		DIMENSION_UINT4,
+	};
+
+	typedef struct MaterialProperty
+	{
+
+		MaterialProperty(const char* name, const ComPtr<ID3D11ShaderResourceView>& srv, ePropertyType type, ePropertyDimension dimension)
+			: Name(name), Register(srv), PropertyType(type), Dimension(dimension) {}
+
+		void SetSRV(ID3D11ShaderResourceView* srv) { Register = srv; }
+
+		ComPtr<ID3D11ShaderResourceView> Register;
+		const char* const Name;
+
+		ePropertyType PropertyType;
+		ePropertyDimension Dimension;
+
+		bool bUpdated;
+	} MP;
+
+	typedef struct MaterialUnorderProperty
+	{
+
+		MaterialUnorderProperty(const char* name, const ComPtr<ID3D11UnorderedAccessView>& uav, ePropertyType type, ePropertyDimension dimension)
+			: Name(name), Register(uav), PropertyType(type), Dimension(dimension) {}
+
+		void SetUAV(ID3D11UnorderedAccessView* uav) { Register = uav; }
+
+		ComPtr<ID3D11UnorderedAccessView> Register;
+
+		const char* const Name;
+
+		ePropertyType PropertyType;
+		ePropertyDimension Dimension;
+
+		bool bUpdated;
+
+	} MUP;
+
+	typedef struct MaterialConstantProperty
+	{
+		MaterialConstantProperty(const char* bufferName, const std::vector<const char*>& names, const ComPtr<ID3D11Buffer>& buffer, unsigned int size)
+			: Name(bufferName), Buffer(buffer), VariableNames(names), Size(size) {}
+
+		const ComPtr<ID3D11Buffer> Buffer;
+
+		const char* Name;
+		std::vector<const char*> VariableNames;
+		// std::map<const char*, DataType> Variables
+
+		unsigned int Size;
+
+		bool bUpdated;
+	} MCP;
+
+	typedef struct MaterialOutputProperty
+	{
+		MaterialOutputProperty(const char* name, const ComPtr<ID3D11RenderTargetView>& rtv, ePropertyDimension dimension)
+			: Name(name), Register(rtv), Dimension(dimension)
+		{}
+
+		const char* Name;
+		const ComPtr<ID3D11RenderTargetView> Register;
+		ePropertyDimension Dimension;
+
+		bool bUpdated;
+
+	} MOP;
+
+
 	class Reflector
 	{
 	public:
-		Reflector(ID3D11Device* device, ID3D11ShaderReflection* reflection);
+		Reflector(ID3D11Device* device, ID3DBlob* blob);
 		~Reflector();
 
+		ComPtr<ID3D11InputLayout> ReflectInputLayout(ID3D11Device* device, ID3DBlob* blob);
+		MaterialConstantProperty* ReflectConstantBuffer(ID3D11Device* device, uint i);
+		MaterialProperty* ReflectTexture(ID3D11Device* device, uint i);
+		MaterialUnorderProperty* ReflectUnorderedAccess(ID3D11Device* device, uint i);
+		MaterialOutputProperty* ReflectRenderTarget(ID3D11Device* device, uint i);
+
+		uint GetConstBufferCount() const { return mConstantBufferCount; }
+		uint GetBoundResourceCount() const { return mBoundResourceCount; }
+		uint GetUnorderedCount() const { return mUnorderedCount; }
+		uint GetSamplerCount() const { return mSamplerCount; }
+
+		const auto& GetSRV() const { return mRawTextures; }
+		const auto& GetUAV() const { return mRawUnorderAccesses; }
+		const auto& GetBuffers() const { return mRawConstBuffers; }
+
+		void AddSRV(MP* mp); //{ mRawTextures.emplace_back(mp->Register.Get()); }
+		void AddUAV(MUP* mup); //{ mRawUnorderAccesses.emplace_back(mup->Register.Get()); }
+		void AddBuffer(MCP* mcp); // { mRawConstBuffers.emplace_back(mcp->Buffer.Get()); }
 	private:
 		
-		void reflectConstantBuffer(ID3D11Device* device);
-		void reflectTexture(ID3D11Device* device);
-		void reflectUnorderedAccess(ID3D11Device* device);
-		void reflectRenderTarget(ID3D11Device* device);
 
 		void determineChannel(uint mask, ePropertyDimension& dimension);
 
-		ID3D11ShaderReflection* mReflection;
+		ComPtr<ID3D11ShaderReflection> mReflection;
 
-		unsigned int mConstantBufferCount;
-		unsigned int mTextureImageCount;
-		unsigned int mTextureBufferCount;
-		unsigned int mUnorderedCount;
-		unsigned int mSamplerCount;
+		uint mConstantBufferCount;
+		uint mBoundResourceCount;
+		uint mUnorderedCount;
+		uint mSamplerCount;
 
-		std::map<long long, MCP> mConstBuffers;
-		std::vector<ComPtr<ID3D11ShaderResourceView>> mShaderResources;
-		std::vector<ComPtr<ID3D11RenderTargetView>> mRenderTargets;
-		std::vector<ComPtr<ID3D11UnorderedAccessView>> mUnorderedAccess;
+		std::map<long long, MCP*> mConstBuffers;
+		std::map<long long, MP*> mTextures;
+		std::map<long long, MUP*> mUnorderedAcceses;
+
+		std::vector<ID3D11ShaderResourceView*> mRawTextures;
+		std::vector<ID3D11Buffer*> mRawConstBuffers;
+		std::vector<ID3D11UnorderedAccessView*> mRawUnorderAccesses;
+		//std::vector<ID3D11SamplerState*> mSamplerStates;
+		
+		//std::vector<ComPtr<ID3D11ShaderResourceView>> mShaderResources;
+		//std::vector<ComPtr<ID3D11RenderTargetView>> mRenderTargets;
+		//std::vector<ComPtr<ID3D11UnorderedAccessView>> mUnorderedAccess;
 		
 	};
 }

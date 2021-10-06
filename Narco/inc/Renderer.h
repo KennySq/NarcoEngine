@@ -25,7 +25,7 @@ namespace NARCO
 		Renderer();
 		virtual ~Renderer();
 	private:
-		void stage_UpdateResource(const Material* material);
+	//	void stage_UpdateResource(const Material* material, const Shader* shader);
 		void stage_InputAssembly(const Mesh* mesh, const Shader* shader);
 
 		void stage_Vertex(const Material* material, const Shader* shader);
@@ -52,20 +52,20 @@ namespace NARCO
 		Material* mMaterial;
 		Transform* mTransform;
 
-		std::vector<ID3D11Buffer*> mVertexConstantBuffers;
-		std::vector<ID3D11ShaderResourceView*> mVertexTextures;
+		//std::vector<ID3D11Buffer*> mVertexConstantBuffers;
+		//std::vector<ID3D11ShaderResourceView*> mVertexTextures;
 
-		std::vector<ID3D11Buffer*> mGeometryConstantBuffers;
-		std::vector<ID3D11ShaderResourceView*> mGeometryTextures;
+		//std::vector<ID3D11Buffer*> mGeometryConstantBuffers;
+		//std::vector<ID3D11ShaderResourceView*> mGeometryTextures;
 
-		std::vector<ID3D11Buffer*> mDomainConstantBuffers;
-		std::vector<ID3D11ShaderResourceView*> mDomainTextures;
+		//std::vector<ID3D11Buffer*> mDomainConstantBuffers;
+		//std::vector<ID3D11ShaderResourceView*> mDomainTextures;
 
-		std::vector<ID3D11Buffer*> mHullConstantBuffers;
-		std::vector<ID3D11ShaderResourceView*> mHullTextures;
+		//std::vector<ID3D11Buffer*> mHullConstantBuffers;
+		//std::vector<ID3D11ShaderResourceView*> mHullTextures;
 
-		std::vector<ID3D11Buffer*> mPixelConstantBuffers;
-		std::vector<ID3D11ShaderResourceView*> mPixelTextures;
+		//std::vector<ID3D11Buffer*> mPixelConstantBuffers;
+		//std::vector<ID3D11ShaderResourceView*> mPixelTextures;
 
 		Camera* mRenderCamera;
 		GBuffer* mGBuffer;

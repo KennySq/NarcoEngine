@@ -4,63 +4,6 @@
 
 namespace NARCO
 {
-	enum ePropertyType
-	{
-		PROPERTY_CONSTANT,
-		PROPERTY_BUFFER,
-		PROPERTY_TEXTURE1D,
-		PROPERTY_TEXTURE2D,
-		PROPERTY_TEXTURE3D,
-		PROPERTY_BYTEADDRESS,
-		// ...
-	};
-
-	enum ePropertyDimension
-	{
-		PROPERTY_SCALAR,
-		PROPERTY_VECTOR2,
-		PROPERTY_VECTOR3,
-		PROPERTY_VECTOR4,
-	};
-
-	typedef struct MaterialProperty
-	{
-
-	public:
-		MaterialProperty(const char* name, const ComPtr<ID3D11ShaderResourceView>& srv, ePropertyType type, ePropertyDimension dimension)
-			: Name(name), Register(srv), PropertyType(type), Dimension(dimension) {}
-
-		const ComPtr<ID3D11ShaderResourceView> Register;
-		const char* const Name;
-		
-		ePropertyType PropertyType;
-		ePropertyDimension Dimension;
-	} MP;
-
-	typedef struct MaterialConstantProperty
-	{
-		MaterialConstantProperty(const char* bufferName, const std::vector<const char*>& names, const ComPtr<ID3D11Buffer>& buffer, unsigned int size)
-			: Name(bufferName), Buffer(buffer), VariableNames(names), Size(size) {}
-
-		const ComPtr<ID3D11Buffer> Buffer;
-		
-		const char* Name;
-		std::vector<const char*> VariableNames;
-
-		unsigned int Size;
-	} MCP;
-
-	typedef struct MaterialOutputProperty
-	{
-		MaterialOutputProperty(const char* name, const ComPtr<ID3D11RenderTargetView>& rtv, ePropertyDimension dimension)
-			: Name(name), Register(rtv), Dimension(dimension)
-		{}
-
-		const char* Name;
-		const ComPtr<ID3D11RenderTargetView> Register;
-		ePropertyDimension Dimension;
-
-	} MOP;
 
 	class Material
 	{
@@ -74,40 +17,55 @@ namespace NARCO
 		ID3D11RasterizerState* GetRasterizerState() const { return mRasterState.Get(); }
 		ID3D11DepthStencilState* GetDepthStencilState() const { return mDepthState.Get(); }
 		
-		const auto& GetInputConstantRegisters() const { return mInputConstantProperties; }
-		const auto& GetInputTextureRegisters() const { return mInputProperties; }
+		//const auto& GetInputConstantRegisters() const { return mInputConstantProperties; }
+		//const auto& GetInputTextureRegisters() const { return mInputProperties; }
 
-		void UpdateBuffer(float* v, unsigned int count, long long hash)
+		//void UpdateBuffer(float* v, unsigned int count, long long hash)
+		//{
+		//	ID3D11Buffer* buffer;
+		//	ID3D11ShaderResourceView* srv = mInputProperties[hash]->Register.Get();
+
+		//	srv->GetResource(reinterpret_cast<ID3D11Resource**>(&buffer));
+
+		//	mContext->UpdateSubresource(buffer, 0, nullptr, v, 0, 0);
+
+		//	return;
+		//}
+
+		void AddBuffer(ID3D11Buffer* buffer);
+		void AddTexture(ID3D11ShaderResourceView* srv);
+		void AddUnorder(ID3D11UnorderedAccessView* uav);
+
+		const auto& GetBuffers() const { return mConstants; }
+		const auto& GetTextures() const { return mTextures; }
+		const auto& GetUnorders() const { return mUnorders; }
+
+		void UpdateConstant(void* data, uint index)
 		{
-			ID3D11Buffer* buffer;
-			ID3D11ShaderResourceView* srv = mInputProperties[hash]->Register.Get();
+			if (index >= mConstants.size() || index < 0)
+			{
+				Debug::Log("invalid index.");
+				return;
+			}
 
-			srv->GetResource(reinterpret_cast<ID3D11Resource**>(&buffer));
-
-			mContext->UpdateSubresource(buffer, 0, nullptr, v, 0, 0);
-
-			return;
+			mContext->UpdateSubresource(mConstants[index].Get(), 0, nullptr, data, 0, 0);
 		}
 
 	private:
 
-		HRESULT reflectVertex(ID3D11ShaderReflection* reflection);
-		HRESULT reflectPixel(ID3D11ShaderReflection* reflection);
+		//HRESULT reflectVertex(ID3D11ShaderReflection* reflection);
+		//HRESULT reflectPixel(ID3D11ShaderReflection* reflection);
 
 		ComPtr<ID3D11RasterizerState> mRasterState;
 		ComPtr<ID3D11DepthStencilState> mDepthState;
 
-		std::map<long long, MaterialProperty*> mInputProperties;
-		std::map<long long, MaterialConstantProperty*> mInputConstantProperties;
-
-
-
-		std::vector<ComPtr<ID3D11Buffer>> mBuffers;
-		std::vector<ComPtr<ID3D11Texture2D>> mTextures;
-		
+		std::vector<ComPtr<ID3D11Buffer>> mConstants;
+		std::vector<ComPtr<ID3D11ShaderResourceView>> mTextures;
+		std::vector<ComPtr<ID3D11UnorderedAccessView>> mUnorders;
 		ID3D11Device* mDevice;
 		ID3D11DeviceContext* mContext;
 		std::string mPath;
 		Shader* mShader;
+		
 	};
 }

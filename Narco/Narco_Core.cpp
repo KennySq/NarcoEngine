@@ -36,7 +36,6 @@ namespace NARCO
 		GameObject* shiba = mSelectedScene->AddGameObject(new Shiba());
 		GameObject* mainCamera = mSelectedScene->AddGameObject(new GameObject("Main Camera"));
 
-
 		Camera* mainCam = mainCamera->AddComponent<Camera>();
 		mainCam->SetDisplay(mDisplay);
 		mainCamera->SetTag("Main Camera");
@@ -52,6 +51,7 @@ namespace NARCO
 		mMainCanvas->AddFrame(new GUI_Frame("Shader Editor", 600, 800, ImGuiFocusedFlags_None));
 
 
+
 	}
 	void Narco_Deferred_Legacy::PreInit()
 	{
@@ -65,12 +65,14 @@ namespace NARCO
 		auto frame4 = mMainCanvas->GetFrame(3);
 
 		AssetManager* assetManager = new AssetManager("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/app/assets");
-
+		
+		GameObject* shiba = mSelectedScene->GetGameObject(0);
 
 		frame->AddGUI("FileSlot_01", new GUI_FileSlot());
 		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
 		frame3->AddGUI("AssetBrowser_01", new GUI_AssetManager(assetManager, device));
-	//	frame4->AddGUI("ShaderEditor_01", new GUI_Material(shiba->GetComponent<Renderer>()->GetMaterial()));
+		frame4->AddGUI("ShaderEditor_01", new GUI_Material(shiba->GetComponent<Renderer>()->GetMaterial()));
+
 
 
 	}
