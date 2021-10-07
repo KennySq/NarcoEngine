@@ -40,7 +40,7 @@ namespace NARCO
 		
 		PRIVATE_PROPERTY Material* mMaterial = nullptr;
 
-		std::map<ID3D11Buffer*, MaterialInput> mConstantBytes;
+		std::map<const char*, MaterialInput> mConstantVariables;
 
 	};
 }
