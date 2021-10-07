@@ -28,6 +28,7 @@ namespace NARCO
 		DIMENSION_FLOAT2,
 		DIMENSION_FLOAT3,
 		DIMENSION_FLOAT4,
+		DIMENSION_FLOAT4X4,
 		DIMENSION_UINT,
 		DIMENSION_UINT2,
 		DIMENSION_UINT3,
@@ -72,13 +73,18 @@ namespace NARCO
 
 	typedef struct MaterialConstantProperty
 	{
-		MaterialConstantProperty(const char* bufferName, const std::vector<const char*>& names, const ComPtr<ID3D11Buffer>& buffer, unsigned int size)
+		struct Variable
+		{
+			uint Size;
+			ePropertyDimension Dimension;
+		};
+		MaterialConstantProperty(const char* bufferName, const std::map<const char*, Variable>& names, const ComPtr<ID3D11Buffer>& buffer, unsigned int size)
 			: Name(bufferName), Buffer(buffer), VariableNames(names), Size(size) {}
 
 		const ComPtr<ID3D11Buffer> Buffer;
 
 		const char* Name;
-		std::vector<const char*> VariableNames;
+		std::map<const char*, Variable> VariableNames; // Key : variable name, value : variable size and type
 		// std::map<const char*, DataType> Variables
 
 		unsigned int Size;
@@ -122,14 +128,18 @@ namespace NARCO
 		const auto& GetUAV() const { return mRawUnorderAccesses; }
 		const auto& GetBuffers() const { return mRawConstBuffers; }
 
+		const auto& GetBufferMap() const { return mConstBuffers; }
+		const auto& GetSRVMap() const { return mTextures; }
+		const auto& GetUAVMap() const { return mUnorderedAcceses; }
+
 		void AddSRV(MP* mp); //{ mRawTextures.emplace_back(mp->Register.Get()); }
 		void AddUAV(MUP* mup); //{ mRawUnorderAccesses.emplace_back(mup->Register.Get()); }
 		void AddBuffer(MCP* mcp); // { mRawConstBuffers.emplace_back(mcp->Buffer.Get()); }
 	private:
 		
 
-		void determineChannel(uint mask, ePropertyDimension& dimension);
-
+		void determineVariableChannel(ID3D11ShaderReflectionType* type, ePropertyDimension& dimension);
+		void determineTextureType(D3D_RESOURCE_RETURN_TYPE type, ePropertyDimension& dim);
 		ComPtr<ID3D11ShaderReflection> mReflection;
 
 		uint mConstantBufferCount;

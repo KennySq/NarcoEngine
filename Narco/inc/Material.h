@@ -32,23 +32,24 @@ namespace NARCO
 		//	return;
 		//}
 
-		void AddBuffer(ID3D11Buffer* buffer);
-		void AddTexture(ID3D11ShaderResourceView* srv);
-		void AddUnorder(ID3D11UnorderedAccessView* uav);
+		void AddBuffer(MCP* mcp);
+		void AddTexture(MP* mp);
+		void AddUnorder(MUP* mup);
 
 		const auto& GetBuffers() const { return mConstants; }
 		const auto& GetTextures() const { return mTextures; }
 		const auto& GetUnorders() const { return mUnorders; }
 
-		void UpdateConstant(void* data, uint index)
+		void UpdateConstant(void* data, long long hash)
 		{
-			if (index >= mConstants.size() || index < 0)
+			auto result = mConstants.find(hash);
+			if (result == mConstants.end())
 			{
 				Debug::Log("invalid index.");
 				return;
 			}
 
-			mContext->UpdateSubresource(mConstants[index].Get(), 0, nullptr, data, 0, 0);
+			mContext->UpdateSubresource(mConstants[hash]->Buffer.Get(), 0, nullptr, data, 0, 0);
 		}
 
 	private:
@@ -59,9 +60,9 @@ namespace NARCO
 		ComPtr<ID3D11RasterizerState> mRasterState;
 		ComPtr<ID3D11DepthStencilState> mDepthState;
 
-		std::vector<ComPtr<ID3D11Buffer>> mConstants;
-		std::vector<ComPtr<ID3D11ShaderResourceView>> mTextures;
-		std::vector<ComPtr<ID3D11UnorderedAccessView>> mUnorders;
+		std::map<long long, MCP*> mConstants;
+		std::map<long long, MP*> mTextures;
+		std::map<long long, MUP*> mUnorders;
 		ID3D11Device* mDevice;
 		ID3D11DeviceContext* mContext;
 		std::string mPath;

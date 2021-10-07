@@ -28,6 +28,26 @@ namespace NARCO
 	Renderer::~Renderer()
 	{
 	}
+	void Renderer::stage_UpdateReservedResources(const Material* material, const Shader* shader)
+	{
+		auto& bufferMap = material->GetBuffers();
+		//stage_UpdateResource(material, shader);
+
+		ID3D11Buffer* worldBuffer = mTransform->GetBuffer();
+		ID3D11Buffer* projectionBuffer = mRenderCamera->GetProjectionBuffer();
+		ID3D11Buffer* viewBuffer = mRenderCamera->GetViewBuffer();
+
+		long long constantHash = MakeHash("Constants");
+
+		auto constantItr = bufferMap.find(constantHash);
+		MCP* constantProperty = constantItr->second;
+		ID3D11Buffer* constantBuffer = constantProperty->Buffer.Get();
+
+		mContext->CopySubresourceRegion(constantBuffer, 0, 0, 0, 0, worldBuffer, 0, nullptr);
+		mContext->CopySubresourceRegion(constantBuffer, 0, 64, 0, 0, viewBuffer, 0, nullptr);
+		mContext->CopySubresourceRegion(constantBuffer, 0, 128, 0, 0, projectionBuffer, 0, nullptr);
+
+	}
 	//void Renderer::stage_UpdateResource(const Material* material, const Shader* shader)
 	//{
 	//	
@@ -177,6 +197,7 @@ namespace NARCO
 
 	void Renderer::start()
 	{
+		static ID3D11Device* device = mDevice;
 		const Scene* scene = mRoot->GetScene();
 
 		mTransform = mRoot->GetComponent<Transform>();
@@ -197,226 +218,94 @@ namespace NARCO
 		auto hulReflect = shader->GetHullReflect();
 		auto pixReflect = shader->GetPixelReflect();
 
-		const auto& vertConsts = vertReflect->GetBuffers();
-		const auto& vertTextures = vertReflect->GetSRV();
-		const auto& verUnorderes = vertReflect->GetUAV();
+		const auto& vertConsts = vertReflect->GetBufferMap();
+		const auto& vertTextures = vertReflect->GetSRVMap();
+		const auto& verUnorderes = vertReflect->GetUAVMap();
 
-		const auto& geoConsts = geoReflect->GetBuffers();
-		const auto& geoTextures = geoReflect->GetSRV();
-		const auto& geoUnorders = geoReflect->GetUAV();
+		const auto& geoConsts = geoReflect->GetBufferMap();
+		const auto& geoTextures = geoReflect->GetSRVMap();
+		const auto& geoUnorders = geoReflect->GetUAVMap();
 
-		const auto& domConsts = domReflect->GetBuffers();
-		const auto& domTextures = domReflect->GetSRV();
-		const auto& domUnorders = domReflect->GetUAV();
+		const auto& domConsts = domReflect->GetBufferMap();
+		const auto& domTextures = domReflect->GetSRVMap();
+		const auto& domUnorders = domReflect->GetUAVMap();
 
-		const auto& hulConsts = hulReflect->GetBuffers();
-		const auto& hulTextures = hulReflect->GetSRV();
-		const auto& hulUnorders = hulReflect->GetUAV();
+		const auto& hulConsts = hulReflect->GetBufferMap();
+		const auto& hulTextures = hulReflect->GetSRVMap();
+		const auto& hulUnorders = hulReflect->GetUAVMap();
 
-		const auto& pixConsts = pixReflect->GetBuffers();
-		const auto& pixTextures = pixReflect->GetSRV();
-		const auto& pixUnorders = pixReflect->GetUAV();
+		const auto& pixConsts = pixReflect->GetBufferMap();
+		const auto& pixTextures = pixReflect->GetSRVMap();
+		const auto& pixUnorders = pixReflect->GetUAVMap();
+
+		auto lamdaReflect = [](Reflector* reflect, ID3D11Device* device)
+		{
+			if (reflect != nullptr)
+			{
+				uint constCount = reflect->GetConstBufferCount();
+				uint resourceCount = reflect->GetBoundResourceCount();
+				uint uaCount = reflect->GetUnorderedCount();
+				uint sampCount = reflect->GetSamplerCount();
+
+				for (uint i = 0; i < constCount; i++)
+				{
+					MCP* mcp = reflect->ReflectConstantBuffer(device, i);
+
+					if (mcp != nullptr)
+					{
+						reflect->AddBuffer(mcp);
+					}
+				}
+
+				for (uint i = 0; i < resourceCount; i++)
+				{
+					MP* mp = reflect->ReflectTexture(device, i);
+
+					if (mp != nullptr)
+					{
+						reflect->AddSRV(mp);
+					}
+				}
+			}
+		};
+
+		lamdaReflect(vertReflect, mDevice);
+		lamdaReflect(pixReflect, mDevice);
+
+
 
 		if (vertReflect != nullptr)
 		{
-			uint constCount = vertReflect->GetConstBufferCount();
-			uint resourceCount = vertReflect->GetBoundResourceCount();
-			uint uaCount = vertReflect->GetUnorderedCount();
-			uint sampCount = vertReflect->GetSamplerCount();
 
-			for (uint i = 0; i < constCount; i++)
-			{
-				MCP* mcp = vertReflect->ReflectConstantBuffer(mDevice, i);
-			
-				if (mcp != nullptr)
-				{
-					vertReflect->AddBuffer(mcp);
-				}
-			}
-
-			for (uint i = 0; i < resourceCount; i++)
-			{
-				MP* mp = vertReflect->ReflectTexture(mDevice, i);
-
-				if (mp != nullptr)
-				{
-					vertReflect->AddSRV(mp);
-				}
-			}
-
-		}
-
-
-		if (vertReflect != nullptr)
-		{
-
-			for (auto& i : vertConsts) { mMaterial->AddBuffer(i); }
-			for (auto& i : vertTextures) { mMaterial->AddTexture(i); }
+			for (auto& i : vertConsts) { mMaterial->AddBuffer(i.second); }
+			for (auto& i : vertTextures) { mMaterial->AddTexture(i.second); }
 
 		}
 		if (geoReflect != nullptr)
 		{
-			for (auto& i : geoConsts) { mMaterial->AddBuffer(i); }
-			for (auto& i : geoTextures) { mMaterial->AddTexture(i); }
+			for (auto& i : geoConsts) { mMaterial->AddBuffer(i.second); }
+			for (auto& i : geoTextures) { mMaterial->AddTexture(i.second); }
 
 		}
 		if (domReflect != nullptr)
 		{
-			for (auto& i : domConsts) { mMaterial->AddBuffer(i); }
-			for (auto& i : domTextures) { mMaterial->AddTexture(i); }
+			for (auto& i : domConsts) { mMaterial->AddBuffer(i.second); }
+			for (auto& i : domTextures) { mMaterial->AddTexture(i.second); }
 
 		}
 		if (hulReflect != nullptr)
 		{
-			for (auto& i : hulConsts) { mMaterial->AddBuffer(i); }
-			for (auto& i : hulTextures) { mMaterial->AddTexture(i); }
+			for (auto& i : hulConsts) { mMaterial->AddBuffer(i.second); }
+			for (auto& i : hulTextures) { mMaterial->AddTexture(i.second); }
 
 		}
 
 		if (pixReflect != nullptr)
 		{
-			for (auto& i : pixConsts) { mMaterial->AddBuffer(i); }
-			for (auto& i : pixTextures) { mMaterial->AddTexture(i); }
+			for (auto& i : pixConsts) { mMaterial->AddBuffer(i.second); }
+			for (auto& i : pixTextures) { mMaterial->AddTexture(i.second); }
 
 		}
-		
-		
-		
-		//if (vertReflection != nullptr)
-		//{
-		//	vertReflection->GetDesc(&vertShaderDesc);
-
-		//	unsigned int vertCbCount = vertShaderDesc.ConstantBuffers;
-		//	unsigned int vertTexCount = vertShaderDesc.BoundResources;
-
-		//	unsigned int index = 0;
-
-		//	for (unsigned int i = 0; i < vertCbCount; i++)
-		//	{
-		//		auto vertCbRf = vertReflection->GetConstantBufferByIndex(i);
-		//		vertCbRf->GetDesc(&vertCbDesc);
-
-		//		auto lookup = constBufferProperties.find(MakeHash(vertCbDesc.Name));
-
-		//		if (lookup == constBufferProperties.end())
-		//		{
-		//			continue;
-		//		}
-
-		//		MCP* reg = lookup->second;
-		//		mVertexConstantBuffers.emplace_back(reg->Buffer.Get());
-		//	}
-
-		//	for (unsigned int i = 0; i < vertTexCount; i++)
-		//	{
-		//		vertReflection->GetResourceBindingDesc(i, &vertTexDesc);
-
-		//		if (vertTexDesc.Type == D3D_SIT_CBUFFER)
-		//		{
-		//			continue;
-		//		}
-
-		//		auto lookup = textureProperties.find(MakeHash(vertTexDesc.Name));
-
-		//		if (lookup == textureProperties.end())
-		//		{
-		//			continue;
-		//		}
-
-		//		MP* reg = lookup->second;
-		//		mVertexTextures.emplace_back(reg->Register.Get());
-		//	}
-
-		//	if (vertCbCount > 0)
-		//	{
-		//		mContext->VSSetConstantBuffers(0, vertCbCount, mVertexConstantBuffers.data());
-		//	}
-		//	if (vertTexCount > 0)
-		//	{
-		//		mContext->VSSetShaderResources(0, vertTexCount - vertCbCount, mVertexTextures.data());
-		//	}
-		//}
-
-		//// Pixel Stage
-		//if (pixReflection != nullptr)
-		//{
-		//	pixReflection->GetDesc(&pixShaderDesc);
-
-		//	unsigned int pixCbCount = pixShaderDesc.ConstantBuffers;
-		//	unsigned int pixTexCount = pixShaderDesc.BoundResources;
-		//	unsigned int pixOutCount = pixShaderDesc.OutputParameters;
-		//	//unsigned int pixSmpCount = pixShaderDesc.Sample
-		//	for (unsigned int i = 0; i < pixCbCount; i++)
-		//	{
-		//		auto pixCbRf = pixReflection->GetConstantBufferByIndex(i);
-		//		pixCbRf->GetDesc(&pixCbDesc);
-
-		//		auto lookup = constBufferProperties.find(MakeHash(pixCbDesc.Name));
-
-		//		if (lookup == constBufferProperties.end())
-		//		{
-		//			continue;
-		//		}
-
-		//		MCP* reg = lookup->second;
-		//		mGeometryConstantBuffers.emplace_back(reg->Buffer.Get());
-		//	}
-
-		//	for (unsigned int i = 0; i < pixTexCount; i++)
-		//	{
-		//		pixReflection->GetResourceBindingDesc(i, &pixTexDesc);
-
-		//		if (pixTexDesc.Type == D3D_SIT_CBUFFER)
-		//		{
-		//			continue;
-		//		}
-
-		//		if (pixTexDesc.Dimension == D3D_SRV_DIMENSION_BUFFER)
-		//		{
-		//			continue;
-		//		}
-
-		//		auto lookup = textureProperties.find(MakeHash(pixTexDesc.Name));
-
-		//		if (lookup == textureProperties.end())
-		//		{
-		//			continue;
-		//		}
-
-		//		MP* reg = lookup->second;
-		//		mPixelTextures.emplace_back(reg->Register.Get());
-		//	}
-
-		//	for (unsigned int i = 0; i < pixOutCount; i++)
-		//	{
-		//		D3D11_SIGNATURE_PARAMETER_DESC outParam{};
-
-		//		pixReflection->GetOutputParameterDesc(i, &outParam);
-		//	
-		//		
-		//		
-		//	}
-
-		//	mContext->OMSetRenderTargets(gbuffer->GetBufferCount(), gbuffer->GetRenderTargets(), gbuffer->GetDepthStencil());
-
-
-		//	if (pixCbCount > 0)
-		//	{
-		//		mContext->PSSetConstantBuffers(0, pixCbCount, mPixelConstantBuffers.data());
-		//	}
-		//	if (pixTexCount > 0)
-		//	{
-		//		mContext->PSSetShaderResources(0, mPixelTextures.size(), mPixelTextures.data());
-		//		
-		//	}
-
-
-
-		//}
-
-
-
-
 
 	}
 
@@ -437,7 +326,7 @@ namespace NARCO
 
 		unsigned int indexCount = mesh->GetIndexCount();
 
-		//stage_UpdateResource(material, shader);
+		stage_UpdateReservedResources(material, shader);
 		stage_InputAssembly(mesh, shader);
 		stage_Vertex(material, shader);
 		stage_Geometry(material, shader);

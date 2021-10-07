@@ -439,41 +439,40 @@ namespace NARCO
 	Material::~Material()
 	{
 	}
-	void Material::AddBuffer(ID3D11Buffer* buffer)
+	void Material::AddBuffer(MCP* mcp)
 	{
-		for (uint i = 0; i < mConstants.size(); i++)
+		long long hash = MakeHash(mcp->Name);
+		auto result = mConstants.find(hash);
+		
+		if (result == mConstants.end())
 		{
-			if (buffer == mConstants[i].Get())
-			{
-				return;
-			}
+			mConstants.insert_or_assign(hash, mcp);
 		}
 
-		mConstants.emplace_back(buffer);
-
+		return;
 	}
-	void Material::AddTexture(ID3D11ShaderResourceView* srv)
+	void Material::AddTexture(MP* mp)
 	{
-		for (uint i = 0; i < mTextures.size(); i++)
+		long long hash = MakeHash(mp->Name);
+		auto result = mTextures.find(hash);
+
+		if (result == mTextures.end())
 		{
-			if (srv == mTextures[i].Get())
-			{
-				return;
-			}
+			mTextures.insert_or_assign(hash, mp);
 		}
 
-		mTextures.emplace_back(srv);
+		return;
 	}
-	void Material::AddUnorder(ID3D11UnorderedAccessView* uav)
+	void Material::AddUnorder(MUP* mup)
 	{
-		for (uint i = 0; i < mUnorders.size(); i++)
+		long long hash = MakeHash(mup->Name);
+		auto result = mUnorders.find(hash);
+
+		if (result != mUnorders.end())
 		{
-			if (uav == mUnorders[i].Get())
-			{
-				return;
-			}
+			mUnorders.insert_or_assign(hash, mup);
 		}
 
-		mUnorders.emplace_back(uav);
+		return;
 	}
 }

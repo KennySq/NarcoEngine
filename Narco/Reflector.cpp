@@ -173,7 +173,7 @@ namespace NARCO
 		uint cbufferVariables = bufDesc.Variables;
 		uint cbufferSize = bufDesc.Size;
 
-		std::vector<const char*> variableNames;
+		std::map<const char*, MCP::Variable> variableNames;
 
 		result = device->CreateBuffer(&propBufferDesc, nullptr, buffer.GetAddressOf());
 		if (result != S_OK)
@@ -185,7 +185,14 @@ namespace NARCO
 		for (uint j = 0; j < cbufferVariables; j++)
 		{
 			D3D11_SHADER_VARIABLE_DESC varDesc{};
+			D3D11_SHADER_TYPE_DESC typeDesc{};
+
 			auto variable = reflectCBuffer->GetVariableByIndex(j);
+			auto type = variable->GetType();
+			type->GetDesc(&typeDesc);
+
+			typeDesc.Type;
+
 			if (variable == nullptr)
 			{
 				Debug::Log(std::to_string(j) + ", failed to get cbuffer variable");
@@ -199,7 +206,13 @@ namespace NARCO
 				continue;
 			}
 
-			variableNames.push_back(varDesc.Name);
+			ePropertyDimension dim;
+
+			determineVariableChannel(type, dim);
+
+			MCP::Variable var = { varDesc.Size, dim };
+			variableNames.insert_or_assign(varDesc.Name, var);
+
 		}
 
 		const char* name = bufDesc.Name;
@@ -223,20 +236,23 @@ namespace NARCO
 		}
 
 		uint boundResources = shaderDesc.BoundResources;
-
+		
 		D3D11_SHADER_INPUT_BIND_DESC shaderInputDesc{};
 
 		ePropertyType type = PROPERTY_UNKNOWN;
 		ePropertyDimension dimension = DIMENSION_UNKNOWN;
-		determineChannel(shaderInputDesc.uFlags, dimension);
-
+	
 		result = reflect->GetResourceBindingDesc(i, &shaderInputDesc);
 		if (result != S_OK)
 		{
 			Debug::Log("failed to get resource binding descriptor");
 			return nullptr;
 		}
-			
+
+		determineTextureType(shaderInputDesc.ReturnType, dimension);
+		
+		// How to determine channel Count ?
+
 		if (shaderInputDesc.Type == D3D_SHADER_INPUT_TYPE::D3D_SIT_TEXTURE)
 		{
 			if (shaderInputDesc.Dimension == D3D_SRV_DIMENSION_TEXTURE2D)
@@ -247,7 +263,6 @@ namespace NARCO
 			{
 				type = ePropertyType::PROPERTY_TEXTURE3D;
 			}
-
 		}
 
 		else if (shaderInputDesc.Type == D3D_SHADER_INPUT_TYPE::D3D_SIT_STRUCTURED)
@@ -316,25 +331,54 @@ namespace NARCO
 		mRawConstBuffers.emplace_back(mcp->Buffer.Get());
 	}
 
-	void Reflector::determineChannel(uint mask, ePropertyDimension& dimension)
+	void Reflector::determineVariableChannel(ID3D11ShaderReflectionType* type, ePropertyDimension& dimension)
 	{
-		if (mask == 1)
+		HRESULT result;
+		D3D11_SHADER_TYPE_DESC typeDesc{};
+
+		result = type->GetDesc(&typeDesc);
+		if (result != S_OK)
 		{
-			dimension = ePropertyDimension::DIMENSION_FLOAT;
-		}
-		else if (mask >= 3)
-		{
-			dimension = ePropertyDimension::DIMENSION_FLOAT2;
-		}
-		else if (mask >= 8)
-		{
-			dimension = ePropertyDimension::DIMENSION_FLOAT3;
-		}
-		else if (mask >= 12)
-		{
-			dimension = ePropertyDimension::DIMENSION_FLOAT4;
+			Debug::Log("failed to get variable type descriptor");
 		}
 
+		if (typeDesc.Type == D3D_SVT_FLOAT)
+		{
+			if (typeDesc.Columns == 4 && typeDesc.Rows == 4)
+			{
+				dimension = DIMENSION_FLOAT4X4;
+			}
+
+			else if (typeDesc.Columns == 1)
+			{
+				dimension = DIMENSION_FLOAT;
+			}
+			else if (typeDesc.Columns == 2)
+			{
+				dimension = DIMENSION_FLOAT2;
+			}
+			else if (typeDesc.Columns == 3)
+			{
+				dimension = DIMENSION_FLOAT3;
+			}
+			else if (typeDesc.Columns == 4)
+			{
+				dimension = DIMENSION_FLOAT4;
+			}
+			
+
+		}
 		return;
+	}
+	void Reflector::determineTextureType(D3D_RESOURCE_RETURN_TYPE type, ePropertyDimension& dim)
+	{
+		if (type == D3D_RESOURCE_RETURN_TYPE::D3D11_RETURN_TYPE_FLOAT)
+		{
+			dim = DIMENSION_FLOAT4;
+		}
+		else if (type == D3D_RESOURCE_RETURN_TYPE::D3D11_RETURN_TYPE_UINT)
+		{
+			dim = DIMENSION_UINT4;
+		}
 	}
 }
