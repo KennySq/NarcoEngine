@@ -179,7 +179,7 @@
     <None Include="built-in\hlsl\Deferred_FinalPass.hlsl">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="Reserved.hlsli">
+    <None Include="built-in\hlsl\Reserved.hlsli">
       <Filter>리소스 파일</Filter>
     </None>
   </ItemGroup>

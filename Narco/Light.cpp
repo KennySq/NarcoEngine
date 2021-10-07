@@ -18,6 +18,8 @@ namespace NARCO
 
 	void Light::start()
 	{
+		
+
 	}
 
 	void Light::update(float delta)

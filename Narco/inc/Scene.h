@@ -34,8 +34,6 @@ namespace NARCO
 		void render(float delta);
 		void release();
 
-		void sceneRender();
-
 		std::string mName;
 		SceneID mSceneID;
 

@@ -122,8 +122,5 @@ namespace NARCO
 		}
 
 	}
-	void Scene::sceneRender()
-	{
 
-	}
 }

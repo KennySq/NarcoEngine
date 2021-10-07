@@ -48,32 +48,6 @@ namespace NARCO
 		mContext->CopySubresourceRegion(constantBuffer, 0, 128, 0, 0, projectionBuffer, 0, nullptr);
 
 	}
-	//void Renderer::stage_UpdateResource(const Material* material, const Shader* shader)
-	//{
-	//	
-
-
-	//	// ...
-
-
-
-	//	std::map<long long, MP*> textureRegisters = material->GetInputTextureRegisters();
-	//	std::map<long long, MCP*> constantRegisters = material->GetInputConstantRegisters();
-	//	
-	//	MCP* defaultConstProperty = constantRegisters.begin()->second;
-
-	//	ID3D11Buffer* destBuffer = defaultConstProperty->Buffer.Get();
-	//	ID3D11Buffer* world = mTransform->GetBuffer();
-	//	ID3D11Buffer* proj = mRenderCamera->GetProjectionBuffer();
-	//	ID3D11Buffer* view = mRenderCamera->GetViewBuffer();
-
-	//	unsigned int viewOffset = sizeof(float) * 16;
-	//	unsigned int projOffset = sizeof(float) * 32;
-
-	//	mContext->CopySubresourceRegion(destBuffer, 0, 0, 0, 0, world, 0, nullptr);
-	//	mContext->CopySubresourceRegion(destBuffer, 0, viewOffset, 0, 0, view, 0, nullptr);
-	//	mContext->CopySubresourceRegion(destBuffer, 0, projOffset, 0, 0, proj, 0, nullptr);
-	//}
 
 	void Renderer::stage_InputAssembly(const Mesh* mesh, const Shader* shader)
 	{
