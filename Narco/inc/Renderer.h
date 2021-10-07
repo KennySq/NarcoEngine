@@ -12,6 +12,8 @@
 
 #include"Narco_Core.h"
 
+#include"Light.h"
+
 namespace NARCO
 {
 	class Renderer : public Component
@@ -28,7 +30,6 @@ namespace NARCO
 
 		void stage_UpdateReservedResources(const Material* material, const Shader* shader);
 
-	//	void stage_UpdateResource(const Material* material, const Shader* shader);
 		void stage_InputAssembly(const Mesh* mesh, const Shader* shader);
 
 		void stage_Vertex(const Material* material, const Shader* shader);
@@ -57,5 +58,7 @@ namespace NARCO
 
 		Camera* mRenderCamera;
 		GBuffer* mGBuffer;
+
+		std::vector<Light*> mEffectLights;
 	}; 
 }
