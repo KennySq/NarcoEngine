@@ -39,7 +39,7 @@ namespace NARCO
 
 		origin *= translation;
 
-		XMStoreFloat4x4(&mMatrix, XMMatrixTranspose(origin));
+		XMStoreFloat4x4(&mMatrix, origin);
 	}
 	void Transform::Translate(XMVECTOR offset)
 	{
@@ -53,7 +53,11 @@ namespace NARCO
 	}
 	void Transform::Rotate(float x, float y, float z)
 	{
-		XMMATRIX rot = XMMatrixRotationRollPitchYaw(x, y, z);
+		float xR = XMConvertToRadians(x);
+		float yR = XMConvertToRadians(y);
+		float zR = XMConvertToRadians(z);
+
+		XMMATRIX rot = XMMatrixRotationRollPitchYaw(xR, yR, zR);
 		XMMATRIX origin = XMLoadFloat4x4(&mMatrix);
 
 		origin *= rot;
@@ -62,7 +66,11 @@ namespace NARCO
 	}
 	void Transform::Rotate(XMVECTOR offset)
 	{
-		XMMATRIX rot = XMMatrixRotationRollPitchYawFromVector(offset);
+		float xR = XMConvertToRadians(offset.m128_f32[0]);
+		float yR = XMConvertToRadians(offset.m128_f32[1]);
+		float zR = XMConvertToRadians(offset.m128_f32[2]);
+
+		XMMATRIX rot = XMMatrixRotationRollPitchYaw(xR, yR, zR);
 		XMMATRIX origin = XMLoadFloat4x4(&mMatrix);
 
 		origin *= rot;
