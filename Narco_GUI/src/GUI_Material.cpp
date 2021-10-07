@@ -18,24 +18,45 @@ namespace NARCO
 		static auto& textureRegisters = mMaterial->GetTextures();
 		static auto& unorders = mMaterial->GetUnorders();
 
+		const Shader* shader = mMaterial->GetShader();
+		Reflector* vertRef = shader->GetVertexReflect();
+		
+		
 		static char buf[64] = "";
 		
 		D3D11_BUFFER_DESC bufDesc{};
 
-		for (uint i = 0; i < constRegisters.size(); i++)
+		for(auto& i : constRegisters)
 		{
-
-			//eMaterialInputType type = eMaterialInputType::INPUT_MATRIX4X4;
-			auto buffer = constRegisters[i].Get();
+			auto buffer = i.second->Buffer.Get();
+			auto variables = i.second->VariableNames;
 			buffer->GetDesc(&bufDesc);
 			uint size = bufDesc.ByteWidth;
 
 			// some data (various size)
-			float* bytes = new float[size / sizeof(float)];
-			
-			MaterialInput input(bytes, size);
+			for (auto& j : variables)
+			{
+				ePropertyDimension dim = j.second.Dimension;
+				uint size = j.second.Size;
+				MaterialInput input;
 
-			mConstantBytes.insert_or_assign(buffer, input);
+				if (dim == DIMENSION_FLOAT4X4)
+				{
+					XMFLOAT4X4* mat = new XMFLOAT4X4();
+					input.Data = mat;
+					input.Size = size;
+				}
+				else if (dim == DIMENSION_FLOAT4)
+				{
+					XMFLOAT4* vec = new XMFLOAT4();
+					input.Data = vec;
+					input.Size = size;
+				}
+
+				mConstantVariables.insert_or_assign(j.first, input);
+			}
+
+
 
 		}
 	}
@@ -49,41 +70,70 @@ namespace NARCO
 		static D3D11_BUFFER_DESC bufferDesc{};
 		
 
-		for (uint i = 0; i < constRegisters.size(); i++)
+		for (auto i : constRegisters)
 		{
-			auto buffer = constRegisters[i].Get();
+			auto variables = i.second->VariableNames;
+			auto buffer = i.second->Buffer.Get();
 			uint size;
-			const MaterialInput& input = mConstantBytes[buffer];
-
-			buffer->GetDesc(&bufferDesc);
+			//const MaterialInput& input = mConstantVariables[buffer];
 			
-			size = bufferDesc.ByteWidth;
-			float* data = reinterpret_cast<float*>(input.Data);
+			buffer->GetDesc(&bufferDesc);
 
-			static float mat[4][4];
-
-			for (uint j = 0; j < size; j += 64)
+			for (auto j : variables)
 			{
-				const char* label1 = (std::string("float_comp_0") + std::to_string(j+1)).c_str();
-				const char* label2 = (std::string("float_comp_1") + std::to_string(j+2)).c_str();
-				const char* label3 = (std::string("float_comp_2") + std::to_string(j+3)).c_str();
-				const char* label4 = (std::string("float_comp_3") + std::to_string(j+4)).c_str();
+				const MaterialInput& input = mConstantVariables[j.first];
+				ePropertyDimension dim = j.second.Dimension;
 
-				ImGui::InputFloat4(label1, mat[0]);
-				ImGui::InputFloat4(label2, mat[1]);
-				ImGui::InputFloat4(label3, mat[2]);
-				ImGui::InputFloat4(label4, mat[3]);
-
-				for (uint t = 0; t < 4; t++)
+				if (dim == DIMENSION_FLOAT4X4)
 				{
-					data[0  + t] = mat[0][t]; // 0 1 2 3
-					data[4  + t] = mat[1][t]; // 4 5 6 7
-					data[8  + t] = mat[2][t]; // 8 9 10 11
-					data[12 + t] = mat[3][t]; // 12 13 14 15
+					XMFLOAT4X4* mat = reinterpret_cast<XMFLOAT4X4*>(input.Data);
+
+					std::string label1 = (j.first + std::string("_0"));
+					std::string label2 = (j.first + std::string("_1"));
+					std::string label3 = (j.first + std::string("_2"));
+					std::string label4 = (j.first + std::string("_3"));
+
+					bool changed0 = ImGui::InputFloat4(label1.c_str(), mat->m[0]);
+					bool changed1 = ImGui::InputFloat4(label2.c_str(), mat->m[1]);
+					bool changed2 = ImGui::InputFloat4(label3.c_str(), mat->m[2]);
+					bool changed3 = ImGui::InputFloat4(label4.c_str(), mat->m[3]);
+
+					if (changed0 || changed1 || changed2 || changed3)
+					{
+						mMaterial->UpdateConstant(mat, i.first);
+					}
+
+
+					ImGui::Separator();
 				}
 			}
+
+			//size = bufferDesc.ByteWidth;
+			//float* data = reinterpret_cast<float*>(input.Data);
+
+			//static float mat[4][4];
+
+			//for (uint j = 0; j < size; j += 64)
+			//{
+			//	const char* label1 = (std::string("float_comp_0") + std::to_string(j+1)).c_str();
+			//	const char* label2 = (std::string("float_comp_1") + std::to_string(j+2)).c_str();
+			//	const char* label3 = (std::string("float_comp_2") + std::to_string(j+3)).c_str();
+			//	const char* label4 = (std::string("float_comp_3") + std::to_string(j+4)).c_str();
+
+			//	ImGui::InputFloat4(label1, mat[0]);
+			//	ImGui::InputFloat4(label2, mat[1]);
+			//	ImGui::InputFloat4(label3, mat[2]);
+			//	ImGui::InputFloat4(label4, mat[3]);
+
+			//	for (uint t = 0; t < 4; t++)
+			//	{
+			//		data[0  + t] = mat[0][t]; // 0 1 2 3
+			//		data[4  + t] = mat[1][t]; // 4 5 6 7
+			//		data[8  + t] = mat[2][t]; // 8 9 10 11
+			//		data[12 + t] = mat[3][t]; // 12 13 14 15
+			//	}
+			//}
 				
-			mMaterial->UpdateConstant(data, i);
 		}
 		return;
 	}
