@@ -10,3 +10,4 @@
 #include"inc/GUI_Frame.h"
 #include"inc/GUI_AssetManager.h"
 #include"inc/GUI_Material.h"
+#include"inc/GUI_GameObject.h"
