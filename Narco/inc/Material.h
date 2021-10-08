@@ -16,21 +16,6 @@ namespace NARCO
 		
 		ID3D11RasterizerState* GetRasterizerState() const { return mRasterState.Get(); }
 		ID3D11DepthStencilState* GetDepthStencilState() const { return mDepthState.Get(); }
-		
-		//const auto& GetInputConstantRegisters() const { return mInputConstantProperties; }
-		//const auto& GetInputTextureRegisters() const { return mInputProperties; }
-
-		//void UpdateBuffer(float* v, unsigned int count, long long hash)
-		//{
-		//	ID3D11Buffer* buffer;
-		//	ID3D11ShaderResourceView* srv = mInputProperties[hash]->Register.Get();
-
-		//	srv->GetResource(reinterpret_cast<ID3D11Resource**>(&buffer));
-
-		//	mContext->UpdateSubresource(buffer, 0, nullptr, v, 0, 0);
-
-		//	return;
-		//}
 
 		void AddBuffer(MCP* mcp);
 		void AddTexture(MP* mp);
@@ -50,6 +35,7 @@ namespace NARCO
 			}
 
 			mContext->UpdateSubresource(mConstants[hash]->Buffer.Get(), 0, nullptr, data, 0, 0);
+			
 		}
 
 	private:

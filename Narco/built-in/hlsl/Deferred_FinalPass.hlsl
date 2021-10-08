@@ -1,11 +1,13 @@
-SamplerState defaultSampler;
+#include"Reserved.hlsli"
+#include"Light.hlsli"
 
-Texture2D<float4> gPosition : register(t0);
-Texture2D<float4> gWorldPosition : register(t1);
-Texture2D<float4> gNormal : register(t2);
-Texture2D<float4> gWorldNormal : register(t3);
-Texture2D<float2> gTexcoord : register(t4);
-Texture2D<float4> gAlbedo : register(t5);
+
+Texture2D<float4> gPosition : register(t2); // 2
+Texture2D<float4> gWorldPosition : register(t3); // 3
+Texture2D<float4> gNormal : register(t4); // 4
+Texture2D<float4> gWorldNormal : register(t5); // ...
+Texture2D<float2> gTexcoord : register(t6);
+Texture2D<float4> gAlbedo : register(t7);
 
 
 /*	float4 mProjection : SV_Target0;
@@ -47,5 +49,6 @@ float4 frag(Pixel_Input input) : SV_Target0
     float4 worldNormal = gWorldNormal.Sample(defaultSampler, input.mTexcoord);
     float4 albedo = gAlbedo.Sample(defaultSampler, input.mTexcoord);
     
-    return worldNormal;
+    color = normalize(worldNormal);
+    return color;
 }

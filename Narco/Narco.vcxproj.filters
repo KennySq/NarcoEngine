@@ -81,9 +81,6 @@
     <ClInclude Include="inc\Super.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Trasnform.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="inc\Transform.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -180,6 +177,9 @@
       <Filter>리소스 파일</Filter>
     </None>
     <None Include="built-in\hlsl\Reserved.hlsli">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="built-in\hlsl\Light.hlsli">
       <Filter>리소스 파일</Filter>
     </None>
   </ItemGroup>

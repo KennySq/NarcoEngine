@@ -24,10 +24,9 @@ namespace NARCO
 #endif
 		const char* path = mPath.c_str();
 		ID3DBlob* blob, * errBlob;
-
 		if ((mFlags & SHADER_VERTEX))
 		{
-			result = D3DCompileFromFile(A2W(path), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "vert", "vs_5_0", 0, compileFlag, &blob, &errBlob);
+			result = D3DCompileFromFile(A2W(path), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "vert", "vs_5_0", compileFlag, 0, &blob, &errBlob);
 			if (result != S_OK)
 			{
 				Debug::Log(reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
@@ -61,7 +60,7 @@ namespace NARCO
 
 		if ((mFlags & SHADER_GEOMETRY))
 		{
-			result = D3DCompileFromFile(A2W(path), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "geom", "gs_5_0", 0, compileFlag, &blob, &errBlob);
+			result = D3DCompileFromFile(A2W(path), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "geom", "gs_5_0", compileFlag, 0, &blob, &errBlob);
 
 			if (result != S_OK)
 			{
@@ -88,7 +87,7 @@ namespace NARCO
 
 		if ((mFlags & SHADER_DOMAIN))
 		{
-			result = D3DCompileFromFile(A2W(path), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "doma", "ds_5_0", 0, compileFlag, &blob, &errBlob);
+			result = D3DCompileFromFile(A2W(path), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "doma", "ds_5_0", compileFlag, 0, &blob, &errBlob);
 
 			if (result != S_OK)
 			{
@@ -114,7 +113,7 @@ namespace NARCO
 
 		if ((mFlags & SHADER_HULL))
 		{
-			result = D3DCompileFromFile(A2W(path), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "hull", "hs_5_0", 0, compileFlag, &blob, &errBlob);
+			result = D3DCompileFromFile(A2W(path), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "hull", "hs_5_0", compileFlag, 0, &blob, &errBlob);
 
 			if (result != S_OK)
 			{
@@ -139,7 +138,7 @@ namespace NARCO
 
 		if ((mFlags & SHADER_PIXEL))
 		{
-			result = D3DCompileFromFile(A2W(path), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "frag", "ps_5_0", 0, compileFlag, &blob, &errBlob);
+			result = D3DCompileFromFile(A2W(path), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "frag", "ps_5_0", compileFlag, 0, &blob, &errBlob);
 
 			if (result != S_OK)
 			{

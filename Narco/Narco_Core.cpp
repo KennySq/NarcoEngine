@@ -48,8 +48,7 @@ namespace NARCO
 		mMainCanvas->AddFrame(new GUI_Frame("File Slot", 300,300, ImGuiWindowFlags_NoResize));
 		mMainCanvas->AddFrame(new GUI_Frame("Color Picker", 400,300, ImGuiWindowFlags_NoResize));
 		mMainCanvas->AddFrame(new GUI_Frame("Asset Browser", 1100, 400, ImGuiWindowFlags_NoResize));
-		mMainCanvas->AddFrame(new GUI_Frame("Shader Editor", 600, 800, ImGuiFocusedFlags_None));
-
+		mMainCanvas->AddFrame(new GUI_Frame("Inspector", 400, 800, ImGuiFocusedFlags_None));
 
 
 	}
@@ -71,7 +70,7 @@ namespace NARCO
 		frame->AddGUI("FileSlot_01", new GUI_FileSlot());
 		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
 		frame3->AddGUI("AssetBrowser_01", new GUI_AssetManager(assetManager, device));
-		frame4->AddGUI("ShaderEditor_01", new GUI_Material(shiba->GetComponent<Renderer>()->GetMaterial()));
+		frame4->AddGUI("Inspector_01", new GUI_GameObject(shiba));
 
 
 

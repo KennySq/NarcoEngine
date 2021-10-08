@@ -150,6 +150,11 @@ namespace NARCO
 
 		D3D11_SHADER_BUFFER_DESC bufDesc{};
 
+		if (mConstantStartIndex > i)
+		{
+			mConstantStartIndex = i;
+		}
+
 		auto reflectCBuffer = reflect->GetConstantBufferByIndex(i);
 		if (reflectCBuffer == nullptr)
 		{
@@ -166,7 +171,7 @@ namespace NARCO
 
 		ComPtr<ID3D11Buffer> buffer;
 		D3D11_BUFFER_DESC propBufferDesc{};
-
+		
 		propBufferDesc.ByteWidth = bufDesc.Size;
 		propBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
@@ -174,7 +179,7 @@ namespace NARCO
 		uint cbufferSize = bufDesc.Size;
 
 		std::map<const char*, MCP::Variable> variableNames;
-
+		
 		result = device->CreateBuffer(&propBufferDesc, nullptr, buffer.GetAddressOf());
 		if (result != S_OK)
 		{
@@ -192,13 +197,13 @@ namespace NARCO
 			type->GetDesc(&typeDesc);
 
 			typeDesc.Type;
-
+			
 			if (variable == nullptr)
 			{
 				Debug::Log(std::to_string(j) + ", failed to get cbuffer variable");
 				continue;
 			}
-
+			
 			result = variable->GetDesc(&varDesc);
 			if (result != S_OK)
 			{
@@ -233,6 +238,11 @@ namespace NARCO
 		{
 			Debug::Log("failed to get shader descriptor");
 			return nullptr;
+		}
+
+		if (mTextureStartIndex > i)
+		{
+			mTextureStartIndex = i;
 		}
 
 		uint boundResources = shaderDesc.BoundResources;

@@ -24,6 +24,10 @@ namespace NARCO
 		void SetMatrix(XMMATRIX matrix) { XMStoreFloat4x4(&mMatrix, matrix); }
 		ID3D11Buffer* GetBuffer() const { return mBuffer.Get(); }
 
+		XMVECTOR GetPosition() const { return XMLoadFloat4(&mPosition); }
+		XMVECTOR GetRotation() const { return XMLoadFloat4(&mRotation); }
+		XMVECTOR GetScale() const { return XMLoadFloat4(&mScale); }
+
 	private:
 		ComPtr<ID3D11Buffer> mBuffer;
 

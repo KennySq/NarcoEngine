@@ -3,7 +3,7 @@
 #include"inc/Shader.h"
 namespace NARCO
 {
-	GBuffer::GBuffer(ID3D11Device* device, unsigned int width, unsigned int height)
+	GBuffer::GBuffer(ID3D11Device* device, uint width, uint height)
 		: mBufferCount(GBufferFormats.size()), mDevice(device), mWidth(width), mHeight(height),
 		mRenderTargets(8), mShaderResources(128)
 	{
@@ -41,11 +41,14 @@ namespace NARCO
 		static unsigned int offsets[] = { 0 };
 		static ID3D11ShaderResourceView* nullSrv[] = { nullptr };
 		static ID3D11RenderTargetView* nullRtv[] = { nullptr };
-		static std::vector<ID3D11ShaderResourceView*> srv;
+		static std::vector<ID3D11ShaderResourceView*> bufferSRV;
+		static std::vector<ID3D11ShaderResourceView*> lightSRV;
+
+		uint startIndex = 0;
 
 		for (unsigned int i = 0; i < mBufferCount; i++)
 		{
-			srv.push_back(mBuffers[i]->GetShaderResource());
+			bufferSRV.push_back(mBuffers[i]->GetShaderResource());
 		}
 
 		context->VSSetShader(vs, nullptr, 0);
@@ -57,15 +60,14 @@ namespace NARCO
 
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		context->PSSetShaderResources(0, mBufferCount, srv.data());
+		context->PSSetShaderResources(2, mBufferCount, bufferSRV.data());
 
 		context->OMSetRenderTargets(1, &backBuffer, nullptr);
 
 		context->DrawIndexed(6, 0, 0);
 
 		context->PSSetShaderResources(0, 1, nullSrv);
-
-		srv.clear();
+		bufferSRV.clear();
 	}
 	void GBuffer::ClearBuffer(ID3D11DeviceContext* context)
 	{

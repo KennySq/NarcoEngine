@@ -20,17 +20,27 @@ namespace NARCO
 
 	class Light : public Component
 	{
+		struct Point
+		{
+			DirectX::XMFLOAT3 Position;
+			float Intesnity;
+		};
+
+		struct Directional
+		{
+			DirectX::XMFLOAT3 Direction;
+			float Intensity;
+		};
+
 	public:
 		Light(eLightType type, eLightMode mode);
 		~Light();
 	private:
-
+		ComPtr<ID3D11Buffer> mBuffer;
 		Transform* mTransform;
 
 		eLightType mType;
 		eLightMode mMode;
-
-		float mIntensity;
 
 		// Component을(를) 통해 상속됨
 		virtual void awake() override;

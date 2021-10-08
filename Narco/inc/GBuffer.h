@@ -20,7 +20,7 @@ namespace NARCO
 	class GBuffer
 	{
 	public:
-		GBuffer(ID3D11Device* device, unsigned int width, unsigned int height);
+		GBuffer(ID3D11Device* device, uint width, uint height);
 		~GBuffer();
 
 		ID3D11RenderTargetView* const * GetRenderTargets() { return mRenderTargets.data(); }
@@ -41,8 +41,8 @@ namespace NARCO
 
 		const unsigned int mBufferCount;
 		
-		unsigned int mWidth;
-		unsigned int mHeight;
+		uint mWidth;
+		uint mHeight;
 
 		Mesh* mScreenQuadMesh;
 		Shader* mScreenQuadShader;

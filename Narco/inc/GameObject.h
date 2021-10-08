@@ -78,6 +78,9 @@ namespace NARCO
 			return static_cast<_Comp*>(newComp);
 		}
 
+		const auto& GetComponents() const { return mComponents; }
+
+
 	protected:
 		static long long mInstanceIDCount;
 

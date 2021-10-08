@@ -18,6 +18,8 @@ namespace NARCO
 		Component(const Component&& c) = delete;
 		virtual ~Component() {}
 
+		const std::string& GetName() const { return mName; }
+
 	protected:
 		virtual void awake() = 0;
 		virtual void start() = 0;

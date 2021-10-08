@@ -154,6 +154,10 @@ namespace NARCO
 		std::vector<ID3D11ShaderResourceView*> mRawTextures;
 		std::vector<ID3D11Buffer*> mRawConstBuffers;
 		std::vector<ID3D11UnorderedAccessView*> mRawUnorderAccesses;
+
+		uint mConstantStartIndex = -1;
+		uint mTextureStartIndex = -1;
+		uint mUnorderStartIndex = -1;
 		//std::vector<ID3D11SamplerState*> mSamplerStates;
 		
 		//std::vector<ComPtr<ID3D11ShaderResourceView>> mShaderResources;
