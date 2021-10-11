@@ -1,6 +1,8 @@
 #pragma once
 #include"IGUI.h"
 #include<GameObject.h>
+#include<Transform.h>
+
 namespace NARCO
 {
 	class GUI_GameObject : public IGUI
@@ -12,6 +14,9 @@ namespace NARCO
 		PUBLIC_API virtual NARCO_API void Update() override;
 		PUBLIC_API virtual NARCO_API void Draw() override;
 		PUBLIC_API virtual NARCO_API void End() override;
+
+		PRIVATE_API NARCO_API void drawTransform(Transform* transform);
+
 
 		PRIVATE_PROPERTY GameObject* mGameObject;
 	};

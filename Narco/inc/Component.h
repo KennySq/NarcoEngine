@@ -19,6 +19,8 @@ namespace NARCO
 		virtual ~Component() {}
 
 		const std::string& GetName() const { return mName; }
+		const GameObject* GetRoot() const { return mRoot; }
+		ComponentID GetID() const { return mComponentID; }
 
 	protected:
 		virtual void awake() = 0;

@@ -24,7 +24,7 @@ namespace NARCO
 
 		void SetTag(const char* tag) { mTag = tag; }
 		const char* GetTag() const { return mTag.c_str(); }
-
+		const char* GetName() const { return mName.c_str(); }
 
 		template<class _Comp>
 		_Comp* GetComponent()

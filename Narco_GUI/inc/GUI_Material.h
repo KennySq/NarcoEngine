@@ -3,6 +3,7 @@
 #include<Material.h>
 
 #include"IGUI.h"
+#include"ImGui_Texture.h"
 
 namespace NARCO
 {

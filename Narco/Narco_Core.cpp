@@ -67,7 +67,7 @@ namespace NARCO
 		
 		GameObject* shiba = mSelectedScene->GetGameObject(0);
 
-		frame->AddGUI("FileSlot_01", new GUI_FileSlot());
+		frame->AddGUI("FileSlot_01", new GUI_FileSlot(ASSET_IMAGE));
 		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
 		frame3->AddGUI("AssetBrowser_01", new GUI_AssetManager(assetManager, device));
 		frame4->AddGUI("Inspector_01", new GUI_GameObject(shiba));

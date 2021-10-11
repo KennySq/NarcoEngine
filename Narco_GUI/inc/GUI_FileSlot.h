@@ -1,18 +1,13 @@
 #pragma once
 #include"IGUI.h"
+#include<Asset.h>
 
 namespace NARCO
 {
-	enum eFileType
-	{
-		FILE_IMAGE,
-		FILE_TEXT,
-		FILE_MODEL,
 
-	};
 	class GUI_FileSlot : public IGUI
 	{
-		PUBLIC_API NARCO_API GUI_FileSlot();
+		PUBLIC_API NARCO_API GUI_FileSlot(eAssetType type);
 		PUBLIC_API NARCO_API ~GUI_FileSlot();
 
 		PUBLIC_API NARCO_API virtual void Start() override;
@@ -28,5 +23,7 @@ namespace NARCO
 		PRIVATE_PROPERTY std::string mFilePath;
 		PRIVATE_PROPERTY bool mbOpenBrowser = false;
 		PRIVATE_PROPERTY std::string mSelectedPath = "C:/";
+
+		PRIVATE_PROPERTY eAssetType mType;
 	};
 }

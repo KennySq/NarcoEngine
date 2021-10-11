@@ -1,6 +1,5 @@
 #pragma once
 #include"Common.h"
-
 #include"Component.h"
 namespace NARCO
 {
@@ -21,13 +20,14 @@ namespace NARCO
 		void SetScale(float x, float y, float z);
 
 		XMMATRIX GetMatrix() const { return XMLoadFloat4x4(&mMatrix); }
-		void SetMatrix(XMMATRIX matrix) { XMStoreFloat4x4(&mMatrix, matrix); }
+		void SetMatrix(XMMATRIX matrix) { XMStoreFloat4x4(&mMatrix, XMMatrixTranspose(matrix)); }
 		ID3D11Buffer* GetBuffer() const { return mBuffer.Get(); }
 
 		XMVECTOR GetPosition() const { return XMLoadFloat4(&mPosition); }
 		XMVECTOR GetRotation() const { return XMLoadFloat4(&mRotation); }
 		XMVECTOR GetScale() const { return XMLoadFloat4(&mScale); }
-
+		
+		
 	private:
 		ComPtr<ID3D11Buffer> mBuffer;
 

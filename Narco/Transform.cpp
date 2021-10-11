@@ -24,6 +24,8 @@ namespace NARCO
 		}
 
 	}
+
+	// TRS will return transform matrix based on current rotation
 	XMMATRIX Transform::TRS(XMVECTOR translation, XMVECTOR rotation, XMVECTOR scale)
 	{
 		XMVECTOR rotateOrigin = XMLoadFloat4(&mRotation);

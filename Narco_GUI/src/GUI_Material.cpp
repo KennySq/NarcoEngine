@@ -109,6 +109,17 @@ namespace NARCO
 			}
 				
 		}
+
+		for (auto t : textureRegisters)
+		{
+			long long hash = t.first;
+			MP* mp = t.second;
+
+
+			//ImGui::Image()
+			
+		}
+
 		return;
 	}
 	NARCO_API void GUI_Material::Draw()

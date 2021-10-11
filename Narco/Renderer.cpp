@@ -30,14 +30,13 @@ namespace NARCO
 	}
 	void Renderer::stage_UpdateReservedResources(const Material* material, const Shader* shader)
 	{
-		auto& bufferMap = material->GetBuffers();
-		//stage_UpdateResource(material, shader);
+		static auto& bufferMap = material->GetBuffers();
+		static long long constantHash = MakeHash("Constants");
 
-		ID3D11Buffer* worldBuffer = mTransform->GetBuffer();
-		ID3D11Buffer* projectionBuffer = mRenderCamera->GetProjectionBuffer();
-		ID3D11Buffer* viewBuffer = mRenderCamera->GetViewBuffer();
+		static ID3D11Buffer* worldBuffer = mTransform->GetBuffer();
+		static ID3D11Buffer* projectionBuffer = mRenderCamera->GetProjectionBuffer();
+		static ID3D11Buffer* viewBuffer = mRenderCamera->GetViewBuffer();
 
-		long long constantHash = MakeHash("Constants");
 
 		auto constantItr = bufferMap.find(constantHash);
 		MCP* constantProperty = constantItr->second;

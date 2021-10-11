@@ -3,6 +3,8 @@
 namespace NARCO
 {
 	using namespace std::filesystem;
+	//std::map<std::string, eAssetType> EXTENSION_MAP;
+
 
 	NARCO_API void GUI_FileSlot::Update()
 	{
@@ -28,8 +30,8 @@ namespace NARCO
 	{
 	}
 
-	NARCO_API GUI_FileSlot::GUI_FileSlot()
-		: mFilePath("")
+	NARCO_API GUI_FileSlot::GUI_FileSlot(eAssetType type)
+		: mFilePath(""), mType(type)
 	{
 	}
 
@@ -158,10 +160,28 @@ namespace NARCO
 
 				else if (!bDirectory && bExists && bHovering && bDoubleClick)
 				{
-					mFilePath = mSelectedPath;
-					mFilePath += label;
+					std::string temp = mSelectedPath + label;
+					std::string extension = temp.substr(temp.find_last_of('.')) + "\"";
+					
+					auto result = EXTENSION_MAP.find(extension);
 
-					std::cout << "Selected File : " << mFilePath << std::endl;
+					if (result == EXTENSION_MAP.end())
+					{
+						Debug::Log("Not supported");
+						continue;
+					}
+					
+					eAssetType type = result->second; //= Asset::DetermineType(extension);
+
+					if (type == mType)
+					{
+						mFilePath = mSelectedPath;
+						mFilePath += label;
+
+						std::cout << "Selected File : " << mFilePath << std::endl;
+
+					}
+
 
 				}
 			}

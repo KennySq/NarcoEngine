@@ -40,9 +40,6 @@ namespace NARCO
 
 	private:
 
-		//HRESULT reflectVertex(ID3D11ShaderReflection* reflection);
-		//HRESULT reflectPixel(ID3D11ShaderReflection* reflection);
-
 		ComPtr<ID3D11RasterizerState> mRasterState;
 		ComPtr<ID3D11DepthStencilState> mDepthState;
 

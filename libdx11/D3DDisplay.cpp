@@ -7,7 +7,7 @@ namespace NARCO
 		HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), reinterpret_cast<void**>(mFactory.GetAddressOf()));
 		if (result != S_OK)
 		{
-			Debug::Throw("result was not S_OK");
+			Debug::Throw("result is not S_OK");
 
 			return;
 		}
@@ -32,7 +32,7 @@ namespace NARCO
 		
 		if (result != S_OK)
 		{
-			Debug::Throw("result was not S_OK");
+			Debug::Throw("result is not S_OK");
 			mFactory->Release();
 			return;
 		}
@@ -41,7 +41,7 @@ namespace NARCO
 
 		if (result != S_OK)
 		{
-			Debug::Throw("result was not S_OK");
+			Debug::Throw("result is not S_OK");
 			mFactory->Release();
 			mSwapChain->Release();
 			
@@ -57,7 +57,7 @@ namespace NARCO
 
 		if (result != S_OK)
 		{
-			Debug::Throw("result was not S_OK");
+			Debug::Throw("result is not S_OK");
 
 			mFactory->Release();
 			mSwapChain->Release();
