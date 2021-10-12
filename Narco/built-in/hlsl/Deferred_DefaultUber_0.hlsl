@@ -1,7 +1,7 @@
 #include"Reserved.hlsli"
 
-Texture2D<float4> gBaseMap;
-Texture2D<float4> gNormalMap;
+Texture2D<float4> gBaseMap : register(t0);
+Texture2D<float4> gNormalMap : register(t1);
 
 Buffer<float> gMetallic;
 Buffer<float> gSmoothness;
@@ -42,35 +42,38 @@ Pixel_Input vert(Vertex_Input input)
 	Pixel_Input output = (Pixel_Input) 0;
 	
     output.mPosition = mul(float4(input.mPosition, 1.0f), gWorld);
+    output.mWorldPosition = output.mPosition;
 	output.mPosition = mul(output.mPosition, gView);
 	output.mPosition = mul(output.mPosition, gProjection);
 	
 	output.mWorldNormal = float4(mul(input.mNormal, (float3x3) gWorld), 1.0f);
 	output.mNormal = float4(input.mNormal, 1.0f);
 	
-	output.mTexcoord = input.mTexcoord;
-	
+ //   output.mTexcoord = float4(mul(input.mTexcoord, (float2x2) gWorld), 1.0f, 1.0f);
+    output.mTexcoord = input.mTexcoord.xy;
 	return output;
 }
 
 Buffer_Input frag(Pixel_Input input)
 {
 	Buffer_Input output = (Buffer_Input) 0;
+		
+    float2 uv = input.mTexcoord.xy;
 	
-	float4 albedo = gBaseMap.Sample(defaultSampler, input.mTexcoord);
-    float4 normal = gNormalMap.Sample(defaultSampler, input.mTexcoord);
+    float4 albedo = gBaseMap.Sample(defaultSampler, uv);
+    float4 normal = gNormalMap.Sample(defaultSampler, uv);
+	
 	
 	output.mProjection = input.mPosition;
     output.mWorldPosition = input.mWorldPosition;
 	
 	output.mNormal = input.mNormal;
 	output.mWorldNormal = input.mWorldNormal;
-	output.mTexcoord = input.mTexcoord;
+	output.mTexcoord = input.mTexcoord.xy;
 	
-    output.mAlbedo = 0;
-    output.mAlbedo = 0;
+    output.mAlbedo = albedo;
 	
-    output.mNormal = normal;
+    //output.mNormal = normal;
 	
 	return output;
 };

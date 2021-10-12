@@ -124,7 +124,7 @@ namespace NARCO
 		uint GetUnorderedCount() const { return mUnorderedCount; }
 		uint GetSamplerCount() const { return mSamplerCount; }
 
-		const auto& GetSRV() const { return mRawTextures; }
+		//const auto& GetSRV() const { return mRawTextures; }
 		const auto& GetUAV() const { return mRawUnorderAccesses; }
 		const auto& GetBuffers() const { return mRawConstBuffers; }
 
@@ -151,7 +151,7 @@ namespace NARCO
 		std::map<long long, MP*> mTextures;
 		std::map<long long, MUP*> mUnorderedAcceses;
 
-		std::vector<ID3D11ShaderResourceView*> mRawTextures;
+		//std::vector<ID3D11ShaderResourceView*> mRawTextures;
 		std::vector<ID3D11Buffer*> mRawConstBuffers;
 		std::vector<ID3D11UnorderedAccessView*> mRawUnorderAccesses;
 

@@ -96,6 +96,9 @@
     <ClInclude Include="inc\Light.h">
       <Filter>헤더 파일\Component</Filter>
     </ClInclude>
+    <ClInclude Include="inc\Dragon.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Narco.cpp">
@@ -153,6 +156,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Light.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Dragon.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

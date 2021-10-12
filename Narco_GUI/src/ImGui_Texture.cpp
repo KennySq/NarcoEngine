@@ -2,10 +2,14 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+#include<Common.h>
+
 // Simple helper function to load an image into a DX11 texture with common settings
 NARCO_API bool LoadTextureFromFile(ID3D11Device* device, const char* filename, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height)
 {
     // Load from disk into a raw RGBA buffer
+    HRESULT result;
     int image_width = 0;
     int image_height = 0;
     unsigned char* image_data = stbi_load(filename, &image_width, &image_height, NULL, 4);
@@ -30,7 +34,12 @@ NARCO_API bool LoadTextureFromFile(ID3D11Device* device, const char* filename, I
     subResource.pSysMem = image_data;
     subResource.SysMemPitch = desc.Width * 4;
     subResource.SysMemSlicePitch = 0;
-    device->CreateTexture2D(&desc, &subResource, &pTexture);
+    result = device->CreateTexture2D(&desc, &subResource, &pTexture);
+    if (result != S_OK)
+    {
+        NARCO::Debug::Log("failed to create texture2d.");
+        return false;
+    }
 
     // Create texture view
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
@@ -39,7 +48,12 @@ NARCO_API bool LoadTextureFromFile(ID3D11Device* device, const char* filename, I
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MipLevels = desc.MipLevels;
     srvDesc.Texture2D.MostDetailedMip = 0;
-    device->CreateShaderResourceView(pTexture, &srvDesc, out_srv);
+    result = device->CreateShaderResourceView(pTexture, &srvDesc, out_srv);
+    if (result != S_OK)
+    {
+        NARCO::Debug::Log("failed to create shader resource view.");
+        return false;
+    }
     pTexture->Release();
 
     *out_width = image_width;
@@ -56,7 +70,8 @@ ImGui_Texture::ImGui_Texture(ID3D11Device* device, const char* path)
 	if (result == false)
 	{
 		NARCO::Debug::Log(std::string("failed to load texture from file.\n") + path);
-	}
+        return;
+    }
 
     mFileName = path;
 

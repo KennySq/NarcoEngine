@@ -65,11 +65,20 @@ namespace NARCO
 	}
 	void Renderer::stage_Vertex(const Material* material, const Shader* shader)
 	{
+		static std::vector<ID3D11ShaderResourceView*> textures;
+
 		ID3D11VertexShader* vs = shader->GetVS();
 		Reflector* vertRef = shader->GetVertexReflect();
 
 		const auto& constBuffers = vertRef->GetBuffers();
-		const auto& textures = vertRef->GetSRV();
+		const auto& shaderResourceMap = vertRef->GetSRVMap();
+		//const auto& textures = vertRef->GetSRV();
+
+		for (auto& s : shaderResourceMap)
+		{
+			ID3D11ShaderResourceView* srv = s.second->Register.Get();
+			textures.emplace_back(srv);
+		}
 
 		unsigned int constBufferCount = constBuffers.size();
 		unsigned int textureCount = textures.size();
@@ -84,6 +93,8 @@ namespace NARCO
 			mContext->VSSetConstantBuffers(0, constBufferCount, rawConstBuffers);
 			mContext->VSSetShaderResources(0, textureCount, rawTextures);
 		}
+
+		textures.clear();
 	}
 	void Renderer::stage_Geometry(const Material* material, const Shader* shader)
 	{
@@ -116,17 +127,28 @@ namespace NARCO
 	}
 	void Renderer::stage_Pixel(const Material* material, const Shader* shader)
 	{
+		static std::vector<ID3D11ShaderResourceView*> textures;
+
 		ID3D11PixelShader* ps = shader->GetPS();
 
 		Reflector* pixRef = shader->GetPixelReflect();
 
 		const auto& constBuffers = pixRef->GetBuffers();
-		const auto& textures = pixRef->GetSRV();
+
+		const auto& shaderResourceMap = pixRef->GetSRVMap();
 
 		unsigned int constBufferCount = constBuffers.size();
-		unsigned int textureCount = textures.size();
+		//unsigned int textureCount = textures.size();
 		
 		ID3D11Buffer* const* rawConstBuffers = constBuffers.data();
+		
+		for (auto& s : shaderResourceMap)
+		{
+			ID3D11ShaderResourceView* srv = s.second->Register.Get();
+			textures.emplace_back(srv);
+		}
+
+		uint rawTextureCount = textures.size();
 		ID3D11ShaderResourceView* const* rawTextures = textures.data();
 
 		if (ps != nullptr)
@@ -134,8 +156,11 @@ namespace NARCO
 			mContext->PSSetShader(ps, nullptr, 0);
 
 			mContext->PSSetConstantBuffers(0, constBufferCount, rawConstBuffers);
-			mContext->PSSetShaderResources(0, textureCount, rawTextures);
+			mContext->PSSetShaderResources(0, rawTextureCount, rawTextures);
 		}
+
+		textures.clear();
+
 	}
 
 	void Renderer::stage_ReflectVertex(const Material* material, const Shader* shader)

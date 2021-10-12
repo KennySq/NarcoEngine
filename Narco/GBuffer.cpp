@@ -69,11 +69,11 @@ namespace NARCO
 		context->PSSetShaderResources(0, 1, nullSrv);
 		bufferSRV.clear();
 	}
-	void GBuffer::ClearBuffer(ID3D11DeviceContext* context)
+	void GBuffer::ClearBuffer(ID3D11DeviceContext* context, const float* clearColors)
 	{
 		for (unsigned int i = 0; i < mBufferCount; i++)
 		{
-			context->ClearRenderTargetView(mBuffers[i]->GetRenderTarget(), DirectX::Colors::Red);
+			context->ClearRenderTargetView(mBuffers[i]->GetRenderTarget(), clearColors);
 
 			context->ClearDepthStencilView(mDepth->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 

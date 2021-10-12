@@ -29,7 +29,7 @@ namespace NARCO
 		const unsigned int GetBufferCount() const { return mBufferCount; }
 
 		void DrawScreen(ID3D11DeviceContext* context, ID3D11RenderTargetView* backBuffer);
-		void ClearBuffer(ID3D11DeviceContext* context);
+		void ClearBuffer(ID3D11DeviceContext* context, const float* clearColors);
 	private:
 		ID3D11Device* mDevice;
 

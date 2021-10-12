@@ -8,7 +8,7 @@ namespace NARCO
 	}
 	NARCO_API void GUI_GameObject::Start()
 	{
-		
+
 		return;
 	}
 	NARCO_API void GUI_GameObject::Update()
@@ -30,12 +30,12 @@ namespace NARCO
 
 				if (id == typeid(Transform).hash_code())
 				{
-					drawTransform(static_cast<Transform*>(comp));
+					guiTransform(static_cast<Transform*>(comp));
 				}
 			}
-			
 
-		
+
+
 		}
 
 		return;
@@ -48,9 +48,11 @@ namespace NARCO
 	{
 		return;
 	}
-	NARCO_API void GUI_GameObject::drawTransform(Transform* transform)
+	NARCO_API void GUI_GameObject::guiTransform(Transform* transform)
 	{
-		static float guiMat[3][3];
+		static float guiMat[3][3] = { {transform->GetPosition().m128_f32[0],transform->GetPosition().m128_f32[1], transform->GetPosition().m128_f32[2]},
+										{transform->GetRotation().m128_f32[0], transform->GetRotation().m128_f32[1], transform->GetRotation().m128_f32[2]}
+			,{1,1,1} };
 
 		const GameObject* root = transform->GetRoot();
 
@@ -76,7 +78,7 @@ namespace NARCO
 			
 			rotation = XMQuaternionRotationRollPitchYaw(rotation.m128_f32[0], rotation.m128_f32[1], rotation.m128_f32[2]);
 			
-			XMMATRIX mat = XMMatrixAffineTransformation(scale, originRotation, rotation, position);
+			XMMATRIX mat = XMMatrixAffineTransformation(scale, originRotation, rotation, originPosition - position);
 			transform->SetMatrix(mat);
 		}
 		

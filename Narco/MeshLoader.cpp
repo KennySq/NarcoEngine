@@ -67,10 +67,12 @@ namespace NARCO
 		FbxScene* scene = FbxScene::Create(manager, "Scene");
 		importer->Import(scene);
 
+		fbxsdk::FbxAxisSystem::DirectX.ConvertScene(scene);
+
 		FbxGeometryConverter geometryConverter(manager);
 		geometryConverter.Triangulate(scene, true);
-		//fbxsdk::FbxAxisSystem sceneAxis = scene->GetGlobalSettings().GetAxisSystem();
-		//fbxsdk::FbxAxisSystem::MayaYUp.ConvertScene(scene);
+
+
 		auto nodeCount = scene->GetNodeCount();
 		FbxNode* rootNode = scene->GetRootNode();
 
@@ -129,7 +131,7 @@ namespace NARCO
 
 						if (mesh->GetElementUVCount() >= 1)
 						{
-							uv = fbx_getTexcoords(mesh, controlPointIndex, mesh->GetTextureUVIndex(i, j));
+							uv = fbx_getTexcoords(mesh, controlPointIndex, i * polyVertexCount + j);
 						}
 
 						Vertex_Static vertex;
@@ -435,20 +437,14 @@ namespace NARCO
 		{
 			switch (vertexUV->GetReferenceMode())
 			{
-			case FbxGeometryElement::eDirect:
-			{
-				result.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(texcoordIndex).mData[0]);
-				result.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(texcoordIndex).mData[1]);
-			}
-			break;
 
-			case FbxGeometryElement::eIndexToDirect:
-			{
-				int index = vertexUV->GetIndexArray().GetAt(texcoordIndex);
-				result.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[0]);
-				result.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[1]);
-			}
-			break;
+				case FbxGeometryElement::eIndexToDirect:
+				{
+					int index = vertexUV->GetIndexArray().GetAt(texcoordIndex);
+					result.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[0]);
+					result.y = 1.0f - static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[1]);
+				}
+				break;
 			}
 		}
 		break;

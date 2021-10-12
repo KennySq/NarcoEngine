@@ -1,9 +1,9 @@
 #include"../inc/GUI_Material.h"
-
+#include<Asset.h>
 namespace NARCO
 {
-	GUI_Material::GUI_Material(Material* material)
-		: mMaterial(material)
+	GUI_Material::GUI_Material(Material* material, ID3D11Device* device)
+		: mMaterial(material), mDevice(device)
 	{
 		
 		
@@ -70,54 +70,62 @@ namespace NARCO
 		static D3D11_BUFFER_DESC bufferDesc{};
 		
 
-		for (auto i : constRegisters)
-		{
-			auto variables = i.second->VariableNames;
-			auto buffer = i.second->Buffer.Get();
-			uint size;
-			//const MaterialInput& input = mConstantVariables[buffer];
-			
-			buffer->GetDesc(&bufferDesc);
+		//for (auto i : constRegisters)
+		//{
+		//	auto variables = i.second->VariableNames;
+		//	auto buffer = i.second->Buffer.Get();
+		//	uint size;
+		//	//const MaterialInput& input = mConstantVariables[buffer];
+		//	
+		//	buffer->GetDesc(&bufferDesc);
 
-			for (auto j : variables)
-			{
-				const MaterialInput& input = mConstantVariables[j.first];
-				ePropertyDimension dim = j.second.Dimension;
+		//	for (auto j : variables)
+		//	{
+		//		const MaterialInput& input = mConstantVariables[j.first];
+		//		ePropertyDimension dim = j.second.Dimension;
 
-				if (dim == DIMENSION_FLOAT4X4)
-				{
-					XMFLOAT4X4* mat = reinterpret_cast<XMFLOAT4X4*>(input.Data);
+		//		if (dim == DIMENSION_FLOAT4X4)
+		//		{
+		//			XMFLOAT4X4* mat = reinterpret_cast<XMFLOAT4X4*>(input.Data);
 
-					std::string label1 = (j.first + std::string("_0"));
-					std::string label2 = (j.first + std::string("_1"));
-					std::string label3 = (j.first + std::string("_2"));
-					std::string label4 = (j.first + std::string("_3"));
+		//			std::string label1 = (j.first + std::string("_0"));
+		//			std::string label2 = (j.first + std::string("_1"));
+		//			std::string label3 = (j.first + std::string("_2"));
+		//			std::string label4 = (j.first + std::string("_3"));
 
-					bool changed0 = ImGui::InputFloat4(label1.c_str(), mat->m[0]);
-					bool changed1 = ImGui::InputFloat4(label2.c_str(), mat->m[1]);
-					bool changed2 = ImGui::InputFloat4(label3.c_str(), mat->m[2]);
-					bool changed3 = ImGui::InputFloat4(label4.c_str(), mat->m[3]);
+		//			bool changed0 = ImGui::InputFloat4(label1.c_str(), mat->m[0]);
+		//			bool changed1 = ImGui::InputFloat4(label2.c_str(), mat->m[1]);
+		//			bool changed2 = ImGui::InputFloat4(label3.c_str(), mat->m[2]);
+		//			bool changed3 = ImGui::InputFloat4(label4.c_str(), mat->m[3]);
 
-					if (changed0 || changed1 || changed2 || changed3)
-					{
-						mMaterial->UpdateConstant(mat, i.first);
-					}
+		//			if (changed0 || changed1 || changed2 || changed3)
+		//			{
+		//				mMaterial->UpdateConstant(mat, i.first);
+		//			}
 
 
-					ImGui::Separator();
-				}
-			}
-				
-		}
+		//			ImGui::Separator();
+		//		}
 
+		//	}
+		//		
+		//}
+		static bool* bOpen = new bool[textureRegisters.size()];
+		uint texIndex = 0;
 		for (auto t : textureRegisters)
 		{
-			long long hash = t.first;
-			MP* mp = t.second;
+			if (ImGui::Button(t.second->Name))
+			{
+				bOpen[texIndex] = !bOpen[texIndex];
+			}
+			ImGui::NewLine();
 
+			if (bOpen[texIndex] == true)
+			{
+				loadTexture(t.second);
+			}
 
-			//ImGui::Image()
-			
+			texIndex++;
 		}
 
 		return;
@@ -128,6 +136,23 @@ namespace NARCO
 	}
 	NARCO_API void GUI_Material::End()
 	{
+		return;
+	}
+	NARCO_API void GUI_Material::loadTexture(MaterialProperty* mp)
+	{
+		static GUI_FileSlot slot = GUI_FileSlot(ASSET_IMAGE, mDevice);
+
+		slot.Update();
+
+		ImGui_Texture* texture = slot.GetImage();
+		if (texture != nullptr)
+		{
+			ID3D11ShaderResourceView* srv = texture->GetSRV();
+			mp->SetSRV(srv);
+		}
+
+		
+
 		return;
 	}
 }

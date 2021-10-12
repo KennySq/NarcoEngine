@@ -5,8 +5,12 @@
 #include"Mesh.h"
 
 #include<fbxsdk.h>
+#include<fbxsdk\scene\fbxaxissystem.h>
 
-#pragma comment(lib, "libfbxsdk.lib")
+#pragma comment(lib, "libfbxsdk-md.lib")
+#pragma comment(lib, "libxml2-md.lib")
+#pragma comment(lib, "zlib-md.lib")
+#define FBXSDK_SHARED
 
 namespace NARCO
 {

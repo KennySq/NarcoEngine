@@ -4,6 +4,7 @@
 
 #include"IGUI.h"
 #include"ImGui_Texture.h"
+#include"GUI_FileSlot.h"
 
 namespace NARCO
 {
@@ -32,16 +33,19 @@ namespace NARCO
 
 	class GUI_Material : public IGUI
 	{
-		PUBLIC_API NARCO_API GUI_Material(Material* material);
+		PUBLIC_API NARCO_API GUI_Material(Material* material, ID3D11Device* device);
 		PUBLIC_API NARCO_API virtual ~GUI_Material();
 		PUBLIC_API virtual NARCO_API void Start() override;
 		PUBLIC_API virtual NARCO_API void Update() override;
 		PUBLIC_API virtual NARCO_API void Draw() override;
 		PUBLIC_API virtual NARCO_API void End() override;
 		
-		PRIVATE_PROPERTY Material* mMaterial = nullptr;
+		PRIVATE_API NARCO_API void loadTexture(MaterialProperty* mp);
 
-		std::map<const char*, MaterialInput> mConstantVariables;
+		PRIVATE_PROPERTY ID3D11Device* mDevice;
+		PRIVATE_PROPERTY Material* mMaterial = nullptr;
+		PRIVATE_PROPERTY std::map<const char*, MaterialInput> mConstantVariables;
+
 
 	};
 }

@@ -1,4 +1,6 @@
 #include"GUI_FileSlot.h"
+#include<Common.h>
+#include<Asset.h>
 
 namespace NARCO
 {
@@ -18,6 +20,12 @@ namespace NARCO
 			mbOpenBrowser = !mbOpenBrowser;
 		}
 
+		if (mImage != nullptr)
+		{
+			ImGui::NewLine();
+			ImGui::Image(mImage->GetSRV(), ImVec2(100, 100));
+		}
+
 		if (mbOpenBrowser == true)
 		{
 			fileBrowse();
@@ -30,8 +38,8 @@ namespace NARCO
 	{
 	}
 
-	NARCO_API GUI_FileSlot::GUI_FileSlot(eAssetType type)
-		: mFilePath(""), mType(type)
+	NARCO_API GUI_FileSlot::GUI_FileSlot(eAssetType type, ID3D11Device* device)
+		: mFilePath(""), mType(type), mDevice(device)
 	{
 	}
 
@@ -47,9 +55,34 @@ namespace NARCO
 	NARCO_API void GUI_FileSlot::End()
 	{
 	}
-	NARCO_API void GUI_FileSlot::loadFile(const char* path)
+	NARCO_API void GUI_FileSlot::loadFile(ID3D11Device* device)
 	{
-		
+		if (mFilePath == "")
+		{
+			Debug::Log("invalid path. => \"" + mFilePath + '\"');
+			return;
+		}
+
+		if (mType == ASSET_IMAGE)
+		{
+			ComPtr<ID3D11ShaderResourceView> view;
+			ComPtr<ID3D11Texture2D> texture;
+
+			ImGui_Texture* tex = new ImGui_Texture(device, mFilePath.c_str());
+			
+			if (tex->GetSRV() == nullptr)
+			{
+				Debug::Log("invalid file pointer.");
+				return;
+			}
+
+			if (mImage != nullptr)
+			{
+				delete mImage;
+			}
+			
+			mImage = tex;
+		}
 	}
 	NARCO_API bool GUI_FileSlot::fileBrowse()
 	{
@@ -179,7 +212,7 @@ namespace NARCO
 						mFilePath += label;
 
 						std::cout << "Selected File : " << mFilePath << std::endl;
-
+						loadFile(mDevice);
 					}
 
 
@@ -187,7 +220,6 @@ namespace NARCO
 			}
 		}
 		
-		//ImGui::TextWrapped("%s", str.str().c_str());
 		ImGui::End();
 		return true;
 	}

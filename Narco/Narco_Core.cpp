@@ -34,6 +34,7 @@ namespace NARCO
 		mSelectedScene = new Scene("Sample Scene", context, this);
 
 		GameObject* shiba = mSelectedScene->AddGameObject(new Shiba());
+		GameObject* dragon = mSelectedScene->AddGameObject()
 		GameObject* mainCamera = mSelectedScene->AddGameObject(new GameObject("Main Camera"));
 
 		Camera* mainCam = mainCamera->AddComponent<Camera>();
@@ -49,7 +50,7 @@ namespace NARCO
 		mMainCanvas->AddFrame(new GUI_Frame("Color Picker", 400,300, ImGuiWindowFlags_NoResize));
 		mMainCanvas->AddFrame(new GUI_Frame("Asset Browser", 1100, 400, ImGuiWindowFlags_NoResize));
 		mMainCanvas->AddFrame(new GUI_Frame("Inspector", 400, 800, ImGuiFocusedFlags_None));
-
+		mMainCanvas->AddFrame(new GUI_Frame("Material", 400, 800, ImGuiFocusedFlags_None));
 
 	}
 	void Narco_Deferred_Legacy::PreInit()
@@ -62,17 +63,21 @@ namespace NARCO
 		auto frame2 = mMainCanvas->GetFrame(1);
 		auto frame3 = mMainCanvas->GetFrame(2);
 		auto frame4 = mMainCanvas->GetFrame(3);
+		auto frame5 = mMainCanvas->GetFrame(4);
 
 		AssetManager* assetManager = new AssetManager("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/app/assets");
 		
 		GameObject* shiba = mSelectedScene->GetGameObject(0);
+		Renderer* shibaRenderer = shiba->GetComponent<Renderer>();
+		Material* shibaMat = shibaRenderer->GetMaterial();
 
-		frame->AddGUI("FileSlot_01", new GUI_FileSlot(ASSET_IMAGE));
+		frame->AddGUI("FileSlot_01", new GUI_FileSlot(ASSET_IMAGE, device));
 		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
 		frame3->AddGUI("AssetBrowser_01", new GUI_AssetManager(assetManager, device));
 		frame4->AddGUI("Inspector_01", new GUI_GameObject(shiba));
+		
 
-
+		frame5->AddGUI("Material_01", new GUI_Material(shibaMat, device));
 
 	}
 	void Narco_Deferred_Legacy::Init()
@@ -95,7 +100,7 @@ namespace NARCO
 		static GUI_ColorPicker* gui_ColorPicker = static_cast<GUI_ColorPicker*>(frame_ColorPicker->GetGUI("ColorPicker_01"));
 		
 		clearScreen(gui_ColorPicker->GetColor4());
-		mGBuffer->ClearBuffer(context);
+		mGBuffer->ClearBuffer(context, gui_ColorPicker->GetColor4());
 		context->OMSetRenderTargets(mGBuffer->GetBufferCount(), rtv, dsv);
 		
 		

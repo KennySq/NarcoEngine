@@ -27,12 +27,12 @@ namespace NARCO
 
 		static NARCO_API ID3D11Device* GetDevice()
 		{
-			D3DHW* inst = GetInstance();
+			static D3DHW* inst = D3DHardware::GetInstance();
 			return inst->mDevice.Get();
 		}
 		static NARCO_API ID3D11DeviceContext* GetImmediateContext()
 		{
-			D3DHW* inst = GetInstance();
+			static D3DHW* inst = D3DHardware::GetInstance();
 			return inst->mImmediateContext.Get();
 		}
 

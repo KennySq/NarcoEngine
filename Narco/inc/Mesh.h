@@ -109,8 +109,6 @@ namespace std
 			size_t uvy = h(v.mTexcoord.y);
 
 			return (posx ^ posy ^ posz ^ normx ^ normy ^ normz ^ binormx ^ binormy ^ binormz ^ tanx ^ tany ^ tanz ^ uvx ^ uvy);
-			//return (uvy ^ uvx ^ tanz ^ tany ^ tanx ^ binormz ^ binormy ^ binormx ^ normz ^ normy ^ normx ^ posz ^ posy ^ posx) << 1;
-			//return (posx ^ posy ^ posz);
 		}
 	};
 }

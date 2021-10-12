@@ -15,7 +15,7 @@ namespace NARCO
 		PUBLIC_API virtual NARCO_API void Draw() override;
 		PUBLIC_API virtual NARCO_API void End() override;
 
-		PRIVATE_API NARCO_API void drawTransform(Transform* transform);
+		PRIVATE_API NARCO_API void guiTransform(Transform* transform);
 
 
 		PRIVATE_PROPERTY GameObject* mGameObject;
