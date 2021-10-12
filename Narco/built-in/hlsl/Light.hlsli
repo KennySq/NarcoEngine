@@ -14,5 +14,5 @@ struct DirectionalLight
     float4 mColor;
 };
 
-StructuredBuffer<PointLight> PointLightBuffer : register(t0);
-StructuredBuffer<DirectionalLight> DirectionalLightBuffer : register(t1);
+StructuredBuffer<PointLight> PointLightBuffer;
+StructuredBuffer<DirectionalLight> DirectionalLightBuffer;

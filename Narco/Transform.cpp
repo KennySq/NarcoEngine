@@ -86,6 +86,12 @@ namespace NARCO
 		mMatrix._22 = y;
 		mMatrix._33 = z;
 	}
+	void Transform::SetPosition(float x, float y, float z)
+	{
+		mMatrix._14 = x;
+		mMatrix._24 = y;
+		mMatrix._34 = z;
+	}
 	void Transform::start()
 	{
 	}

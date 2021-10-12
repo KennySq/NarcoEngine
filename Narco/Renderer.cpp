@@ -30,12 +30,12 @@ namespace NARCO
 	}
 	void Renderer::stage_UpdateReservedResources(const Material* material, const Shader* shader)
 	{
-		static auto& bufferMap = material->GetBuffers();
-		static long long constantHash = MakeHash("Constants");
+		auto& bufferMap = material->GetBuffers();
+		long long constantHash = MakeHash("Constants");
 
-		static ID3D11Buffer* worldBuffer = mTransform->GetBuffer();
-		static ID3D11Buffer* projectionBuffer = mRenderCamera->GetProjectionBuffer();
-		static ID3D11Buffer* viewBuffer = mRenderCamera->GetViewBuffer();
+		ID3D11Buffer* worldBuffer = mTransform->GetBuffer();
+		ID3D11Buffer* projectionBuffer = mRenderCamera->GetProjectionBuffer();
+		ID3D11Buffer* viewBuffer = mRenderCamera->GetViewBuffer();
 
 
 		auto constantItr = bufferMap.find(constantHash);
@@ -309,7 +309,7 @@ namespace NARCO
 
 	void Renderer::update(float delta)
 	{
-		static ID3D11ShaderResourceView* nullSrv[] = { nullptr };
+		static ID3D11ShaderResourceView* nullSrv[1] = { nullptr };
 		static ID3D11RenderTargetView* nullRtv[] = { nullptr };
 
 		const Material* material = mMaterial;
@@ -324,6 +324,17 @@ namespace NARCO
 
 		unsigned int indexCount = mesh->GetIndexCount();
 
+		const Scene* scene = mRoot->GetScene();
+		Narco_Deferred_Legacy* rp = scene->GetRP();
+		GBuffer* gbuffer = rp->GetGBuffer();
+
+		//mContext->OMSetRenderTargets(1, nullRtv, nullptr);
+		//mContext->PSSetShaderResources(0, 1, &nullSrv[0]);
+
+
+		mContext->OMSetRenderTargets(gbuffer->GetBufferCount(), gbuffer->GetRenderTargets(), gbuffer->GetDepthStencil());
+
+
 		stage_UpdateReservedResources(material, shader);
 		stage_InputAssembly(mesh, shader);
 		stage_Vertex(material, shader);
@@ -332,11 +343,11 @@ namespace NARCO
 		stage_Hull(material, shader);
 		stage_Pixel(material, shader);
 
-		mContext->RSSetState(rsState);
+		//mContext->RSSetState(rsState);
 		
 		mContext->DrawIndexed(indexCount, 0, 0);
 
-		mContext->PSSetShaderResources(0, 1, nullSrv);
+		mContext->PSSetShaderResources(0, 1, &nullSrv[0]);
 		mContext->OMSetRenderTargets(1, nullRtv, nullptr);
 	}
 

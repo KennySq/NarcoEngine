@@ -18,6 +18,7 @@ namespace NARCO
 		void Rotate(XMVECTOR offset);
 
 		void SetScale(float x, float y, float z);
+		void SetPosition(float x, float y, float z);
 
 		XMMATRIX GetMatrix() const { return XMLoadFloat4x4(&mMatrix); }
 		void SetMatrix(XMMATRIX matrix) { XMStoreFloat4x4(&mMatrix, XMMatrixTranspose(matrix)); }

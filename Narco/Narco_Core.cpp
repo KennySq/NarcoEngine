@@ -1,5 +1,7 @@
 #include "inc/Narco_Core.h"
 
+#include"inc\Dragon.h"
+
 using namespace NARCO;
 
 namespace NARCO
@@ -34,7 +36,7 @@ namespace NARCO
 		mSelectedScene = new Scene("Sample Scene", context, this);
 
 		GameObject* shiba = mSelectedScene->AddGameObject(new Shiba());
-		GameObject* dragon = mSelectedScene->AddGameObject()
+		GameObject* dragon = mSelectedScene->AddGameObject(new Dragon());
 		GameObject* mainCamera = mSelectedScene->AddGameObject(new GameObject("Main Camera"));
 
 		Camera* mainCam = mainCamera->AddComponent<Camera>();
@@ -71,10 +73,12 @@ namespace NARCO
 		Renderer* shibaRenderer = shiba->GetComponent<Renderer>();
 		Material* shibaMat = shibaRenderer->GetMaterial();
 
+		GameObject* dragon = mSelectedScene->GetGameObject(1);
+
 		frame->AddGUI("FileSlot_01", new GUI_FileSlot(ASSET_IMAGE, device));
 		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
 		frame3->AddGUI("AssetBrowser_01", new GUI_AssetManager(assetManager, device));
-		frame4->AddGUI("Inspector_01", new GUI_GameObject(shiba));
+		frame4->AddGUI("Inspector_01", new GUI_GameObject(dragon));
 		
 
 		frame5->AddGUI("Material_01", new GUI_Material(shibaMat, device));
@@ -94,6 +98,7 @@ namespace NARCO
 		static ID3D11RenderTargetView* backBuffer[] = { mDisplay->GetRenderTargetView() };
 		static ID3D11DepthStencilView* dsv = mGBuffer->GetDepthStencil();
 		static D3D11_VIEWPORT viewports[] = { mDisplay->GetMainViewport() };
+		static ID3D11ShaderResourceView* nullSrv[6] = { nullptr };
 
 		static GUI_Canvas* canvas = mMainCanvas;
 		static GUI_Frame* frame_ColorPicker = canvas->GetFrame(1);
@@ -101,25 +106,37 @@ namespace NARCO
 		
 		clearScreen(gui_ColorPicker->GetColor4());
 		mGBuffer->ClearBuffer(context, gui_ColorPicker->GetColor4());
-		context->OMSetRenderTargets(mGBuffer->GetBufferCount(), rtv, dsv);
-		
-		
+
+		//context->OMSetRenderTargets(mGBuffer->GetBufferCount(), rtv, dsv);
+		//
+		//
 		context->RSSetViewports(1, viewports);
 
 		mSelectedScene->update(delta);
 
+		context->PSSetShaderResources(0, 6, &nullSrv[0]);
+
 		mGBuffer->DrawScreen(context, backBuffer[0]);
+		context->PSSetShaderResources(0, 6, &nullSrv[0]);
 
 		mMainCanvas->Update();
-		
-		
 
 	}
 	void Narco_Deferred_Legacy::Render(float delta)
 	{
+		static ID3D11DeviceContext* context = mHardware->GetImmediateContext();
+		static ID3D11RenderTargetView* nullRtv[] = { nullptr };
+		static ID3D11ShaderResourceView* nullSrv[6] = { nullptr };
+
+		//context->OMSetRenderTargets(1, nullRtv, nullptr);
 		mSelectedScene->render(delta);
+
 		mMainCanvas->Draw();
 
+		context->OMSetRenderTargets(1, nullRtv, nullptr);
+		context->PSSetShaderResources(0, 6, &nullSrv[0]);
+
+		
 
 		mDisplay->Present();
 		

@@ -3,7 +3,7 @@
 namespace NARCO
 {
 	Camera::Camera()
-		: mFieldOfView(XMConvertToRadians(90.0f)), mFar(1000.0f), mNear(0.01f), mAspectRatio(1.333f)
+		: mFieldOfView(XMConvertToRadians(60.0f)), mFar(1000.0f), mNear(0.01f), mAspectRatio(1.777f)
 	{
 		auto hw = D3DHW::GetInstance();
 		
@@ -53,7 +53,7 @@ namespace NARCO
 		eye = XMVectorSet(-1, 0, 0, 0);
 		up = XMVectorSet(0, 1, 0, 0);
 		at = XMVectorSet(0, 0, 0, 0);
-		XMMATRIX view = XMMatrixTranspose(XMMatrixLookAtLH(eye, at, up));
+		XMMATRIX view = XMMatrixLookAtLH(eye, at, up);
 
 		mTransform->SetMatrix(view);
 

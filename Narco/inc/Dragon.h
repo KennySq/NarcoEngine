@@ -7,6 +7,9 @@ namespace NARCO
 	class Dragon : public Prefab
 	{
 	public:
+		Dragon();
+		~Dragon();
+
 		virtual void awake() override;
 		virtual void start() override;
 		virtual void update(float delta) override;
@@ -14,8 +17,7 @@ namespace NARCO
 		virtual void release() override;
 	
 	private:
-		Dragon();
-		~Dragon();
+
 
 	};
 }

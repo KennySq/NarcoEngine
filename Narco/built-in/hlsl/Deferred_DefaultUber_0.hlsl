@@ -41,7 +41,10 @@ Pixel_Input vert(Vertex_Input input)
 {
 	Pixel_Input output = (Pixel_Input) 0;
 	
-    output.mPosition = mul(float4(input.mPosition, 1.0f), gWorld);
+    float4 pos = float4(input.mPosition.xyz, 1.0f);
+	
+    output.mPosition = mul(pos.xyzw, gWorld);
+
     output.mWorldPosition = output.mPosition;
 	output.mPosition = mul(output.mPosition, gView);
 	output.mPosition = mul(output.mPosition, gProjection);

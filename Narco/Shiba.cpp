@@ -35,7 +35,7 @@ void Shiba::awake()
 
 void Shiba::start()
 {
-	mTransform->Translate(0, 0, 0.125f);
+	mTransform->Translate(-500, 0, 0.125f);
 	mTransform->Rotate(-90, -65, 0);
 
 	GameObject::start();

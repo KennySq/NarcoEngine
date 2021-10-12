@@ -39,10 +39,13 @@ namespace NARCO
 		static ID3D11InputLayout* il = mScreenQuadShader->GetIL();
 		static unsigned int strides[] = { sizeof(Vertex_Quad) };
 		static unsigned int offsets[] = { 0 };
-		static ID3D11ShaderResourceView* nullSrv[] = { nullptr };
+		static ID3D11ShaderResourceView* nullSrv[6] = { nullptr };
 		static ID3D11RenderTargetView* nullRtv[] = { nullptr };
 		static std::vector<ID3D11ShaderResourceView*> bufferSRV;
 		static std::vector<ID3D11ShaderResourceView*> lightSRV;
+
+		//context->OMSetRenderTargets(1, null, nullptr);
+
 
 		uint startIndex = 0;
 
@@ -60,13 +63,13 @@ namespace NARCO
 
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		context->PSSetShaderResources(2, mBufferCount, bufferSRV.data());
+		context->PSSetShaderResources(0, mBufferCount, bufferSRV.data());
 
 		context->OMSetRenderTargets(1, &backBuffer, nullptr);
 
 		context->DrawIndexed(6, 0, 0);
 
-		context->PSSetShaderResources(0, 1, nullSrv);
+		context->PSSetShaderResources(0, mBufferCount, nullSrv);
 		bufferSRV.clear();
 	}
 	void GBuffer::ClearBuffer(ID3D11DeviceContext* context, const float* clearColors)
@@ -75,9 +78,10 @@ namespace NARCO
 		{
 			context->ClearRenderTargetView(mBuffers[i]->GetRenderTarget(), clearColors);
 
-			context->ClearDepthStencilView(mDepth->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		}
+		context->ClearDepthStencilView(mDepth->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+
 
 	}
 }

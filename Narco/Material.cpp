@@ -9,9 +9,12 @@ namespace NARCO
 		D3D11_RASTERIZER_DESC rasterizerDesc = CD3D11_RASTERIZER_DESC();;
 
 		rasterizerDesc.CullMode = D3D11_CULL_NONE;
-		rasterizerDesc.DepthClipEnable = true;
+		rasterizerDesc.DepthClipEnable = false;
 		rasterizerDesc.MultisampleEnable = false;
+		rasterizerDesc.FrontCounterClockwise = true;
 		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+		rasterizerDesc.DepthBiasClamp = 1.0f;
+		
 
 		HRESULT result = mDevice->CreateRasterizerState(&rasterizerDesc, mRasterState.GetAddressOf());
 		if (result != S_OK)
