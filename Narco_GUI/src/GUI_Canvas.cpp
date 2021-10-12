@@ -49,11 +49,8 @@ namespace NARCO
 
 		for (unsigned int i = 0; i < frameCount; i++)
 		{
-
-
 			mGuiFrames[i]->Update();
 		}
-	//	ImGui::EndFrame();
 
 		return;
 	}
