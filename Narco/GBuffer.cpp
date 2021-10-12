@@ -69,7 +69,7 @@ namespace NARCO
 
 		context->DrawIndexed(6, 0, 0);
 
-		context->PSSetShaderResources(0, mBufferCount, nullSrv);
+		context->PSSetShaderResources(0, 1, nullSrv);
 		bufferSRV.clear();
 	}
 	void GBuffer::ClearBuffer(ID3D11DeviceContext* context, const float* clearColors)

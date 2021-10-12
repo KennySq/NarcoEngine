@@ -49,7 +49,7 @@ float4 frag(Pixel_Input input) : SV_Target0
     float4 worldNormal = gWorldNormal.Sample(defaultSampler, input.mTexcoord);
     float4 albedo = gAlbedo.Sample(defaultSampler, input.mTexcoord);
     
-    color = normalize(worldNormal);
+    color = albedo;
     
     return color;
 }

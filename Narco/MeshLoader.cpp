@@ -406,7 +406,7 @@ namespace NARCO
 		}
 
 		const FbxGeometryElementUV* vertexUV = mesh->GetElementUV(0);
-
+		
 		switch (vertexUV->GetMappingMode())
 		{
 		case FbxGeometryElement::eByControlPoint:

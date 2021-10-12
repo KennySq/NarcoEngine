@@ -20,7 +20,7 @@ namespace NARCO
 		uber->Compile(mDevice);
 		Material* uberMat = new Material(uber, mDevice, mContext);
 
-		loader.SetPath("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/ice_dragon/ice_dragon.fbx");
+		loader.SetPath("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/skater/skater.fbx");
 		loader.Load();
 
 		Mesh* mesh = loader.ConvertMesh();
@@ -30,8 +30,6 @@ namespace NARCO
 
 
 		GameObject::awake();
-
-
 	}
 	void Dragon::start()
 	{

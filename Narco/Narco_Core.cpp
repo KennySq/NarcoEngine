@@ -74,6 +74,8 @@ namespace NARCO
 		Material* shibaMat = shibaRenderer->GetMaterial();
 
 		GameObject* dragon = mSelectedScene->GetGameObject(1);
+		Renderer* dragonRenderer = dragon->GetComponent<Renderer>();
+		Material* dragonMat = dragonRenderer->GetMaterial();
 
 		frame->AddGUI("FileSlot_01", new GUI_FileSlot(ASSET_IMAGE, device));
 		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
@@ -81,7 +83,7 @@ namespace NARCO
 		frame4->AddGUI("Inspector_01", new GUI_GameObject(dragon));
 		
 
-		frame5->AddGUI("Material_01", new GUI_Material(shibaMat, device));
+		frame5->AddGUI("Material_01", new GUI_Material(dragonMat, device));
 
 	}
 	void Narco_Deferred_Legacy::Init()
