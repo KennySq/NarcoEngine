@@ -41,7 +41,9 @@ namespace NARCO
 		XMFLOAT3 fbx_getBinormals(const FbxMesh* mesh, int controlPoint, int vertex);
 		XMFLOAT3 fbx_getTangents(const FbxMesh* mesh, int controlPoint, int vertex);
 		XMFLOAT2 fbx_getTexcoords(const FbxMesh* mesh, int controlPoint, int texcoordIndex);
-		void fbx_insertVertex(const XMFLOAT3& position, const XMFLOAT3& normal, const XMFLOAT3& binormal, const XMFLOAT3& tangent, const XMFLOAT2& uv, unsigned int vertexCount);
+		uint fbx_getMaterialID(const FbxMesh* mesh, int polygon);
+		
+		void fbx_insertVertex(const XMFLOAT3& position, const XMFLOAT3& normal, const XMFLOAT3& binormal, const XMFLOAT3& tangent, const XMFLOAT2& uv, int materialID, unsigned int vertexCount);
 
 		std::string mPath;
 		eMeshType mMeshType;
@@ -52,6 +54,7 @@ namespace NARCO
 		std::vector<XMFLOAT3> mBinormals;
 		std::vector<XMFLOAT3> mTangents;
 		std::vector<XMFLOAT2> mTexcoords;
+		std::vector<uint> mMaterialIDs;
 
 		std::vector<Vertex_Static> mVertices;
 		std::vector<unsigned int> mIndices;

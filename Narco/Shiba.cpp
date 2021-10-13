@@ -13,22 +13,16 @@ Shiba::~Shiba()
 
 void Shiba::awake()
 {
-	Shader* uberShader = new Shader("built-in/hlsl/Deferred_DefaultUber_0.hlsl", SHADER_VERTEX | SHADER_PIXEL);
-	uberShader->Compile(mDevice);
-	Material* uberMaterial = new Material(uberShader, mDevice, mContext);
+	const Scene* scene = GetScene();
 
+	Shader* uberShader = scene->GetShader("Deferred_DefaultUber_0.hlsl");
+	Material * uberMaterial = new Material(uberShader, mDevice, mContext);
 
-	MeshLoader loader(mDevice);
-
-	loader.SetPath("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/shiba/shiba.fbx");
-	loader.Load();
-
-	Mesh* mesh_shiba = loader.ConvertMesh();
+	Mesh* mesh_shiba = scene->GetMesh("shiba.fbx");
 
 	Renderer* shibaRenderer = AddComponent<Renderer>();
 	shibaRenderer->SetMesh(mesh_shiba);
-	shibaRenderer->SetMaterial(uberMaterial);
-
+	shibaRenderer->AddMaterial(uberMaterial);
 
 	GameObject::awake();
 }

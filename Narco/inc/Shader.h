@@ -35,7 +35,11 @@ namespace NARCO
 		friend Material;
 	public:
 		Shader(const char* path, unsigned int flags);
+		Shader(const Shader& other);
 		~Shader();
+
+		const std::string& GetPath() const { return mPath; }
+		const std::string& GetFileName() const { return mFileName; }
 
 		HRESULT Compile(ID3D11Device* device);
 
@@ -58,6 +62,7 @@ namespace NARCO
 		eShaderFlag mFlags;
 
 		std::string mPath;
+		std::string mFileName;
 
 		std::vector<ID3D11RenderTargetView*> mPixelRenderTargets;
 

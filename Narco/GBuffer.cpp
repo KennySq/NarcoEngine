@@ -22,7 +22,7 @@ namespace NARCO
 
 		mDepth = new D3DDepthStencil(device, D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_DEFAULT, width, height, 1);
 	
-		mScreenQuadMesh = new Mesh(device, PRIMITIVE_QUAD);
+		mScreenQuadMesh = new Mesh("SCREEN_QUAD", device, PRIMITIVE_QUAD);
 		mScreenQuadShader = new Shader("built-in/hlsl/Deferred_FinalPass.hlsl", SHADER_VERTEX | SHADER_PIXEL);
 		mScreenQuadShader->Compile(device);
 	

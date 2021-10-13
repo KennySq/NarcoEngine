@@ -28,6 +28,19 @@ namespace NARCO
 		mBoundResourceCount = shaderDesc.BoundResources;
 		
 	}
+	Reflector::Reflector(const Reflector& other)
+	{
+		mReflection = other.mReflection;
+
+		for (auto& i : other.mTextures)
+		{
+			MP* mp = new MP(*i.second);
+
+			mTextures.insert_or_assign(i.first, mp);
+		}
+
+
+	}
 	Reflector::~Reflector()
 	{
 	}
@@ -174,6 +187,8 @@ namespace NARCO
 		
 		propBufferDesc.ByteWidth = bufDesc.Size;
 		propBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		propBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		propBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 
 		uint cbufferVariables = bufDesc.Variables;
 		uint cbufferSize = bufDesc.Size;
@@ -306,6 +321,33 @@ namespace NARCO
 	MaterialOutputProperty* Reflector::ReflectRenderTarget(ID3D11Device* device, uint i)
 	{
 		return nullptr;
+	}
+	bool Reflector::Find(const char* name) const
+	{
+		std::string comp1 = name;
+		long long hash = MakeHash(comp1);
+		auto constResult = mConstBuffers.find(hash);
+
+		if (constResult != mConstBuffers.end())
+		{
+			return true;
+		}
+
+		auto textureResult = mTextures.find(hash);
+
+		if (textureResult != mTextures.end())
+		{
+			return true;
+		}
+
+		auto unorderResult = mUnorderedAcceses.find(hash);
+
+		if (unorderResult != mUnorderedAcceses.end())
+		{
+			return true;
+		}
+
+		return false;
 	}
 	void Reflector::AddSRV(MP* mp)
 	{

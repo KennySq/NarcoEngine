@@ -113,6 +113,7 @@ namespace NARCO
 						XMFLOAT3& position = mPositions[controlPointIndex];
 						XMFLOAT3 tangent{};
 						XMFLOAT2 uv{};
+						uint materialID = 0;
 
 						if (mesh->GetElementNormalCount() >= 1)
 						{
@@ -134,15 +135,22 @@ namespace NARCO
 							uv = fbx_getTexcoords(mesh, controlPointIndex, i * polyVertexCount + j);
 						}
 
+						if (mesh->GetElementMaterialCount() >= 1)
+						{
+							materialID = fbx_getMaterialID(mesh, i);
+						}
+
 						Vertex_Static vertex;
+
 
 						vertex.mPosition = position;
 						vertex.mNormal = normal;
 						vertex.mBinormal = binormal;
 						vertex.mTangent = tangent;
 						vertex.mTexcoord = uv;
+						vertex.mMaterialID = materialID;
 
-						fbx_insertVertex(position, normal, binormal, tangent, uv,vertexCount);
+						fbx_insertVertex(position, normal, binormal, tangent, uv, materialID, vertexCount);
 						vertexCount++;
 
 
@@ -454,9 +462,31 @@ namespace NARCO
 		return result;
 	}
 
-	void MeshLoader::fbx_insertVertex(const XMFLOAT3& position, const XMFLOAT3& normal, const XMFLOAT3& binormal, const XMFLOAT3& tangent, const XMFLOAT2& uv, unsigned int vertexCount)
+	uint MeshLoader::fbx_getMaterialID(const FbxMesh* mesh, int polygon)
 	{
-		Vertex_Static vertex = { position , normal, binormal, tangent, uv };
+		uint result = 0;
+
+		for (uint i = 0; i < mesh->GetLayerCount(); i++)
+		{
+			const fbxsdk::FbxLayerElementMaterial* layerMat = mesh->GetLayer(i)->GetMaterials();
+			
+			if (layerMat == nullptr)
+			{
+				continue;
+			}
+
+			result = layerMat->GetIndexArray().GetAt(polygon);
+		}
+
+		mMaterialIDs.emplace_back(result);
+
+		return result;
+
+	}
+
+	void MeshLoader::fbx_insertVertex(const XMFLOAT3& position, const XMFLOAT3& normal, const XMFLOAT3& binormal, const XMFLOAT3& tangent, const XMFLOAT2& uv, int materialID, unsigned int vertexCount)
+	{
+		Vertex_Static vertex = { position , normal, binormal, tangent, uv, materialID };
 
 		auto lookup = mIndexMap.find(vertex);
 
@@ -475,7 +505,9 @@ namespace NARCO
 
 	Mesh* MeshLoader::ConvertMesh() const
 	{
-		Mesh* mesh = new Mesh();
+		std::string fileName = mPath.substr(mPath.find_last_of("/") + 1);
+
+		Mesh* mesh = new Mesh(fileName);
 
 		D3D11_BUFFER_DESC vertexDesc{};
 		D3D11_BUFFER_DESC indexDesc{};

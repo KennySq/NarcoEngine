@@ -5,7 +5,21 @@ namespace NARCO
 	Shader::Shader(const char* path, unsigned int flags)
 		: mPath(path), mFlags((eShaderFlag)flags)
 	{
+		mFileName = mPath.substr(mPath.find_last_of('/') + 1);
+	}
+	Shader::Shader(const Shader& other)
+		: mPath(other.mPath), mFlags(other.mFlags)
+	{
+		mFileName = other.mFileName;
+
+		mVertex = other.mVertex;
+		mGeometry = other.mGeometry;
+		mDomain = other.mDomain;
+		mHull = other.mHull;
+		mPixel = other.mPixel;
+
 		
+
 	}
 	Shader::~Shader()
 	{

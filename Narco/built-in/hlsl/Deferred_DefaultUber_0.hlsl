@@ -3,11 +3,6 @@
 Texture2D<float4> gBaseMap : register(t0);
 Texture2D<float4> gNormalMap : register(t1);
 
-Buffer<float> gMetallic;
-Buffer<float> gSmoothness;
-Buffer<float2> gSomeFloat2;
-Buffer<float3> gSomeFloat3;
-
 struct Vertex_Input
 {
 	float3 mPosition : POSITION0;
@@ -15,6 +10,7 @@ struct Vertex_Input
     float3 mBinormal : BINORMAL0;
     float3 mTangent : TANGENT0;
 	float2 mTexcoord : TEXCOORD0;
+    uint mMaterialID : TEXCOORD1;
 };
 
 struct Pixel_Input
@@ -24,6 +20,7 @@ struct Pixel_Input
 	float4 mNormal : TEXCOORD1;
 	float4 mWorldNormal : TEXCOORD2;
 	float2 mTexcoord : TEXCOORD3;
+    uint mMaterialID : TEXCOORD4;
 };
 
 struct Buffer_Input
@@ -54,6 +51,8 @@ Pixel_Input vert(Vertex_Input input)
 	
  //   output.mTexcoord = float4(mul(input.mTexcoord, (float2x2) gWorld), 1.0f, 1.0f);
     output.mTexcoord = input.mTexcoord.xy;
+	
+    output.mMaterialID = input.mMaterialID;
 	return output;
 }
 
@@ -74,9 +73,15 @@ Buffer_Input frag(Pixel_Input input)
 	output.mWorldNormal = input.mWorldNormal;
 	output.mTexcoord = input.mTexcoord.xy;
 	
-    output.mAlbedo = albedo;
+    //output.mAlbedo = albedo;
+	
+    if (input.mMaterialID == gMaterialID.x)
+    {
+        output.mAlbedo = albedo;
+    }
+
 	
     //output.mNormal = normal;
 	
-	return output;
+        return output;
 };

@@ -63,6 +63,65 @@ namespace NARCO
 
 		return nullptr;
 	}
+	Shader* Scene::AddShader(Shader* shader)
+	{
+		if (shader == nullptr)
+		{
+			Debug::Log("invalid argument.");
+			return nullptr;
+		}
+
+		std::string fileName = shader->GetFileName();
+
+		long long hash = MakeHash(fileName);
+
+		mCacheShaders.insert_or_assign(hash, shader);
+
+		return shader;
+	}
+	Shader* Scene::GetShader(const char* name) const
+	{
+		long long hash = MakeHash(name);
+
+		auto result = mCacheShaders.find(hash);
+
+		if (result == mCacheShaders.end())
+		{
+			Debug::Log(std::string("shader ") + name + " not found.");
+			return nullptr;
+		}
+
+		return result->second;
+	}
+	Mesh* Scene::AddMesh(Mesh* mesh)
+	{
+		if (mesh == nullptr)
+		{
+			Debug::Log("invalid argument");
+			return nullptr;
+		}
+
+		long long hash = MakeHash(mesh->GetFileName());
+
+		mCacheMeshes.insert_or_assign(hash, mesh);
+
+		return mesh;
+
+	}
+	Mesh* Scene::GetMesh(const char* name) const
+	{
+		long long hash = MakeHash(name);
+
+		auto result = mCacheMeshes.find(hash);
+
+		if (result == mCacheMeshes.end())
+		{
+			Debug::Log(std::string("Mesh ") + name + " not found.");
+			return nullptr;
+		}
+
+		return result->second;
+	}
 	void Scene::awake()
 	{
 		for (auto i : mGameObjects)

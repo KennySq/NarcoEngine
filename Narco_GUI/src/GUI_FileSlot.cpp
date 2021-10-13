@@ -39,8 +39,9 @@ namespace NARCO
 	}
 
 	NARCO_API GUI_FileSlot::GUI_FileSlot(eAssetType type, ID3D11Device* device)
-		: mFilePath(""), mType(type), mDevice(device)
+		: mFilePath(""), mType(type), mDevice(device), mItemIndex(0), mBrowserDropSelect(-1), mBrowserDropItr(0)
 	{
+		
 	}
 
 	NARCO_API GUI_FileSlot::~GUI_FileSlot()
@@ -91,10 +92,8 @@ namespace NARCO
 		static auto driveVector = GetDriveStrings();
 		static unsigned int driveCount = driveVector.size();
 		static const char** drives = new const char* [driveCount];
-		static int itemIndex = 0;
+
 		static ImGuiIO& io = ImGui::GetIO();
-		static int browserDropdownSelectedIndex = -1;
-		int browserDropdownIterateIndex = 0;
 
 		static auto lamda_bDoubleClick = []() -> bool
 		{
@@ -113,21 +112,21 @@ namespace NARCO
 			drives[i] = driveVector[i].c_str();
 		}
 
-		if (ImGui::BeginCombo("", drives[itemIndex]))
+		if (ImGui::BeginCombo("", drives[mItemIndex]))
 		{
 			for (unsigned int i = 0; i < driveVector.size(); i++)
 			{
-				static bool bSelected = itemIndex == i;
+				static bool bSelected = mItemIndex == i;
 
 				if (ImGui::Selectable(drives[i], bSelected))
 				{
-					itemIndex = i;
+					mItemIndex = i;
 				}
 
 				if (bSelected)
 				{
 					ImGui::SetItemDefaultFocus();
-					mSelectedPath = drives[itemIndex];
+					mSelectedPath = drives[mItemIndex];
 
 				}
 
@@ -155,7 +154,7 @@ namespace NARCO
 		}
 		ImGui::Separator();
 		
-		for (directory_iterator itr(mSelectedPath); itr != directory_iterator(); ++itr, ++browserDropdownIterateIndex)
+		for (directory_iterator itr(mSelectedPath); itr != directory_iterator(); ++itr, ++mBrowserDropItr)
 		{
 			static ImVec2 itemRectSize;
 			static ImVec2 itemRectMin;
@@ -167,9 +166,9 @@ namespace NARCO
 			std::string labelString = str.str();
 			const char* label = labelString.c_str();
 
-			if (ImGui::Selectable(label, browserDropdownSelectedIndex == browserDropdownIterateIndex))
+			if (ImGui::Selectable(label, mBrowserDropSelect == mBrowserDropItr))
 			{
-				browserDropdownSelectedIndex = browserDropdownIterateIndex;
+				mBrowserDropSelect = mBrowserDropItr;
 
 				itemRectSize = ImGui::GetItemRectSize();
 				itemRectMin = ImGui::GetItemRectMin();
@@ -177,7 +176,7 @@ namespace NARCO
 
 			}
 
-			if (browserDropdownSelectedIndex == browserDropdownIterateIndex)
+			if (mBrowserDropSelect == mBrowserDropItr)
 			{
 				bool bDirectory = itr->is_directory();
 				bool bExists = itr->exists();
@@ -219,6 +218,8 @@ namespace NARCO
 				}
 			}
 		}
+
+		mBrowserDropItr = 0;
 		
 		ImGui::End();
 		return true;

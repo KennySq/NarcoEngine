@@ -33,19 +33,23 @@ namespace NARCO
 
 	class GUI_Material : public IGUI
 	{
-		PUBLIC_API NARCO_API GUI_Material(Material* material, ID3D11Device* device);
+		PUBLIC_API NARCO_API GUI_Material(Material* material, ID3D11Device* device, uint materialIndex);
 		PUBLIC_API NARCO_API virtual ~GUI_Material();
 		PUBLIC_API virtual NARCO_API void Start() override;
 		PUBLIC_API virtual NARCO_API void Update() override;
 		PUBLIC_API virtual NARCO_API void Draw() override;
 		PUBLIC_API virtual NARCO_API void End() override;
 		
-		PRIVATE_API NARCO_API void loadTexture(MaterialProperty* mp);
+		PRIVATE_API NARCO_API void loadTexture(GUI_FileSlot* slot, MaterialProperty* mp);
 
 		PRIVATE_PROPERTY ID3D11Device* mDevice;
 		PRIVATE_PROPERTY Material* mMaterial = nullptr;
 		PRIVATE_PROPERTY std::map<const char*, MaterialInput> mConstantVariables;
+		PRIVATE_PROPERTY uint mMaterialIndex;
 
+		PRIVATE_PROPERTY std::vector<GUI_FileSlot> mGUIFileSlots;
+
+		bool* bTextureLoadOpen;
 
 	};
 }

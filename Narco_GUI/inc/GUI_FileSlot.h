@@ -31,6 +31,12 @@ namespace NARCO
 
 		PRIVATE_PROPERTY ImGui_Texture* mImage = nullptr;
 		PRIVATE_PROPERTY ID3D11Device* mDevice;
+
+		PRIVATE_PROPERTY int mItemIndex = 0;
+		PRIVATE_PROPERTY int mBrowserDropSelect = -1;
+		PRIVATE_PROPERTY int mBrowserDropItr = 0;
+
+
 		
 	};
 }

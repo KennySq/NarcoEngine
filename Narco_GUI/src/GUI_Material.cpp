@@ -2,8 +2,8 @@
 #include<Asset.h>
 namespace NARCO
 {
-	GUI_Material::GUI_Material(Material* material, ID3D11Device* device)
-		: mMaterial(material), mDevice(device)
+	GUI_Material::GUI_Material(Material* material, ID3D11Device* device, uint materialIndex)
+		: mMaterial(material), mDevice(device), mMaterialIndex(materialIndex)
 	{
 		
 		
@@ -59,6 +59,12 @@ namespace NARCO
 
 
 		}
+
+		bTextureLoadOpen = new bool[textureRegisters.size()];
+		for (uint i = 0; i < textureRegisters.size(); i++)
+		{
+			mGUIFileSlots.emplace_back(GUI_FileSlot(ASSET_IMAGE, mDevice));
+		}
 	}
 	NARCO_API void GUI_Material::Update()
 	{
@@ -110,23 +116,31 @@ namespace NARCO
 		//	}
 		//		
 		//}
-		static bool* bOpen = new bool[textureRegisters.size()];
 		uint texIndex = 0;
+		std::string set = std::string("set ") + std::to_string(mMaterialIndex);
+		
+		ImGui::PushID(set.c_str());
+
 		for (auto t : textureRegisters)
 		{
+			ImGui::PushID(texIndex);
 			if (ImGui::Button(t.second->Name))
 			{
-				bOpen[texIndex] = !bOpen[texIndex];
+				bTextureLoadOpen[texIndex] = !bTextureLoadOpen[texIndex];
 			}
 			ImGui::NewLine();
 
-			if (bOpen[texIndex] == true)
+			if (bTextureLoadOpen[texIndex] == true)
 			{
-				loadTexture(t.second);
+				loadTexture(&mGUIFileSlots[texIndex], t.second);
 			}
 
 			texIndex++;
+
+			ImGui::PopID();
 		}
+
+		ImGui::PopID();
 
 		return;
 	}
@@ -138,13 +152,12 @@ namespace NARCO
 	{
 		return;
 	}
-	NARCO_API void GUI_Material::loadTexture(MaterialProperty* mp)
+	NARCO_API void GUI_Material::loadTexture(GUI_FileSlot* slot, MaterialProperty* mp)
 	{
-		static GUI_FileSlot slot = GUI_FileSlot(ASSET_IMAGE, mDevice);
+		
+		slot->Update();
 
-		slot.Update();
-
-		ImGui_Texture* texture = slot.GetImage();
+		ImGui_Texture* texture = slot->GetImage();
 		if (texture != nullptr)
 		{
 			ID3D11ShaderResourceView* srv = texture->GetSRV();

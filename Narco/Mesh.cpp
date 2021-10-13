@@ -2,10 +2,12 @@
 
 namespace NARCO
 {
-	Mesh::Mesh()
+	Mesh::Mesh(const std::string& fileName)
+		: mFileName(fileName)
 	{
 	}
-	Mesh::Mesh(ID3D11Device* device, eMeshPrimitive primitiveTag)
+	Mesh::Mesh(const std::string& fileName, ID3D11Device* device, eMeshPrimitive primitiveTag)
+		: mFileName(fileName)
 	{
 		if (primitiveTag == PRIMITIVE_QUAD)
 		{

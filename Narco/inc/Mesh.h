@@ -11,6 +11,7 @@ namespace NARCO
 		XMFLOAT3 mBinormal;
 		XMFLOAT3 mTangent;
 		XMFLOAT2 mTexcoord;
+		uint mMaterialID;
 
 		friend std::hash<Vertex_Static>;
 		bool operator==(const Vertex_Static& v2) const
@@ -54,8 +55,8 @@ namespace NARCO
 		friend MeshLoader;
 
 	public:
-		Mesh();
-		Mesh(ID3D11Device* device, eMeshPrimitive primitiveTag);
+		Mesh(const std::string& fileName);
+		Mesh(const std::string& fileName, ID3D11Device* device, eMeshPrimitive primitiveTag);
 		Mesh(const Mesh& mesh) = delete;
 		Mesh(const Mesh&&) = delete;
 
@@ -63,10 +64,14 @@ namespace NARCO
 		ID3D11Buffer* GetIndex() const { return mIndex.Get(); }
 
 		unsigned int GetStride() const { return mStride; }
-
 		unsigned int GetIndexCount() const { return mIndexCount; }
 
+		const std::string& GetFileName() const { return mFileName; }
+
 	private:
+
+		std::string mFileName;
+
 		ComPtr<ID3D11Buffer> mVertex;
 		ComPtr<ID3D11Buffer> mIndex;
 

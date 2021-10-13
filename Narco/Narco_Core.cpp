@@ -1,6 +1,7 @@
 #include "inc/Narco_Core.h"
 
-#include"inc\Dragon.h"
+#include"inc/Dragon.h"
+#include"inc/Skater.h"
 
 using namespace NARCO;
 
@@ -13,30 +14,44 @@ namespace NARCO
 		ID3D11Device* device = D3DHardware::GetDevice();
 		ID3D11DeviceContext* context = D3DHardware::GetImmediateContext();
 
-
-
 		unsigned int width = NARCO_INIT_APP_WIDTH;
 		unsigned int height = NARCO_INIT_APP_HEIGHT;
 
-
-
 		mGBuffer = new GBuffer(device, width, height);
 
-
-
 		// 테스트 코드 영역입니다.
-
-		//MeshLoader debugLoader(device);
-
-		//debugLoader.SetPath("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/ice_dragon/ice_dragon.fbx");
-		//debugLoader.Load();
-
-		//Mesh* mesh_dragon = debugLoader.ConvertMesh();
-
 		mSelectedScene = new Scene("Sample Scene", context, this);
+
+		Shader* uberShader = new Shader("built-in/hlsl/Deferred_DefaultUber_0.hlsl", SHADER_VERTEX | SHADER_PIXEL);
+		uberShader->Compile(device);
+		mSelectedScene->AddShader(uberShader);
+
+	//	MeshLoader shibaLoader(device);
+		MeshLoader dragonLoader(device);
+		MeshLoader skaterLoader(device);
+
+		//shibaLoader.SetPath("x64/Debug/resources/shiba/shiba.fbx");
+		//shibaLoader.Load();
+
+		dragonLoader.SetPath("x64/Debug/resources/dragon-high.fbx");
+		//dragonLoader.Load();
+
+		skaterLoader.SetPath("x64/Debug/resources/skater/model/skater.fbx");
+		skaterLoader.Load();
+
+		//mSelectedScene->AddMesh(shibaLoader.ConvertMesh());
+		//mSelectedScene->AddMesh(dragonLoader.ConvertMesh());
+		mSelectedScene->AddMesh(skaterLoader.ConvertMesh());
+		
+
+
+
+	//	mSelectedScene->AddMesh()
 
 		GameObject* shiba = mSelectedScene->AddGameObject(new Shiba());
 		GameObject* dragon = mSelectedScene->AddGameObject(new Dragon());
+		GameObject* skater = mSelectedScene->AddGameObject(new Skater());
+		
 		GameObject* mainCamera = mSelectedScene->AddGameObject(new GameObject("Main Camera"));
 
 		Camera* mainCam = mainCamera->AddComponent<Camera>();
@@ -71,19 +86,24 @@ namespace NARCO
 		
 		GameObject* shiba = mSelectedScene->GetGameObject(0);
 		Renderer* shibaRenderer = shiba->GetComponent<Renderer>();
-		Material* shibaMat = shibaRenderer->GetMaterial();
+		Material* shibaMat = shibaRenderer->GetMaterial(0);
 
 		GameObject* dragon = mSelectedScene->GetGameObject(1);
 		Renderer* dragonRenderer = dragon->GetComponent<Renderer>();
-		Material* dragonMat = dragonRenderer->GetMaterial();
+		Material* dragonMat = dragonRenderer->GetMaterial(0);
+
+		GameObject* skater = mSelectedScene->GetGameObject(2);
+		Renderer* skaterRenderer = skater->GetComponent<Renderer>();
+		Material* skaterMat = skaterRenderer->GetMaterial(0);
+		Material* skaterMat2 = skaterRenderer->GetMaterial(1);
 
 		frame->AddGUI("FileSlot_01", new GUI_FileSlot(ASSET_IMAGE, device));
 		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
 		frame3->AddGUI("AssetBrowser_01", new GUI_AssetManager(assetManager, device));
-		frame4->AddGUI("Inspector_01", new GUI_GameObject(dragon));
+		frame4->AddGUI("Inspector_01", new GUI_GameObject(skater));
 		
-
-		frame5->AddGUI("Material_01", new GUI_Material(dragonMat, device));
+		frame5->AddGUI("Material_01", new GUI_Material(skaterMat, device, 0));
+		frame5->AddGUI("Material_02", new GUI_Material(skaterMat2, device, 1));
 
 	}
 	void Narco_Deferred_Legacy::Init()
@@ -109,9 +129,6 @@ namespace NARCO
 		clearScreen(gui_ColorPicker->GetColor4());
 		mGBuffer->ClearBuffer(context, gui_ColorPicker->GetColor4());
 
-		//context->OMSetRenderTargets(mGBuffer->GetBufferCount(), rtv, dsv);
-		//
-		//
 		context->RSSetViewports(1, viewports);
 
 		mSelectedScene->update(delta);

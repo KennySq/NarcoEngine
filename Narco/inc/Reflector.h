@@ -41,6 +41,12 @@ namespace NARCO
 		MaterialProperty(const char* name, const ComPtr<ID3D11ShaderResourceView>& srv, ePropertyType type, ePropertyDimension dimension)
 			: Name(name), Register(srv), PropertyType(type), Dimension(dimension) {}
 
+		MaterialProperty(const MaterialProperty& other)
+			: Name(other.Name), Register(nullptr), PropertyType(other.PropertyType), Dimension(other.Dimension)
+		{
+
+		}
+
 		void SetSRV(ID3D11ShaderResourceView* srv) { Register = srv; }
 
 		ComPtr<ID3D11ShaderResourceView> Register;
@@ -57,6 +63,10 @@ namespace NARCO
 
 		MaterialUnorderProperty(const char* name, const ComPtr<ID3D11UnorderedAccessView>& uav, ePropertyType type, ePropertyDimension dimension)
 			: Name(name), Register(uav), PropertyType(type), Dimension(dimension) {}
+
+		MaterialUnorderProperty(const MaterialUnorderProperty& other)
+			: Name(other.Name), Register(nullptr), PropertyType(other.PropertyType), Dimension(other.Dimension) {}
+
 
 		void SetUAV(ID3D11UnorderedAccessView* uav) { Register = uav; }
 
@@ -111,6 +121,7 @@ namespace NARCO
 	{
 	public:
 		Reflector(ID3D11Device* device, ID3DBlob* blob);
+		Reflector(const Reflector& other);
 		~Reflector();
 
 		ComPtr<ID3D11InputLayout> ReflectInputLayout(ID3D11Device* device, ID3DBlob* blob);
@@ -123,6 +134,8 @@ namespace NARCO
 		uint GetBoundResourceCount() const { return mBoundResourceCount; }
 		uint GetUnorderedCount() const { return mUnorderedCount; }
 		uint GetSamplerCount() const { return mSamplerCount; }
+
+		bool Find(const char* name) const;
 
 		//const auto& GetSRV() const { return mRawTextures; }
 		const auto& GetUAV() const { return mRawUnorderAccesses; }
@@ -158,11 +171,6 @@ namespace NARCO
 		uint mConstantStartIndex = -1;
 		uint mTextureStartIndex = -1;
 		uint mUnorderStartIndex = -1;
-		//std::vector<ID3D11SamplerState*> mSamplerStates;
-		
-		//std::vector<ComPtr<ID3D11ShaderResourceView>> mShaderResources;
-		//std::vector<ComPtr<ID3D11RenderTargetView>> mRenderTargets;
-		//std::vector<ComPtr<ID3D11UnorderedAccessView>> mUnorderedAccess;
 		
 	};
 }

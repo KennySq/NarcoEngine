@@ -19,16 +19,17 @@ namespace NARCO
 	class Renderer : public Component
 	{
 	public:
-		void SetMaterial(Material* material);
+		void AddMaterial(Material* material);
+		void SetMaterial(Material* material, uint index);
 		void SetMesh(Mesh* mesh);
 
-		Material* GetMaterial() const { return mMaterial; }
+		Material* GetMaterial(uint index) const { return mMaterials[index]; }
 		Mesh* GetMesh() const { return mMesh; }
 		Renderer();
 		virtual ~Renderer();
 	private:
 
-		void stage_UpdateReservedResources(const Material* material, const Shader* shader);
+		void stage_UpdateReservedResources(const Material* material, const Shader* shader, uint materialID);
 
 		void stage_InputAssembly(const Mesh* mesh, const Shader* shader);
 
@@ -53,7 +54,7 @@ namespace NARCO
 		ID3D11DeviceContext* mContext;
 		Mesh* mMesh;
 
-		Material* mMaterial;
+		std::vector<Material*> mMaterials;
 		Transform* mTransform;
 
 		Camera* mRenderCamera;

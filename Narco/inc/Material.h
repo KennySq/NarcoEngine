@@ -9,6 +9,7 @@ namespace NARCO
 	{
 	public:
 		Material(Shader* shader, ID3D11Device* device, ID3D11DeviceContext* context);
+		Material(const Material& other);
 		~Material();
 
 		const Shader* GetShader() const { return mShader; }

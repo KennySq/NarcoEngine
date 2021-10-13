@@ -13,21 +13,15 @@ namespace NARCO
 	void Dragon::awake()
 	{
 		Renderer* renderer = AddComponent<Renderer>();
+		const Scene* scene = GetScene();
 
-		MeshLoader loader(mDevice);
-
-		Shader* uber = new Shader("built-in/hlsl/Deferred_DefaultUber_0.hlsl", SHADER_VERTEX | SHADER_PIXEL);
-		uber->Compile(mDevice);
+		Shader* uber = scene->GetShader("Deferred_DefaultUber_0.hlsl");
 		Material* uberMat = new Material(uber, mDevice, mContext);
 
-		loader.SetPath("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/skater/skater.fbx");
-		loader.Load();
-
-		Mesh* mesh = loader.ConvertMesh();
+		Mesh* mesh = scene->GetMesh("dragon-high.fbx");
 
 		renderer->SetMesh(mesh);
-		renderer->SetMaterial(uberMat);
-
+		renderer->AddMaterial(uberMat);
 
 		GameObject::awake();
 	}

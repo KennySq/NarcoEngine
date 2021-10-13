@@ -24,6 +24,12 @@ namespace NARCO
 		}
 
 	}
+	Material::Material(const Material& other)
+		: mShader(new Shader(*other.mShader)), mRasterState(other.mRasterState), mDepthState(other.mDepthState),
+		mConstants(other.mConstants), mDevice(other.mDevice), mContext(other.mContext), mPath(other.mPath)
+	{
+		mShader->Compile(mDevice);
+	}
 	Material::~Material()
 	{
 	}
