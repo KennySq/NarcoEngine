@@ -65,17 +65,20 @@ namespace NARCO
 		MCP* constantProperty = constantItr->second;
 		ID3D11Buffer* constantBuffer = constantProperty->Buffer.Get();
 
-		CBuffer buffer;
+		CBuffer* buffer;
 		D3D11_MAPPED_SUBRESOURCE subData{};
-		subData.pData = &buffer;
 
 		mContext->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subData);
 
-		XMStoreFloat4x4(&buffer.w, mTransform->GetMatrix());
-		XMStoreFloat4x4(&buffer.v, mRenderCamera->GetView());
-		XMStoreFloat4x4(&buffer.p, mRenderCamera->GetProjection());
-		
-		buffer.matID[0] = { materialID };
+
+
+		buffer = reinterpret_cast<CBuffer*>(subData.pData);
+
+		XMStoreFloat4x4(&buffer->w, mTransform->GetMatrix());
+		XMStoreFloat4x4(&buffer->v, mRenderCamera->GetView());
+		XMStoreFloat4x4(&buffer->p, mRenderCamera->GetProjection());
+
+		buffer->matID[0] = { materialID };
 
 		mContext->Unmap(constantBuffer, 0);
 

@@ -61,7 +61,7 @@ namespace NARCO
 		{
 			auto errorStatus = importer->GetStatus();
 			Debug::Log("FbxImporter initialization failed.");
-			throw std::invalid_argument(errorStatus.GetErrorString());
+			return false;
 		}
 
 		FbxScene* scene = FbxScene::Create(manager, "Scene");

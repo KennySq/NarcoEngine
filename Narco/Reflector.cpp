@@ -333,13 +333,6 @@ namespace NARCO
 			return true;
 		}
 
-		auto textureResult = mTextures.find(hash);
-
-		if (textureResult != mTextures.end())
-		{
-			return true;
-		}
-
 		auto unorderResult = mUnorderedAcceses.find(hash);
 
 		if (unorderResult != mUnorderedAcceses.end())
