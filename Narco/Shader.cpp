@@ -70,6 +70,11 @@ namespace NARCO
 			result = D3DCompileFromFile(A2W(path), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "vert", "vs_5_0", compileFlag, 0, &blob, &errBlob);
 			if (result != S_OK)
 			{
+				if (result == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+				{
+					return result;
+				}
+
 				Debug::Log(reinterpret_cast<const char*>(errBlob->GetBufferPointer()));
 				errBlob->Release();
 
