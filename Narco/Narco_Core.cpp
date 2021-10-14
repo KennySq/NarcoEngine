@@ -26,22 +26,26 @@ namespace NARCO
 		uberShader->Compile(device);
 		mSelectedScene->AddShader(uberShader);
 
-	//	MeshLoader shibaLoader(device);
+		Shader* customShader = new Shader("built-in/hlsl/Deferred_CustomUber_0.hlsl", SHADER_VERTEX | SHADER_PIXEL);
+		customShader->Compile(device);
+		mSelectedScene->AddShader(customShader);
+
+		MeshLoader shibaLoader(device);
 		MeshLoader dragonLoader(device);
 		MeshLoader skaterLoader(device);
 
-		//shibaLoader.SetPath("x64/Debug/resources/shiba/shiba.fbx");
-		//shibaLoader.Load();
+		shibaLoader.SetPath("x64/Debug/resources/shiba/shiba.fbx");
+		shibaLoader.Load();
 
 		dragonLoader.SetPath("x64/Debug/resources/dragon-high.fbx");
 		//dragonLoader.Load();
 
-		skaterLoader.SetPath("x64/Debug/resources/skater/model/skater.fbx");
-		skaterLoader.Load();
+		//skaterLoader.SetPath("x64/Debug/resources/skater/model/skater.fbx");
+		//skaterLoader.Load();
 
-		//mSelectedScene->AddMesh(shibaLoader.ConvertMesh());
+		mSelectedScene->AddMesh(shibaLoader.ConvertMesh());
 		//mSelectedScene->AddMesh(dragonLoader.ConvertMesh());
-		mSelectedScene->AddMesh(skaterLoader.ConvertMesh());
+		//mSelectedScene->AddMesh(skaterLoader.ConvertMesh());
 		
 
 
@@ -68,7 +72,7 @@ namespace NARCO
 		mMainCanvas->AddFrame(new GUI_Frame("Asset Browser", 1100, 400, ImGuiWindowFlags_NoResize));
 		mMainCanvas->AddFrame(new GUI_Frame("Inspector", 400, 800, ImGuiFocusedFlags_None));
 		mMainCanvas->AddFrame(new GUI_Frame("Material", 400, 800, ImGuiFocusedFlags_None));
-
+		mMainCanvas->AddFrame(new GUI_Frame("Hierarchy", 400, 800, ImGuiFocusedFlags_None));
 	}
 	void Narco_Deferred_Legacy::PreInit()
 	{
@@ -81,6 +85,7 @@ namespace NARCO
 		auto frame3 = mMainCanvas->GetFrame(2);
 		auto frame4 = mMainCanvas->GetFrame(3);
 		auto frame5 = mMainCanvas->GetFrame(4);
+		auto frame6 = mMainCanvas->GetFrame(5);
 
 		AssetManager* assetManager = new AssetManager("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/app/assets");
 		
@@ -100,11 +105,12 @@ namespace NARCO
 		frame->AddGUI("FileSlot_01", new GUI_FileSlot(ASSET_IMAGE, device));
 		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
 		frame3->AddGUI("AssetBrowser_01", new GUI_AssetManager(assetManager, device));
-		frame4->AddGUI("Inspector_01", new GUI_GameObject(skater));
+		frame4->AddGUI("Inspector_01", new GUI_GameObject(shiba));
 		
-		frame5->AddGUI("Material_01", new GUI_Material(skaterMat, device, 0));
-		frame5->AddGUI("Material_02", new GUI_Material(skaterMat2, device, 1));
-
+		frame5->AddGUI("Material_01", new GUI_Material(shibaMat, device, 0));
+		
+		GUI_GameObject* inspector = static_cast<GUI_GameObject*>(frame4->GetGUI("Inspector_01"));
+		frame6->AddGUI("Hierarchy_01", new GUI_Hierarchy(mSelectedScene, inspector));
 	}
 	void Narco_Deferred_Legacy::Init()
 	{

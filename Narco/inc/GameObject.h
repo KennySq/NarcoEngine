@@ -22,6 +22,8 @@ namespace NARCO
 
 		const Scene* GetScene() const { return mScene; }
 
+		uint GetInstanceID() const { return mInstanceID; }
+
 		void SetTag(const char* tag) { mTag = tag; }
 		const char* GetTag() const { return mTag.c_str(); }
 		const char* GetName() const { return mName.c_str(); }

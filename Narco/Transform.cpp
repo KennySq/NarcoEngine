@@ -45,9 +45,11 @@ namespace NARCO
 	}
 	void Transform::Translate(XMVECTOR offset)
 	{
+
 		XMMATRIX translation = XMMatrixTranslationFromVector(offset);
 
 		XMMATRIX origin = XMLoadFloat4x4(&mMatrix);
+		
 
 		origin *= translation;
 
@@ -61,6 +63,7 @@ namespace NARCO
 
 		XMMATRIX rot = XMMatrixRotationRollPitchYaw(xR, yR, zR);
 		XMMATRIX origin = XMLoadFloat4x4(&mMatrix);
+		
 
 		origin *= rot;
 
@@ -88,9 +91,9 @@ namespace NARCO
 	}
 	void Transform::SetPosition(float x, float y, float z)
 	{
-		mMatrix._14 = x;
-		mMatrix._24 = y;
-		mMatrix._34 = z;
+		mMatrix._41 = x;
+		mMatrix._42 = y;
+		mMatrix._43 = z;
 	}
 	void Transform::start()
 	{
@@ -99,11 +102,13 @@ namespace NARCO
 	{
 		XMVECTOR translation, rotQuat, scale;
 		XMMATRIX mat = XMLoadFloat4x4(&mMatrix);
-		XMMatrixDecompose(&scale, &rotQuat, &translation, mat);
+		XMMatrixDecompose(&scale, &rotQuat, &translation, XMMatrixTranspose(mat));
 
 		XMStoreFloat4(&mPosition, translation);
 		XMStoreFloat4(&mRotation, rotQuat);
 		XMStoreFloat4(&mScale, scale);
+		
+
 
 		mContext->UpdateSubresource(mBuffer.Get(), 0, nullptr, &mMatrix, 0, 0);
 
