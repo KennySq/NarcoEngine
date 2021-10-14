@@ -6,6 +6,9 @@ namespace NARCO
 		: mPath(path), mFlags((eShaderFlag)flags)
 	{
 		mFileName = mPath.substr(mPath.find_last_of('/') + 1);
+		
+
+
 	}
 	Shader::Shader(const Shader& other)
 		: mPath(other.mPath), mFlags(other.mFlags)
@@ -17,8 +20,32 @@ namespace NARCO
 		mDomain = other.mDomain;
 		mHull = other.mHull;
 		mPixel = other.mPixel;
+		mLayout = other.mLayout;
 
-		
+		if (other.mVertexRef != nullptr)
+		{
+			mVertexRef = new Reflector(*other.mVertexRef);
+		}
+
+		if (other.mGeometryRef != nullptr)
+		{
+			mGeometryRef = new Reflector(*other.mGeometryRef);
+		}
+
+		if (other.mDomainRef != nullptr)
+		{
+			mDomainRef = new Reflector(*other.mDomainRef);
+		}
+
+		if (other.mHullRef != nullptr)
+		{
+			mHullRef = new Reflector(*other.mHullRef);
+		}
+
+		if (other.mPixelRef != nullptr)
+		{
+			mPixelRef = new Reflector(*other.mPixelRef);
+		}
 
 	}
 	Shader::~Shader()
@@ -174,6 +201,62 @@ namespace NARCO
 			blob->Release();
 		}
 		
+		auto lamdaReflect = [](Reflector* reflect, ID3D11Device* device)
+		{
+			if (reflect != nullptr)
+			{
+				uint constCount = reflect->GetConstBufferCount();
+				uint resourceCount = reflect->GetBoundResourceCount();
+				uint uaCount = reflect->GetUnorderedCount();
+				uint sampCount = reflect->GetSamplerCount();
+
+				for (uint i = 0; i < constCount; i++)
+				{
+
+
+					MCP* mcp = reflect->ReflectConstantBuffer(device, i);
+
+					if (mcp == nullptr)
+					{
+						continue;
+					}
+
+					if (reflect->Find(mcp->Name) == true)
+					{
+						delete mcp;
+						continue;
+					}
+
+					if (mcp != nullptr)
+					{
+						reflect->AddBuffer(mcp);
+					}
+				}
+
+				for (uint i = 0; i < resourceCount; i++)
+				{
+					MP* mp = reflect->ReflectTexture(device, i);
+
+					if (mp == nullptr)
+					{
+						continue;
+					}
+
+					if (mp != nullptr)
+					{
+						reflect->AddSRV(mp);
+					}
+				}
+			}
+		};
+
+		lamdaReflect(mVertexRef, device);
+		lamdaReflect(mGeometryRef, device);
+		lamdaReflect(mDomainRef, device);
+		lamdaReflect(mHullRef, device);
+		lamdaReflect(mPixelRef, device);
+
+
 		return S_OK;
 	}
 	void Shader::Release()

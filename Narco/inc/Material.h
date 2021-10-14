@@ -22,6 +22,10 @@ namespace NARCO
 		void AddTexture(MP* mp);
 		void AddUnorder(MUP* mup);
 
+		void ClearBuffer() { mConstants.clear(); }
+		void ClearTexture() { mTextures.clear(); }
+		void ClearUnorder() { mUnorders.clear(); }
+
 		const auto& GetBuffers() const { return mConstants; }
 		const auto& GetTextures() const { return mTextures; }
 		const auto& GetUnorders() const { return mUnorders; }
@@ -47,6 +51,7 @@ namespace NARCO
 		std::map<long long, MCP*> mConstants;
 		std::map<long long, MP*> mTextures;
 		std::map<long long, MUP*> mUnorders;
+
 		ID3D11Device* mDevice;
 		ID3D11DeviceContext* mContext;
 		std::string mPath;

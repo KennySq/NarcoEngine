@@ -38,6 +38,11 @@ Pixel_Input vert(Vertex_Input input)
 {
 	Pixel_Input output = (Pixel_Input) 0;
 	
+    if (input.mMaterialID != gMaterialID.x)
+    {
+        return output;
+    }
+	
     float4 pos = float4(input.mPosition.xyz, 1.0f);
 	
     output.mPosition = mul(pos.xyzw, gWorld);
@@ -53,18 +58,21 @@ Pixel_Input vert(Vertex_Input input)
     output.mTexcoord = input.mTexcoord.xy;
 	
     output.mMaterialID = input.mMaterialID;
-	return output;
+	
+
+	
+	
+    return output;
 }
 
 Buffer_Input frag(Pixel_Input input)
 {
 	Buffer_Input output = (Buffer_Input) 0;
-		
+	
     float2 uv = input.mTexcoord.xy;
 	
     float4 albedo = gBaseMap.Sample(defaultSampler, uv);
     float4 normal = gNormalMap.Sample(defaultSampler, uv);
-	
 	
 	output.mProjection = input.mPosition;
     output.mWorldPosition = input.mWorldPosition;
@@ -74,11 +82,8 @@ Buffer_Input frag(Pixel_Input input)
 	output.mTexcoord = input.mTexcoord.xy;
 	
     //output.mAlbedo = albedo;
-	
-    if (input.mMaterialID == gMaterialID.x)
-    {
+
         output.mAlbedo = albedo;
-    }
 
 	
     //output.mNormal = normal;

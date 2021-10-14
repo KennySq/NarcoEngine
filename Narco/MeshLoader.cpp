@@ -94,7 +94,6 @@ namespace NARCO
 				FbxMesh* mesh = node->GetMesh();
 				fbx_getControlPoints(mesh);
 
-
 				unsigned int triCount = mesh->GetPolygonCount();
 				unsigned int vertexCount = 0;
 

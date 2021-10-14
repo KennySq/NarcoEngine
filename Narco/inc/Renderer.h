@@ -30,6 +30,8 @@ namespace NARCO
 	private:
 
 		void stage_UpdateReservedResources(const Material* material, const Shader* shader, uint materialID);
+		void stage_ResourceInitialize(Material* material, const Shader* shader);
+		void stage_ResourceUnbind(Material* material);
 
 		void stage_InputAssembly(const Mesh* mesh, const Shader* shader);
 
@@ -44,6 +46,7 @@ namespace NARCO
 		void stage_ReflectDomain(const Material* material, const Shader* shader);
 		void stage_ReflectHull(const Material* material, const Shader* shader);
 		void stage_ReflectPixel(const Material* material, const Shader* shader);
+
 
 		virtual void awake() override;
 		virtual void start() override;

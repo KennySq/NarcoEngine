@@ -68,9 +68,9 @@ namespace NARCO
 	}
 	NARCO_API void GUI_Material::Update()
 	{
-		static auto& constRegisters = mMaterial->GetBuffers();
-		static auto& textureRegisters = mMaterial->GetTextures();
-		static auto& unorders = mMaterial->GetUnorders();
+		auto& constRegisters = mMaterial->GetBuffers();
+		auto& textureRegisters = mMaterial->GetTextures();
+		auto& unorders = mMaterial->GetUnorders();
 		
 		static char buf[64] = "";
 		static D3D11_BUFFER_DESC bufferDesc{};

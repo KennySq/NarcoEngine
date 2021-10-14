@@ -32,6 +32,13 @@ namespace NARCO
 	{
 		mReflection = other.mReflection;
 
+		for (auto& i : other.mConstBuffers)
+		{
+			MCP* mcp = i.second;
+
+			mConstBuffers.insert_or_assign(i.first, mcp);
+		}
+
 		for (auto& i : other.mTextures)
 		{
 			MP* mp = new MP(*i.second);

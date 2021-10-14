@@ -60,7 +60,6 @@ namespace NARCO
 		ID3D11Buffer* projectionBuffer = mRenderCamera->GetProjectionBuffer();
 		ID3D11Buffer* viewBuffer = mRenderCamera->GetViewBuffer();
 
-
 		auto constantItr = bufferMap.find(constantHash);
 		MCP* constantProperty = constantItr->second;
 		ID3D11Buffer* constantBuffer = constantProperty->Buffer.Get();
@@ -82,10 +81,75 @@ namespace NARCO
 
 		mContext->Unmap(constantBuffer, 0);
 
-		//mContext->CopySubresourceRegion(constantBuffer, 0, 0, 0, 0, worldBuffer, 0, nullptr);
-		//mContext->CopySubresourceRegion(constantBuffer, 0, 64, 0, 0, viewBuffer, 0, nullptr);
-		//mContext->CopySubresourceRegion(constantBuffer, 0, 128, 0, 0, projectionBuffer, 0, nullptr);
-		//
+	}
+
+	void Renderer::stage_ResourceInitialize(Material* material, const Shader* shader)
+	{
+		Reflector* vertReflect = shader->GetVertexReflect();
+		Reflector* geoReflect = shader->GetGeometryReflect();
+		Reflector* domReflect = shader->GetDomainReflect();
+		Reflector* hulReflect = shader->GetHullReflect();
+		Reflector* pixReflect = shader->GetPixelReflect();
+
+		const auto& vertConsts = vertReflect->GetBufferMap();
+		const auto& vertTextures = vertReflect->GetSRVMap();
+		const auto& verUnorderes = vertReflect->GetUAVMap();
+
+		const auto& geoConsts = geoReflect->GetBufferMap();
+		const auto& geoTextures = geoReflect->GetSRVMap();
+		const auto& geoUnorders = geoReflect->GetUAVMap();
+
+		const auto& domConsts = domReflect->GetBufferMap();
+		const auto& domTextures = domReflect->GetSRVMap();
+		const auto& domUnorders = domReflect->GetUAVMap();
+
+		const auto& hulConsts = hulReflect->GetBufferMap();
+		const auto& hulTextures = hulReflect->GetSRVMap();
+		const auto& hulUnorders = hulReflect->GetUAVMap();
+
+		const auto& pixConsts = pixReflect->GetBufferMap();
+		const auto& pixTextures = pixReflect->GetSRVMap();
+		const auto& pixUnorders = pixReflect->GetUAVMap();
+
+		if (vertReflect != nullptr)
+		{
+
+			for (auto& i : vertConsts) { material->AddBuffer(i.second); }
+			for (auto& i : vertTextures) { material->AddTexture(i.second); }
+
+		}
+		if (geoReflect != nullptr)
+		{
+			for (auto& i : geoConsts) { material->AddBuffer(i.second); }
+			for (auto& i : geoTextures) { material->AddTexture(i.second); }
+
+		}
+		if (domReflect != nullptr)
+		{
+			for (auto& i : domConsts) { material->AddBuffer(i.second); }
+			for (auto& i : domTextures) { material->AddTexture(i.second); }
+
+		}
+		if (hulReflect != nullptr)
+		{
+			for (auto& i : hulConsts) { material->AddBuffer(i.second); }
+			for (auto& i : hulTextures) { material->AddTexture(i.second); }
+
+		}
+
+		if (pixReflect != nullptr)
+		{
+			for (auto& i : pixConsts) { material->AddBuffer(i.second); }
+			for (auto& i : pixTextures) { material->AddTexture(i.second); }
+
+		}
+	}
+
+	void Renderer::stage_ResourceUnbind(Material* material)
+	{
+		material->ClearBuffer();
+		material->ClearTexture();
+		material->ClearUnorder();
 	}
 
 	void Renderer::stage_InputAssembly(const Mesh* mesh, const Shader* shader)
@@ -168,25 +232,40 @@ namespace NARCO
 	void Renderer::stage_Pixel(const Material* material, const Shader* shader)
 	{
 		static std::vector<ID3D11ShaderResourceView*> textures;
+		static std::vector<ID3D11Buffer*> buffers;
 
 		ID3D11PixelShader* ps = shader->GetPS();
 
 		Reflector* pixRef = shader->GetPixelReflect();
 
-		const auto& constBuffers = pixRef->GetBuffers();
+		const auto& pixBufferMap = pixRef->GetBufferMap();
+		const auto& constBuffers = material->GetBuffers();
 
 		const auto& shaderResourceMap = pixRef->GetSRVMap();
 
-		unsigned int constBufferCount = constBuffers.size();
 		//unsigned int textureCount = textures.size();
 		
-		ID3D11Buffer* const* rawConstBuffers = constBuffers.data();
+		/*ID3D11Buffer* const* rawConstBuffers = constBuffers.data();*/
 		
 		for (auto& s : shaderResourceMap)
 		{
 			ID3D11ShaderResourceView* srv = s.second->Register.Get();
 			textures.emplace_back(srv);
 		}
+
+		for (auto& b : constBuffers)
+		{
+			if (pixBufferMap.find(b.first) == pixBufferMap.end())
+			{
+				continue;
+			}
+
+			ID3D11Buffer* buffer = b.second->Buffer.Get();
+
+			buffers.emplace_back(buffer);
+		}
+
+		unsigned int constBufferCount = buffers.size();
 
 		uint rawTextureCount = textures.size();
 		ID3D11ShaderResourceView* const* rawTextures = textures.data();
@@ -195,11 +274,18 @@ namespace NARCO
 		{
 			mContext->PSSetShader(ps, nullptr, 0);
 
-			mContext->PSSetConstantBuffers(0, constBufferCount, rawConstBuffers);
-			mContext->PSSetShaderResources(0, rawTextureCount, rawTextures);
+			if (constBufferCount > 0)
+			{
+				mContext->PSSetConstantBuffers(0, constBufferCount, buffers.data());
+			}
+			if (rawTextureCount > 0)
+			{
+				mContext->PSSetShaderResources(0, rawTextureCount, rawTextures);
+			}
 		}
 
 		textures.clear();
+		buffers.clear();
 
 	}
 
@@ -260,112 +346,28 @@ namespace NARCO
 			auto hulReflect = shader->GetHullReflect();
 			auto pixReflect = shader->GetPixelReflect();
 
-			const auto& vertConsts = vertReflect->GetBufferMap();
-			const auto& vertTextures = vertReflect->GetSRVMap();
-			const auto& verUnorderes = vertReflect->GetUAVMap();
+			//const auto& vertConsts = vertReflect->GetBufferMap();
+			//const auto& vertTextures = vertReflect->GetSRVMap();
+			//const auto& verUnorderes = vertReflect->GetUAVMap();
 
-			const auto& geoConsts = geoReflect->GetBufferMap();
-			const auto& geoTextures = geoReflect->GetSRVMap();
-			const auto& geoUnorders = geoReflect->GetUAVMap();
+			//const auto& geoConsts = geoReflect->GetBufferMap();
+			//const auto& geoTextures = geoReflect->GetSRVMap();
+			//const auto& geoUnorders = geoReflect->GetUAVMap();
 
-			const auto& domConsts = domReflect->GetBufferMap();
-			const auto& domTextures = domReflect->GetSRVMap();
-			const auto& domUnorders = domReflect->GetUAVMap();
+			//const auto& domConsts = domReflect->GetBufferMap();
+			//const auto& domTextures = domReflect->GetSRVMap();
+			//const auto& domUnorders = domReflect->GetUAVMap();
 
-			const auto& hulConsts = hulReflect->GetBufferMap();
-			const auto& hulTextures = hulReflect->GetSRVMap();
-			const auto& hulUnorders = hulReflect->GetUAVMap();
+			//const auto& hulConsts = hulReflect->GetBufferMap();
+			//const auto& hulTextures = hulReflect->GetSRVMap();
+			//const auto& hulUnorders = hulReflect->GetUAVMap();
 
-			const auto& pixConsts = pixReflect->GetBufferMap();
-			const auto& pixTextures = pixReflect->GetSRVMap();
-			const auto& pixUnorders = pixReflect->GetUAVMap();
-
-			auto lamdaReflect = [](Reflector* reflect, ID3D11Device* device)
-			{
-				if (reflect != nullptr)
-				{
-					uint constCount = reflect->GetConstBufferCount();
-					uint resourceCount = reflect->GetBoundResourceCount();
-					uint uaCount = reflect->GetUnorderedCount();
-					uint sampCount = reflect->GetSamplerCount();
-
-					for (uint i = 0; i < constCount; i++)
-					{
+			//const auto& pixConsts = pixReflect->GetBufferMap();
+			//const auto& pixTextures = pixReflect->GetSRVMap();
+			//const auto& pixUnorders = pixReflect->GetUAVMap();
 
 
-						MCP* mcp = reflect->ReflectConstantBuffer(device, i);
-						
-						if (mcp == nullptr)
-						{
-							continue;
-						}
-						
-						if (reflect->Find(mcp->Name) == true)
-						{
-							delete mcp;
-							continue;
-						}
-
-						if (mcp != nullptr)
-						{
-							reflect->AddBuffer(mcp);
-						}
-					}
-
-					for (uint i = 0; i < resourceCount; i++)
-					{
-						MP* mp = reflect->ReflectTexture(device, i);
-
-						if (mp == nullptr)
-						{
-							continue;
-						}
-
-						if (mp != nullptr)
-						{
-							reflect->AddSRV(mp);
-						}
-					}
-				}
-			};
-
-			lamdaReflect(vertReflect, mDevice);
-			lamdaReflect(pixReflect, mDevice);
-
-
-
-			if (vertReflect != nullptr)
-			{
-
-				for (auto& i : vertConsts) { mMaterials[index]->AddBuffer(i.second); }
-				for (auto& i : vertTextures) { mMaterials[index]->AddTexture(i.second); }
-
-			}
-			if (geoReflect != nullptr)
-			{
-				for (auto& i : geoConsts) { mMaterials[index]->AddBuffer(i.second); }
-				for (auto& i : geoTextures) { mMaterials[index]->AddTexture(i.second); }
-
-			}
-			if (domReflect != nullptr)
-			{
-				for (auto& i : domConsts) { mMaterials[index]->AddBuffer(i.second); }
-				for (auto& i : domTextures) { mMaterials[index]->AddTexture(i.second); }
-
-			}
-			if (hulReflect != nullptr)
-			{
-				for (auto& i : hulConsts) { mMaterials[index]->AddBuffer(i.second); }
-				for (auto& i : hulTextures) { mMaterials[index]->AddTexture(i.second); }
-
-			}
-
-			if (pixReflect != nullptr)
-			{
-				for (auto& i : pixConsts) { mMaterials[index]->AddBuffer(i.second); }
-				for (auto& i : pixTextures) { mMaterials[index]->AddTexture(i.second); }
-
-			}
+			stage_ResourceInitialize(mMaterials[index], shader);
 
 		}
 
@@ -387,7 +389,7 @@ namespace NARCO
 		{
 			//mContext->ClearState();
 
-			const Material* material = mMaterials[index];
+			Material* material = mMaterials[index];
 			const Shader* shader = mMaterials[index]->GetShader();
 			const Mesh* mesh = mMesh;
 			ID3D11VertexShader* vs = shader->GetVS();
@@ -404,7 +406,7 @@ namespace NARCO
 			GBuffer* gbuffer = rp->GetGBuffer();
 
 			mContext->OMSetRenderTargets(gbuffer->GetBufferCount(), gbuffer->GetRenderTargets(), gbuffer->GetDepthStencil());
-
+			
 			stage_UpdateReservedResources(material, shader, index);
 			stage_InputAssembly(mesh, shader);
 			stage_Vertex(material, shader);
@@ -412,13 +414,16 @@ namespace NARCO
 			stage_Domain(material, shader);
 			stage_Hull(material, shader);
 			stage_Pixel(material, shader);
-
+			
 			//mContext->RSSetState(rsState);
 
 			mContext->DrawIndexed(indexCount, 0, 0);
 
 			mContext->PSSetShaderResources(0, 1, &nullSrv[0]);
 			mContext->OMSetRenderTargets(1, nullRtv, nullptr);
+		
+			//stage_ResourceUnbind(material);
+
 		}
 
 
