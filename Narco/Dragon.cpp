@@ -1,6 +1,5 @@
 #include"inc/Dragon.h"
-#include"inc/Renderer.h"
-
+#include"inc/MeshLoader.h"
 namespace NARCO
 {
 	Dragon::Dragon()
@@ -12,16 +11,9 @@ namespace NARCO
 	}
 	void Dragon::awake()
 	{
-		Renderer* renderer = AddComponent<Renderer>();
 		const Scene* scene = GetScene();
 
-		Shader* uber = scene->GetShader("Deferred_DefaultUber_0.hlsl");
-		Material* uberMat = new Material(uber, mDevice, mContext);
-
 		Mesh* mesh = scene->GetMesh("dragon-high.fbx");
-
-		renderer->SetMesh(mesh);
-		renderer->AddMaterial(uberMat);
 
 		GameObject::awake();
 	}

@@ -1,8 +1,6 @@
 #pragma once
 #include"Prefab.h"
 #include"MeshLoader.h"
-#include"Renderer.h"
-#include"Material.h"
 
 using namespace NARCO;
 

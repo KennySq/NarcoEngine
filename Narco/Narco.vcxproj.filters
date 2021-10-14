@@ -48,12 +48,6 @@
     <ClInclude Include="inc\Scene.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Material.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\Shader.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="inc\IRenderPipeline.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -72,9 +66,6 @@
     <ClInclude Include="inc\Component.h">
       <Filter>헤더 파일\Component</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Renderer.h">
-      <Filter>헤더 파일\Component</Filter>
-    </ClInclude>
     <ClInclude Include="inc\AssetManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -90,9 +81,6 @@
     <ClInclude Include="inc\Prefab.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Reflector.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="inc\Light.h">
       <Filter>헤더 파일\Component</Filter>
     </ClInclude>
@@ -102,12 +90,12 @@
     <ClInclude Include="inc\Skater.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="inc\Stage.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Narco.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Narco_Core.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Component.cpp">
@@ -119,22 +107,13 @@
     <ClCompile Include="MeshLoader.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="GBuffer.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="AssetManager.cpp">
@@ -155,9 +134,6 @@
     <ClCompile Include="Prefab.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Reflector.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Light.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -165,6 +141,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Skater.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Narco_Core.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -188,10 +167,9 @@
     <None Include="built-in\hlsl\Deferred_FinalPass.hlsl">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="built-in\hlsl\Light.hlsli" />
-    <None Include="built-in\hlsl\Reserved.hlsli" />
-    <None Include="Deferred_CustomUber_0.hlsl">
-      <Filter>리소스 파일</Filter>
+    <None Include="cpp.hint" />
+    <None Include="Stage.hpp">
+      <Filter>소스 파일</Filter>
     </None>
   </ItemGroup>
 </Project>

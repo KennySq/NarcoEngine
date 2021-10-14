@@ -3,6 +3,10 @@
 #include"inc/Dragon.h"
 #include"inc/Skater.h"
 
+#include"inc/Camera.h"
+
+#include"inc/Stage.h"
+
 using namespace NARCO;
 
 namespace NARCO
@@ -22,13 +26,14 @@ namespace NARCO
 		// 테스트 코드 영역입니다.
 		mSelectedScene = new Scene("Sample Scene", context, this);
 
-		Shader* uberShader = new Shader("built-in/hlsl/Deferred_DefaultUber_0.hlsl", SHADER_VERTEX | SHADER_PIXEL);
-		uberShader->Compile(device);
-		mSelectedScene->AddShader(uberShader);
+		Stage<ID3D11VertexShader>* stage = new Stage<ID3D11VertexShader>("built-in/hlsl/Deferred_DefaultUber_0.hlsl", STAGE_VERTEX | STAGE_PIXEL);
+		//Shader* uberShader = new Shader("built-in/hlsl/Deferred_DefaultUber_0.hlsl", SHADER_VERTEX | SHADER_PIXEL);
+		//uberShader->Compile(device);
+		//mSelectedScene->AddShader(uberShader);
 
-		Shader* customShader = new Shader("built-in/hlsl/Deferred_CustomUber_0.hlsl", SHADER_VERTEX | SHADER_PIXEL);
-		customShader->Compile(device);
-		mSelectedScene->AddShader(customShader);
+		//Shader* customShader = new Shader("built-in/hlsl/Deferred_CustomUber_0.hlsl", SHADER_VERTEX | SHADER_PIXEL);
+		//customShader->Compile(device);
+		//mSelectedScene->AddShader(customShader);
 
 		MeshLoader shibaLoader(device);
 		MeshLoader dragonLoader(device);
@@ -90,25 +95,17 @@ namespace NARCO
 		AssetManager* assetManager = new AssetManager("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/app/assets");
 		
 		GameObject* shiba = mSelectedScene->GetGameObject(0);
-		Renderer* shibaRenderer = shiba->GetComponent<Renderer>();
-		Material* shibaMat = shibaRenderer->GetMaterial(0);
+
 
 		GameObject* dragon = mSelectedScene->GetGameObject(1);
-		Renderer* dragonRenderer = dragon->GetComponent<Renderer>();
-		Material* dragonMat = dragonRenderer->GetMaterial(0);
+
 
 		GameObject* skater = mSelectedScene->GetGameObject(2);
-		Renderer* skaterRenderer = skater->GetComponent<Renderer>();
-		Material* skaterMat = skaterRenderer->GetMaterial(0);
-		Material* skaterMat2 = skaterRenderer->GetMaterial(1);
-
 		frame->AddGUI("FileSlot_01", new GUI_FileSlot(ASSET_IMAGE, device));
 		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
 		frame3->AddGUI("AssetBrowser_01", new GUI_AssetManager(assetManager, device));
 		frame4->AddGUI("Inspector_01", new GUI_GameObject(shiba));
-		
-		frame5->AddGUI("Material_01", new GUI_Material(shibaMat, device, 0));
-		
+
 		GUI_GameObject* inspector = static_cast<GUI_GameObject*>(frame4->GetGUI("Inspector_01"));
 		frame6->AddGUI("Hierarchy_01", new GUI_Hierarchy(mSelectedScene, inspector));
 	}

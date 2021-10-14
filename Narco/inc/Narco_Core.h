@@ -8,8 +8,6 @@
 
 #include"GBuffer.h"
 
-#include"Renderer.h"
-
 #include"AssetManager.h"
 
 #include"Prefab.h"

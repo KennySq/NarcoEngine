@@ -3,8 +3,6 @@
 
 #include"GameObject.h"
 #include"Prefab.h"
-#include"Material.h"
-
 
 namespace NARCO
 {
@@ -26,9 +24,6 @@ namespace NARCO
 		GameObject* AddGameObject(GameObject* gameObject);
 		GameObject* AddGameObject(const char* name);
 		GameObject* GetGameObject(InstanceID iid) const;
-
-		Shader* AddShader(Shader* shader);
-		Shader* GetShader(const char* name) const;
 
 		Mesh* AddMesh(Mesh* mesh);
 		Mesh* GetMesh(const char* name) const;
@@ -53,7 +48,7 @@ namespace NARCO
 		std::map<InstanceID, GameObject*> mGameObjects;
 		std::vector<GameObject*> mGameObjectList;
 		
-		std::map<long long, Shader*> mCacheShaders;
+
 		std::map<long long, Mesh*> mCacheMeshes;
 
 		ID3D11DeviceContext* mContext;

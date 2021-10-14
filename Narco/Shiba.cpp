@@ -15,14 +15,7 @@ void Shiba::awake()
 {
 	const Scene* scene = GetScene();
 
-	Shader* uberShader = scene->GetShader("Deferred_DefaultUber_0.hlsl");
-	Material * uberMaterial = new Material(uberShader, mDevice, mContext);
-
 	Mesh* mesh_shiba = scene->GetMesh("shiba.fbx");
-
-	Renderer* shibaRenderer = AddComponent<Renderer>();
-	shibaRenderer->SetMesh(mesh_shiba);
-	shibaRenderer->AddMaterial(uberMaterial);
 
 	GameObject::awake();
 }
