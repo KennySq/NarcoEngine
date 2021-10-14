@@ -20,9 +20,10 @@ void Skater::awake()
 	const Scene* scene = GetScene();
 	
 	Shader* shader = scene->GetShader("Deferred_DefaultUber_0.hlsl");
+	Shader* custom = scene->GetShader("Deferred_CustomUber_0.hlsl");
 
 	Material* baseMap = new Material(shader, mDevice, mContext);
-	Material* board = new Material(*baseMap);
+	Material* board = new Material(custom, mDevice, mContext);
 	
 	Mesh* mesh = scene->GetMesh("skater.fbx");
 	
