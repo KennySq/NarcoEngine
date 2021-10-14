@@ -11,3 +11,4 @@
 #include"inc/GUI_AssetManager.h"
 #include"inc/GUI_Material.h"
 #include"inc/GUI_GameObject.h"
+#include"inc/GUI_Hierarchy.h"

@@ -48,11 +48,28 @@ namespace NARCO
 	{
 		return;
 	}
+	void GUI_GameObject::Refresh()
+	{
+
+
+
+	}
 	NARCO_API void GUI_GameObject::guiTransform(Transform* transform)
 	{
-		static float guiMat[3][3] = { {transform->GetPosition().m128_f32[0],transform->GetPosition().m128_f32[1], transform->GetPosition().m128_f32[2]},
-										{transform->GetRotation().m128_f32[0], transform->GetRotation().m128_f32[1], transform->GetRotation().m128_f32[2]}
-			,{1,1,1} };
+		for (unsigned int i = 0; i < 3; i++)
+		{
+			mGuiMatrix[0][i] = transform->GetPosition().m128_f32[i];
+		}
+
+		for (unsigned int i = 0; i < 3; i++)
+		{
+			mGuiMatrix[1][i] = XMConvertToDegrees(transform->GetRotation().m128_f32[i]);
+		}
+
+		for (unsigned int i = 0; i < 3; i++)
+		{
+			mGuiMatrix[2][i] = transform->GetScale().m128_f32[i];
+		}
 
 		const GameObject* root = transform->GetRoot();
 
@@ -62,9 +79,10 @@ namespace NARCO
 		std::string floatList1 = (name + "_1").c_str();
 		std::string floatList2 = (name + "_2").c_str();
 
-		bool bFloat0 = ImGui::InputFloat3(floatList0.c_str(), guiMat[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
-		bool bFloat1 = ImGui::InputFloat3(floatList1.c_str(), guiMat[1], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
-		bool bFloat2 = ImGui::InputFloat3(floatList2.c_str(), guiMat[2], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
+
+		bool bFloat0 = ImGui::InputFloat3(floatList0.c_str(), mGuiMatrix[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
+		bool bFloat1 = ImGui::InputFloat3(floatList1.c_str(), mGuiMatrix[1], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
+		bool bFloat2 = ImGui::InputFloat3(floatList2.c_str(), mGuiMatrix[2], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
 
 		if (bFloat0 || bFloat1 || bFloat2)
 		{
@@ -72,13 +90,42 @@ namespace NARCO
 			XMVECTOR originRotation = transform->GetRotation();
 			XMVECTOR originScale = transform->GetScale();
 
-			XMVECTOR position = { guiMat[0][0], guiMat[0][1], guiMat[0][2], 1.0f };
-			XMVECTOR rotation = { XMConvertToRadians(guiMat[1][0]), XMConvertToRadians(guiMat[1][1]), XMConvertToRadians(guiMat[1][2]), 1.0f };
-			XMVECTOR scale	  = { guiMat[2][0], guiMat[2][1], guiMat[2][2], 1.0f };
+			XMVECTOR position = { mGuiMatrix[0][0], mGuiMatrix[0][1], mGuiMatrix[0][2], 1.0f };
+			XMVECTOR rotation = { XMConvertToRadians(mGuiMatrix[1][0]), XMConvertToRadians(mGuiMatrix[1][1]), XMConvertToRadians(mGuiMatrix[1][2]) };
+			XMVECTOR scale	  = { mGuiMatrix[2][0], mGuiMatrix[2][1], mGuiMatrix[2][2], 1.0f };
 			
-			rotation = XMQuaternionRotationRollPitchYaw(rotation.m128_f32[0], rotation.m128_f32[1], rotation.m128_f32[2]);
+			//rotation = XMQuaternionRotationRollPitchYaw(rotation.m128_f32[0], rotation.m128_f32[1], rotation.m128_f32[2]);
+			rotation = XMQuaternionRotationRollPitchYaw(mGuiMatrix[1][0], mGuiMatrix[1][1], mGuiMatrix[1][2]);
+			XMMATRIX mat = XMMatrixAffineTransformation(scale, XMQuaternionIdentity(), rotation, position);
 			
-			XMMATRIX mat = XMMatrixAffineTransformation(scale, originRotation, rotation, originPosition - position);
+			
+			auto rot = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(mGuiMatrix[1][0]),
+				XMConvertToRadians(mGuiMatrix[1][1]), XMConvertToRadians(mGuiMatrix[1][2]));
+			XMVECTOR rotToDeg;
+
+			for (uint i = 0; i < 4; i++)
+			{
+				// quaternion to degrees ?
+				rotToDeg.m128_f32[i] = XMConvertToDegrees(rot.m128_f32[i]);
+			}
+			
+			auto q = XMQuaternionRotationMatrix(mat);
+			XMVECTOR qVec;
+			for (int i = 0; i < 4; i++)
+			{
+				qVec.m128_f32[i] = XMConvertToDegrees(q.m128_f32[i]);
+			}
+
+			//for (uint i = 0; i < 3; i++)
+			//{
+			//	mGuiMatrix[0][i] = mat.r[3].m128_f32[i];
+			//}
+
+			//for (uint i = 0; i < 3; i++)
+			//{
+			//	mGuiMatrix[1][i] =
+			//}
+
 			transform->SetMatrix(mat);
 		}
 		
