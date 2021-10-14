@@ -1,4 +1,14 @@
 #include "inc/MeshLoader.h"
+
+#include<fbxsdk.h>
+
+#pragma comment(lib, "libfbxsdk-md.lib")
+#pragma comment(lib, "libxml2-md.lib")
+#pragma comment(lib, "zlib-md.lib")
+
+#define FBXSDK_SHARED
+
+
 namespace NARCO
 {
 	void MeshLoader::SetPath(const char* path)
