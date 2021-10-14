@@ -4,10 +4,12 @@
 #include"GameObject.h"
 #include"Prefab.h"
 #include"Material.h"
-#include"MeshLoader.h"
+
 
 namespace NARCO
 {
+	class Mesh;
+
 	class Narco_Deferred_Legacy;
 	typedef unsigned long long SceneID;
 
@@ -31,6 +33,9 @@ namespace NARCO
 		Mesh* AddMesh(Mesh* mesh);
 		Mesh* GetMesh(const char* name) const;
 
+		GameObject* const* GetGameObjects() { return mGameObjectList.data(); }
+		uint GetGameObjectCount() const { return mGameObjectList.size(); }
+
 		ID3D11DeviceContext* GetContext() const { return mContext; }
 
 		Narco_Deferred_Legacy* GetRP() const { return mRenderPipeline; }
@@ -46,6 +51,8 @@ namespace NARCO
 		SceneID mSceneID;
 
 		std::map<InstanceID, GameObject*> mGameObjects;
+		std::vector<GameObject*> mGameObjectList;
+		
 		std::map<long long, Shader*> mCacheShaders;
 		std::map<long long, Mesh*> mCacheMeshes;
 

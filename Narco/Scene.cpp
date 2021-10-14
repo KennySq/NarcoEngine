@@ -1,5 +1,5 @@
 #include"inc/Scene.h"
-
+#include"MeshLoader.h"
 namespace NARCO
 {
 	Scene::Scene(const char* name, ID3D11DeviceContext* context, Narco_Deferred_Legacy* rp)
@@ -32,6 +32,7 @@ namespace NARCO
 
 		gameObject->mScene = this;
 		mGameObjects.insert_or_assign(id, gameObject);
+		mGameObjectList.emplace_back(gameObject);
 
 		return gameObject;
 
@@ -51,6 +52,7 @@ namespace NARCO
 
 		gameObject->mScene = this;
 		mGameObjects.insert_or_assign(id, gameObject);
+		mGameObjectList.emplace_back(gameObject);
 
 		return gameObject;
 	}
