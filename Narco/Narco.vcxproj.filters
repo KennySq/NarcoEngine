@@ -188,6 +188,10 @@
     <None Include="built-in\hlsl\Deferred_FinalPass.hlsl">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="cpp.hint" />
+    <None Include="built-in\hlsl\Light.hlsli" />
+    <None Include="built-in\hlsl\Reserved.hlsli" />
+    <None Include="Deferred_CustomUber_0.hlsl">
+      <Filter>리소스 파일</Filter>
+    </None>
   </ItemGroup>
 </Project>
