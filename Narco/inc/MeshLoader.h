@@ -4,14 +4,11 @@
 
 #include"Mesh.h"
 
-#include<fbxsdk.h>
-#include<fbxsdk\scene\fbxaxissystem.h>
-
-#pragma comment(lib, "libfbxsdk-md.lib")
-#pragma comment(lib, "libxml2-md.lib")
-#pragma comment(lib, "zlib-md.lib")
-#define FBXSDK_SHARED
-
+namespace fbxsdk
+{
+	class FbxNode;
+	class FbxMesh;
+}
 namespace NARCO
 {
 	enum eMeshType
@@ -21,8 +18,11 @@ namespace NARCO
 		MESH_OBJ,
 	};
 
+	using namespace fbxsdk;
+
 	class MeshLoader : IFileSystem
 	{
+
 	public:
 		MeshLoader(ID3D11Device* device) : mDevice(device), mVertexType(VERTEX_STATIC), mMeshType(MESH_NONE) {}
 		virtual ~MeshLoader() {}
