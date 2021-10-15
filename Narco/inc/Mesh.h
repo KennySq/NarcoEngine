@@ -77,6 +77,8 @@ namespace NARCO
 
 		unsigned int mStride;
 		unsigned int mIndexCount;
+
+		
 	};
 }
 

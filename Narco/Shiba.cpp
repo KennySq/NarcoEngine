@@ -1,5 +1,7 @@
 #include"inc/Shiba.h"
 
+#include"inc/Renderer.h"
+
 using namespace NARCO;
 
 Shiba::Shiba()
@@ -16,6 +18,14 @@ void Shiba::awake()
 	const Scene* scene = GetScene();
 
 	Mesh* mesh_shiba = scene->GetMesh("shiba.fbx");
+
+	Material* uberMat = scene->GetMaterial("Deferred_DefaultUber_0.hlsl");
+
+	Renderer* renderer = AddComponent<Renderer>();
+
+	renderer->SetMesh(mesh_shiba);
+	renderer->AddMaterial(uberMat);
+
 
 	GameObject::awake();
 }
