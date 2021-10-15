@@ -21,8 +21,41 @@ namespace NARCO
 
 		ID3D11InputLayout* GetInputLayout() const { return mInputLayout.Get(); }
 
-	private:
+		SharedPipelineResource<ID3D11Buffer>& GetConstBuffers() { return mBuffers; }
+		SharedPipelineResource<ID3D11ShaderResourceView>& GetShaderResources() { return mShaderResources; }
+		SharedPipelineResource<ID3D11SamplerState>& GetSamplerStates() { return mSamplerStates; }
+		
+		template<typename _Ty>
+		void UpdateResource(const char* name, eResourceType type, void* data, uint size)
+		{
+			if (type == RESOURCE_CBUFFER)
+			{
+				auto result = mBuffers.Find(name);
 
+				if (result == nullptr)
+				{
+					Debug::Log(std::string(name) + " not found.");
+					return;
+				}
+
+				D3D11_MAPPED_SUBRESOURCE mappedSub{};
+				HRESULT mapResult = mContext->Map(result, 0, D3D11_MAP_WRITE, 0, &mappedSub);
+				if (mapResult != S_OK)
+				{
+					Debug::Log("failed to map");
+					return;
+				}
+
+				_Ty* ptr = reinterpret_cast<_Ty*>(mappedSub.pData);
+
+				memcpy(ptr, data, size);
+
+				mContext->Unmap(result);
+			
+			}
+		}
+
+	private:
 		Stage<ID3D11VertexShader>* mVertexStage;
 		Stage<ID3D11GeometryShader>* mGeometryStage;
 		Stage<ID3D11DomainShader>* mDomainStage;
@@ -33,7 +66,7 @@ namespace NARCO
 
 		SharedPipelineResource<ID3D11Buffer> mBuffers;
 		SharedPipelineResource<ID3D11ShaderResourceView> mShaderResources;
-		SharedPipelineResource<ID3D11UnorderedAccessView> mUnorderAccesses;
+		SharedPipelineResource<ID3D11SamplerState> mSamplerStates;
 
 		std::string mShaderPath;
 		std::string mFileName;

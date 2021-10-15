@@ -38,6 +38,13 @@ namespace NARCO
 	Renderer::~Renderer()
 	{
 	}
+	void Renderer::UpdateSharedResources(Material* mat)
+	{
+		auto buffers = mat->GetConstBuffers();
+
+
+
+	}
 	void Renderer::awake()
 	{
 
@@ -83,7 +90,7 @@ namespace NARCO
 				auto info = lamdaBindStage(vertex);
 
 				context->VSSetShader(vertex->GetShader(), nullptr, 0);
-				
+
 				if (info.bufferCount > 0)
 				{
 					context->VSSetConstantBuffers(0, info.bufferCount, info.buffers);
@@ -100,7 +107,7 @@ namespace NARCO
 				}
 
 			}
-			
+
 			if (geometry != nullptr)
 			{
 				auto info = lamdaBindStage(geometry);
@@ -188,7 +195,7 @@ namespace NARCO
 					context->PSSetSamplers(0, info.samplerCount, info.samplerStates);
 				}
 			}
-		
+
 			context->DrawIndexed(indexCount, 0, 0);
 
 			context->VSSetShaderResources(0, 1, nullSRV);

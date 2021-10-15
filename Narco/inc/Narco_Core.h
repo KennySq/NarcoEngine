@@ -39,6 +39,21 @@ namespace NARCO
 
 		GBuffer* GetGBuffer() const { return mGBuffer; }
 
+		void BoundBackBuffer(ID3D11DeviceContext* context) const
+		{
+			mGBuffer->Unbound(context);
+
+			static ID3D11RenderTargetView* backBuffer[] = { mDisplay->GetRenderTargetView() };
+			context->OMSetRenderTargets(1, backBuffer, nullptr);
+
+
+		}
+
+		void BoundGBuffer(ID3D11DeviceContext* context) const
+		{
+			mGBuffer->Bound(context);
+		}
+
 	private:
 		void clearScreen(const float* clearColor);
 		void drawScreen();

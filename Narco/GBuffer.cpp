@@ -75,7 +75,7 @@ namespace NARCO
 		context->DrawIndexed(6, 0, 0);
 
 		context->PSSetShaderResources(0, 1, nullSrv);
-		context->OMSetRenderTargets(1, nullRtv, nullptr);
+	//	context->OMSetRenderTargets(1, nullRtv, nullptr);
 
 		bufferSRV.clear();
 	}

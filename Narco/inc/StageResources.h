@@ -3,6 +3,13 @@
 
 namespace NARCO
 {
+	enum eResourceType
+	{
+		RESOURCE_CBUFFER,
+		RESOURCE_TEXTURE,
+		RESOURCE_SAMPLER,
+	};
+
 	template<typename _Ty>
 	struct SharedResource
 	{
@@ -22,21 +29,22 @@ namespace NARCO
 	template<typename _Ty>
 	struct SharedPipelineResource
 	{
-		bool Find(const std::string& name)
+		_Ty* Find(const std::string& name)
 		{
-			if (Map.find(MakeHash(name)) != Map.end())
+			auto result = Map.find(MakeHash(name));
+			if (result != Map.end())
 			{
-				return true;
+				return result.second.Get();
 			}
 
-			return false;
+			return nullptr;
 		}
 
 		void Add(const SharedResource<_Ty>& resource)
 		{
-			bool bExists = Find(resource.Name);
+			auto result = Find(resource.Name);
 
-			if (bExists == true)
+			if (result == nullptr)
 			{
 				//Debug::Log(resource.Name + " is already exists.");
 				return;

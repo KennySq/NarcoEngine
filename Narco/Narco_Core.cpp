@@ -5,7 +5,7 @@
 
 #include"inc/Camera.h"
 
-#include"inc/Stage.h"
+#include"inc/Material.h"
 
 using namespace NARCO;
 
@@ -26,7 +26,9 @@ namespace NARCO
 		// 테스트 코드 영역입니다.
 		mSelectedScene = new Scene("Sample Scene", context, this);
 
-		Stage<ID3D11VertexShader>* stage = new Stage<ID3D11VertexShader>("built-in/hlsl/Deferred_DefaultUber_0.hlsl", STAGE_VERTEX | STAGE_PIXEL);
+		Material* mat = new Material("built-in/hlsl/Deferred_DefaultUber_0.hlsl", STAGE_VERTEX | STAGE_PIXEL);
+		mSelectedScene->AddMaterial(mat);
+
 		//Shader* uberShader = new Shader("built-in/hlsl/Deferred_DefaultUber_0.hlsl", SHADER_VERTEX | SHADER_PIXEL);
 		//uberShader->Compile(device);
 		//mSelectedScene->AddShader(uberShader);
@@ -51,7 +53,7 @@ namespace NARCO
 		mSelectedScene->AddMesh(shibaLoader.ConvertMesh());
 		//mSelectedScene->AddMesh(dragonLoader.ConvertMesh());
 		//mSelectedScene->AddMesh(skaterLoader.ConvertMesh());
-		
+
 
 
 
@@ -60,7 +62,7 @@ namespace NARCO
 		GameObject* shiba = mSelectedScene->AddGameObject(new Shiba());
 		GameObject* dragon = mSelectedScene->AddGameObject(new Dragon());
 		GameObject* skater = mSelectedScene->AddGameObject(new Skater());
-		
+
 		GameObject* mainCamera = mSelectedScene->AddGameObject(new GameObject("Main Camera"));
 
 		Camera* mainCam = mainCamera->AddComponent<Camera>();
@@ -72,8 +74,8 @@ namespace NARCO
 
 		mMainCanvas = new GUI_Canvas(mWindowHandle, mHandleInstance, device, context);
 
-		mMainCanvas->AddFrame(new GUI_Frame("File Slot", 300,300, ImGuiWindowFlags_NoResize));
-		mMainCanvas->AddFrame(new GUI_Frame("Color Picker", 400,300, ImGuiWindowFlags_NoResize));
+		mMainCanvas->AddFrame(new GUI_Frame("File Slot", 300, 300, ImGuiWindowFlags_NoResize));
+		mMainCanvas->AddFrame(new GUI_Frame("Color Picker", 400, 300, ImGuiWindowFlags_NoResize));
 		mMainCanvas->AddFrame(new GUI_Frame("Asset Browser", 1100, 400, ImGuiWindowFlags_NoResize));
 		mMainCanvas->AddFrame(new GUI_Frame("Inspector", 400, 800, ImGuiFocusedFlags_None));
 		mMainCanvas->AddFrame(new GUI_Frame("Material", 400, 800, ImGuiFocusedFlags_None));
@@ -93,7 +95,7 @@ namespace NARCO
 		auto frame6 = mMainCanvas->GetFrame(5);
 
 		AssetManager* assetManager = new AssetManager("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/app/assets");
-		
+
 		GameObject* shiba = mSelectedScene->GetGameObject(0);
 
 
@@ -119,7 +121,7 @@ namespace NARCO
 	void Narco_Deferred_Legacy::Update(float delta)
 	{
 		static ID3D11DeviceContext* context = mHardware->GetImmediateContext();
-		static ID3D11RenderTargetView* const * rtv = mGBuffer->GetRenderTargets();
+		static ID3D11RenderTargetView* const* rtv = mGBuffer->GetRenderTargets();
 		static ID3D11RenderTargetView* backBuffer[] = { mDisplay->GetRenderTargetView() };
 		static ID3D11DepthStencilView* dsv = mGBuffer->GetDepthStencil();
 		static D3D11_VIEWPORT viewports[] = { mDisplay->GetMainViewport() };
@@ -128,17 +130,23 @@ namespace NARCO
 		static GUI_Canvas* canvas = mMainCanvas;
 		static GUI_Frame* frame_ColorPicker = canvas->GetFrame(1);
 		static GUI_ColorPicker* gui_ColorPicker = static_cast<GUI_ColorPicker*>(frame_ColorPicker->GetGUI("ColorPicker_01"));
-		
+
 		clearScreen(gui_ColorPicker->GetColor4());
 		mGBuffer->ClearBuffer(context, gui_ColorPicker->GetColor4());
 
 		context->RSSetViewports(1, viewports);
+		mGBuffer->Bound(context);
 
 		mSelectedScene->update(delta);
 
+		mGBuffer->Unbound(context);
 		context->PSSetShaderResources(0, 6, &nullSrv[0]);
 
+
+
 		mGBuffer->DrawScreen(context, backBuffer[0]);
+
+
 		context->PSSetShaderResources(0, 6, &nullSrv[0]);
 
 		mMainCanvas->Update();
@@ -158,10 +166,10 @@ namespace NARCO
 		context->OMSetRenderTargets(1, nullRtv, nullptr);
 		context->PSSetShaderResources(0, 6, &nullSrv[0]);
 
-		
+
 
 		mDisplay->Present();
-		
+
 
 
 	}
@@ -178,7 +186,7 @@ namespace NARCO
 	{
 		static ID3D11DeviceContext* context = mHardware->GetImmediateContext();
 		static ID3D11RenderTargetView* renderTargetView = mDisplay->GetRenderTargetView();
-		
+
 		context->ClearRenderTargetView(renderTargetView, clearColor);
 
 

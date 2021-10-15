@@ -103,7 +103,7 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="inc\Renderer.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -156,9 +156,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Narco_Core.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="inc\Material.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">

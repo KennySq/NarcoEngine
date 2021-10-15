@@ -9,12 +9,12 @@ namespace NARCO
 	public:
 		Renderer();
 		~Renderer();
-		
-
 
 		void SetMesh(Mesh* mesh) { mMesh = mesh; }
 		void AddMaterial(Material* material) { mMaterials.emplace_back(material); }
 		void RemoveMaterial(uint index) { mMaterials[index] = nullptr; }
+
+		void UpdateSharedResources(Material* mat);
 
 	private:
 		virtual void awake() override;
@@ -22,7 +22,7 @@ namespace NARCO
 		virtual void update(float delta) override;
 		virtual void render(float delta) override;
 		virtual void release() override;
-		
+
 		Mesh* mMesh;
 		std::vector<Material*> mMaterials;
 	};
