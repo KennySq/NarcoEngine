@@ -95,6 +95,34 @@ namespace NARCO
 
 		return result->second;
 	}
+	Material* Scene::AddMaterial(Material* mat)
+	{
+		if (mat == nullptr)
+		{
+			Debug::Log("invalid argument");
+			return nullptr;
+		}
+
+		long long hash = MakeHash(mat->GetFileName());
+
+		mCacheMaterials.insert_or_assign(hash, mat);
+
+		return mat;
+	}
+	Material* Scene::GetMaterial(const char* name) const
+	{
+		long long hash = MakeHash(name);
+
+		auto result = mCacheMaterials.find(hash);
+
+		if (result == mCacheMaterials.end())
+		{
+			Debug::Log(std::string("Material ") + name + " not found.");
+			return nullptr;
+		}
+
+		return result->second;
+	}
 	void Scene::awake()
 	{
 		for (auto i : mGameObjects)

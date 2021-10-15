@@ -1,6 +1,7 @@
 #pragma once
 #include"Common.h"
 
+#include"Material.h"
 #include"GameObject.h"
 #include"Prefab.h"
 
@@ -28,6 +29,9 @@ namespace NARCO
 		Mesh* AddMesh(Mesh* mesh);
 		Mesh* GetMesh(const char* name) const;
 
+		Material* AddMaterial(Material* mat);
+		Material* GetMaterial(const char* name) const;
+
 		GameObject* const* GetGameObjects() { return mGameObjectList.data(); }
 		uint GetGameObjectCount() const { return mGameObjectList.size(); }
 
@@ -48,7 +52,7 @@ namespace NARCO
 		std::map<InstanceID, GameObject*> mGameObjects;
 		std::vector<GameObject*> mGameObjectList;
 		
-
+		std::map<long long, Material*> mCacheMaterials;
 		std::map<long long, Mesh*> mCacheMeshes;
 
 		ID3D11DeviceContext* mContext;
