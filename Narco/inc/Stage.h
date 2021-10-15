@@ -31,8 +31,6 @@ namespace NARCO
 		HRESULT Reflect(SharedPipelineResource<ID3D11ShaderResourceView>* sharedResources);
 		HRESULT Reflect(SharedPipelineResource<ID3D11SamplerState>* sharedResources);
 
-		ComPtr<ID3D11InputLayout> GenerateInputLayout();
-
 		uint GetBufferCount() const { return mBuffers.size(); }
 		uint GetShaderResourceCount() const { return mShaderResources.size(); }
 		uint GetSamplerStateCount() const { return mSamplerStates.size(); }

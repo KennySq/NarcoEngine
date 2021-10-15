@@ -1,5 +1,5 @@
 #include"inc/Renderer.h"
-
+#include"inc/Scene.h"
 namespace NARCO
 {
 	struct stageInfo
@@ -40,14 +40,19 @@ namespace NARCO
 	}
 	void Renderer::UpdateSharedResources(Material* mat)
 	{
-		auto buffers = mat->GetConstBuffers();
+		//auto buffers = mat->GetConstBuffers();
 
-
+		
 
 	}
 	void Renderer::awake()
 	{
-
+		mRenderScene = mRoot->GetScene();
+	
+		GameObject* cameraObject = mRenderScene->FindGameObjectWithTag("Main Camera");
+		mRenderCamera = cameraObject->GetComponent<Camera>();
+	
+		mRenderTransform = mRoot->GetComponent<Transform>();
 	}
 	void Renderer::start()
 	{
@@ -66,6 +71,9 @@ namespace NARCO
 		for (uint i = 0; i < passCount; i++)
 		{
 			Material* material = mMaterials[i];
+
+			mRenderCamera->RenderMaterial = material;
+			mRenderTransform->RenderMaterial = material;
 
 			Stage<ID3D11VertexShader>* vertex = material->GetVertex();
 			Stage<ID3D11GeometryShader>* geometry = material->GetGeometry();

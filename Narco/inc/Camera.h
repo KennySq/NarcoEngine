@@ -4,6 +4,7 @@
 #include"GameObject.h"
 #include<D3DDisplay.h>
 
+
 namespace NARCO
 {
 	class Camera : public Component
@@ -20,7 +21,7 @@ namespace NARCO
 		XMMATRIX GetView() const { return mTransform->GetMatrix(); }
 		XMMATRIX GetProjection() const { return XMLoadFloat4x4(&mProjection); }
 
-
+		Material* RenderMaterial;
 	private:
 		float mFieldOfView;
 		float mAspectRatio;
@@ -34,6 +35,7 @@ namespace NARCO
 
 
 		Transform* mTransform;
+
 
 		virtual void awake() override;
 		virtual void start() override;

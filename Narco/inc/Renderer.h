@@ -2,6 +2,7 @@
 #include"Material.h"
 #include"Mesh.h"
 #include"Component.h"
+#include"Camera.h"
 namespace NARCO
 {
 	class Renderer : public Component
@@ -25,5 +26,10 @@ namespace NARCO
 
 		Mesh* mMesh;
 		std::vector<Material*> mMaterials;
+	
+		Camera* mRenderCamera;
+		Transform* mRenderTransform;
+
+		const Scene* mRenderScene;
 	};
 }

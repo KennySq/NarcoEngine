@@ -190,8 +190,9 @@ namespace NARCO
 			return result;
 		}
 
-		uint resourceCount = shaderDesc.BoundResources;
+		auto& variableOffsets = sharedResources->VariableOffsets;
 
+		uint resourceCount = shaderDesc.BoundResources;
 		D3D11_SHADER_INPUT_BIND_DESC resourceDesc{};
 
 		for (uint i = 0; i < resourceCount; i++)
@@ -201,24 +202,25 @@ namespace NARCO
 			if (resourceDesc.Type == D3D_SIT_CBUFFER)
 			{
 				// check same resource on application
-				if (sharedResources->Find(resourceDesc.Name) == true)
+				if (sharedResources->Find(resourceDesc.Name) != nullptr)
 				{
 					long long hash = MakeHash(resourceDesc.Name);
-					auto resource = sharedResources->Map[hash];
+					auto resource = sharedResources->Find(resourceDesc.Name);
 					
-					resource.StageFlags |= mStageFlag;
+					resource->StageFlags |= mStageFlag;
 
-					mBuffers.emplace_back(resource.Resource.Get());
+					mBuffers.emplace_back(resource->Resource.Get());
+
 
 					continue;
 				}
 
-				SharedResource<ID3D11Buffer> buffer;
+				SharedResource<ID3D11Buffer>* buffer = new SharedResource<ID3D11Buffer>();
 				D3D11_BUFFER_DESC cbufferDesc{};
 				D3D11_SHADER_BUFFER_DESC cbufferShaderDesc{};
 				ID3D11ShaderReflectionConstantBuffer* cbufferShader = mReflection->GetConstantBufferByName(resourceDesc.Name);
 				
-				buffer.Name = resourceDesc.Name;
+				buffer->Name = resourceDesc.Name;
 
 				result = cbufferShader->GetDesc(&cbufferShaderDesc);
 
@@ -229,26 +231,34 @@ namespace NARCO
 				cbufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 				cbufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 
+
 				if (cbufferShaderDesc.Type == D3D_CT_CBUFFER)
 				{
 					for (uint i = 0; i < elementCount; i++)
 					{
+						
+
 						auto variable = cbufferShader->GetVariableByIndex(i);
 						D3D11_SHADER_VARIABLE_DESC variableDesc{};
 						
 						result = variable->GetDesc(&variableDesc);
-				
+						long long hash = MakeHash(variableDesc.Name);
+
+						variableOffsets.insert_or_assign(hash, variableDesc.StartOffset);
+
+
 					}
 
-					result = mDevice->CreateBuffer(&cbufferDesc, nullptr, buffer.Resource.GetAddressOf());
+					result = mDevice->CreateBuffer(&cbufferDesc, nullptr, buffer->Resource.GetAddressOf());
 					if (result != S_OK)
 					{
-						Debug::Log("failed to create constant buffer.");
+						Debug::Log("failed to create constant buffer->");
 						continue;
 					}
+					buffer->StageFlags |= mStageFlag;
 
 					sharedResources->Add(buffer);
-					mBuffers.emplace_back(buffer.Resource.Get());
+					mBuffers.emplace_back(buffer->Resource.Get());
 
 				}
 			

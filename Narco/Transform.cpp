@@ -100,6 +100,16 @@ namespace NARCO
 	}
 	void Transform::update(float delta)
 	{
+		if (RenderMaterial != nullptr)
+		{
+			static const char* cbufferName = "Constants";
+			static const char* variableName = "gWorld";
+			
+			RenderMaterial->MapConstantBuffer(cbufferName, variableName, RESOURCE_CBUFFER, &mMatrix, sizeof(mMatrix));
+			
+		}
+
+
 		XMVECTOR translation, rotQuat, scale;
 		XMMATRIX mat = XMLoadFloat4x4(&mMatrix);
 		XMMatrixDecompose(&scale, &rotQuat, &translation, XMMatrixTranspose(mat));
@@ -108,9 +118,9 @@ namespace NARCO
 		XMStoreFloat4(&mRotation, rotQuat);
 		XMStoreFloat4(&mScale, scale);
 		
-
-
 		mContext->UpdateSubresource(mBuffer.Get(), 0, nullptr, &mMatrix, 0, 0);
+
+		
 
 	}
 	void Transform::render(float delta)
@@ -122,4 +132,5 @@ namespace NARCO
 	void Transform::awake()
 	{
 	}
+
 }

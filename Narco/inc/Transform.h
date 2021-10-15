@@ -1,8 +1,31 @@
 #pragma once
 #include"Common.h"
 #include"Component.h"
+
+#include"Material.h"
+
 namespace NARCO
 {
+
+	//class ProxyTransform : public MaterialProxy
+	//{
+	//public:
+	//	ProxyTransform(Material* material)
+	//		: mMaterial(material) {	}
+
+
+	//	virtual void Invoke() override;
+	//private:
+
+	//	Material* mMaterial;
+	//	const char* mName;
+	//	const char* mVariable;
+	//	eResourceType mType;
+	//	void* mData;
+	//	uint mSize;
+
+	//};
+
 	class Transform : public Component
 	{
 	public:
@@ -28,7 +51,7 @@ namespace NARCO
 		XMVECTOR GetRotation() const { return XMLoadFloat4(&mRotation); }
 		XMVECTOR GetScale() const { return XMLoadFloat4(&mScale); }
 		
-		
+		Material* RenderMaterial;
 	private:
 		ComPtr<ID3D11Buffer> mBuffer;
 
@@ -37,6 +60,7 @@ namespace NARCO
 		XMFLOAT4 mPosition;
 		XMFLOAT4 mRotation;
 		XMFLOAT4 mScale;
+
 
 		virtual void awake() override;
 		virtual void start() override;

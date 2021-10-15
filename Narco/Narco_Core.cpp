@@ -180,7 +180,6 @@ namespace NARCO
 		mMainCanvas->End();
 
 		delete mHardware;
-		delete mDisplay;
 	}
 	void Narco_Deferred_Legacy::clearScreen(const float* clearColor)
 	{

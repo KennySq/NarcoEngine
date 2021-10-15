@@ -51,9 +51,6 @@
     <ClInclude Include="inc\IRenderPipeline.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Narco_Scene.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="inc\GBuffer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -90,20 +87,17 @@
     <ClInclude Include="inc\Skater.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Stage.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\Stage.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="inc\Material.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\StageResources.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="inc\Renderer.h">
       <Filter>헤더 파일\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Stage.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="StageResources.hpp">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -185,11 +179,6 @@
     <None Include="built-in\hlsl\Deferred_FinalPass.hlsl">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="built-in\hlsl\Light.hlsli" />
-    <None Include="built-in\hlsl\Reserved.hlsli" />
-    <None Include="Deferred_CustomUber_0.hlsl" />
-    <None Include="built-in\hlsl\Deferred_CustomUber_0.hlsl">
-      <Filter>리소스 파일</Filter>
-    </None>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

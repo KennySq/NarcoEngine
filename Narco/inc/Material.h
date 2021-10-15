@@ -24,36 +24,51 @@ namespace NARCO
 		SharedPipelineResource<ID3D11Buffer>& GetConstBuffers() { return mBuffers; }
 		SharedPipelineResource<ID3D11ShaderResourceView>& GetShaderResources() { return mShaderResources; }
 		SharedPipelineResource<ID3D11SamplerState>& GetSamplerStates() { return mSamplerStates; }
-		
-		template<typename _Ty>
-		void UpdateResource(const char* name, eResourceType type, void* data, uint size)
+
+		void MapConstantBuffer(const char* cbufferName, const char* variableName, eResourceType type, void* data, uint size)
 		{
 			if (type == RESOURCE_CBUFFER)
 			{
-				auto result = mBuffers.Find(name);
+				auto result = mBuffers.Find(cbufferName);
 
 				if (result == nullptr)
 				{
-					Debug::Log(std::string(name) + " not found.");
+					Debug::Log(std::string(cbufferName) + " not found.");
 					return;
 				}
 
 				D3D11_MAPPED_SUBRESOURCE mappedSub{};
-				HRESULT mapResult = mContext->Map(result, 0, D3D11_MAP_WRITE, 0, &mappedSub);
+				HRESULT mapResult = mContext->Map(result->Resource.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSub);
 				if (mapResult != S_OK)
 				{
 					Debug::Log("failed to map");
 					return;
 				}
 
-				_Ty* ptr = reinterpret_cast<_Ty*>(mappedSub.pData);
+				long long variableHash = MakeHash(variableName);
+				const auto& variableOffsets = mBuffers.VariableOffsets;
+
+				auto variableResult = variableOffsets.find(variableHash);
+
+				if (variableResult == variableOffsets.end())
+				{
+					Debug::Log(std::string(variableName) + " not found.");
+					return;
+				}
+
+				uint offset = variableResult->second;
+
+				int* origin = reinterpret_cast<int*>(mappedSub.pData);
+
+				void* ptr = origin + (offset / sizeof(int));
 
 				memcpy(ptr, data, size);
 
-				mContext->Unmap(result);
-			
+				mContext->Unmap(result->Resource.Get(), 0);
+
 			}
 		}
+
 
 	private:
 		Stage<ID3D11VertexShader>* mVertexStage;
