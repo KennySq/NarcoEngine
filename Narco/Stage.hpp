@@ -1,5 +1,5 @@
 #pragma once
-#include"inc\Stage.h"
+#include"inc/Stage.h"
 
 #include<atlbase.h>
 #include<d3dcompiler.h>
@@ -10,39 +10,89 @@
 namespace NARCO
 {
 	template<>
-	inline Stage<ID3D11VertexShader>::Stage(const char* shaderPath, uint stageFlag)
-		: mPath(shaderPath), mStageFlags(stageFlag)
+	inline Stage<ID3D11VertexShader>::Stage(const char* shaderPath)
+		: mPath(shaderPath), mStageFlag(STAGE_VERTEX)
 	{
-		compile("vert", "vs_5_0");
-		
+		HRESULT result;
+
+		result = compile("vert", "vs_5_0");
+
+		ID3D11VertexShader** shader = reinterpret_cast<ID3D11VertexShader**>(mShader.GetAddressOf());
+		result = mDevice->CreateVertexShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), nullptr, shader);
+
+		if (result != S_OK)
+		{
+			Debug::Log("failed to create shader");
+			return;
+		}
 	}
 
 	template<>
-	inline Stage<ID3D11GeometryShader>::Stage(const char* shaderPath, uint stageFlag)
-		: mPath(shaderPath), mStageFlags(stageFlag)
+	inline Stage<ID3D11GeometryShader>::Stage(const char* shaderPath)
+		: mPath(shaderPath), mStageFlag(STAGE_GEOMETRY)
 	{
+		HRESULT result;
 		compile("geom", "gs_5_0");
+
+		ID3D11GeometryShader** shader = reinterpret_cast<ID3D11GeometryShader**>(mShader.GetAddressOf());
+		result = mDevice->CreateGeometryShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), nullptr, shader);
+		
+		if (result != S_OK)
+		{
+			Debug::Log("failed to create shader");
+			return;
+		}
 	}
 
 	template<>
-	inline Stage<ID3D11DomainShader>::Stage(const char* shaderPath, uint stageFlag)
-		: mPath(shaderPath), mStageFlags(stageFlag)
+	inline Stage<ID3D11DomainShader>::Stage(const char* shaderPath)
+		: mPath(shaderPath), mStageFlag(STAGE_DOMAIN)
 	{
-		compile("doma", "ds_5_0");
+		HRESULT result;
+		result = compile("doma", "ds_5_0");
+
+		ID3D11DomainShader** shader = reinterpret_cast<ID3D11DomainShader**>(mShader.GetAddressOf());
+		result = mDevice->CreateDomainShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), nullptr, shader);
+
+		if (result != S_OK)
+		{
+			Debug::Log("failed to create shader");
+			return;
+		}
 	}
 
 	template<>
-	inline Stage<ID3D11HullShader>::Stage(const char* shaderPath, uint stageFlag)
-		: mPath(shaderPath), mStageFlags(stageFlag)
+	inline Stage<ID3D11HullShader>::Stage(const char* shaderPath)
+		: mPath(shaderPath), mStageFlag(STAGE_HULL)
 	{
-		compile("hull", "hs_5_0");
+		HRESULT result;
+		result = compile("hull", "hs_5_0");
+
+		ID3D11HullShader** shader = reinterpret_cast<ID3D11HullShader**>(mShader.GetAddressOf());
+		result = mDevice->CreateHullShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), nullptr, shader);
+
+		if (result != S_OK)
+		{
+			Debug::Log("failed to create shader");
+			return;
+		}
 	}
 
 	template<>
-	inline Stage<ID3D11PixelShader>::Stage(const char* shaderPath, uint stageFlag)
-		: mPath(shaderPath), mStageFlags(stageFlag)
+	inline Stage<ID3D11PixelShader>::Stage(const char* shaderPath)
+		: mPath(shaderPath), mStageFlag(STAGE_PIXEL)
 	{
-		compile("frag", "ps_5_0");
+		HRESULT result;
+		result = compile("frag", "ps_5_0");
+
+		ID3D11PixelShader** shader = reinterpret_cast<ID3D11PixelShader**>(mShader.GetAddressOf());
+		result = mDevice->CreatePixelShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), nullptr, shader);
+
+		if (result != S_OK)
+		{
+			Debug::Log("failed to create shader");
+			return;
+		}
 	}
 
 	template<typename _ShaderTy>
@@ -59,19 +109,21 @@ namespace NARCO
 		
 		DWORD compileFlag = 0;
 
-		ID3DBlob* blob = nullptr, *errBlob = nullptr;
+		ID3DBlob *errBlob = nullptr;
 
 #ifdef _DEBUG
 		compileFlag |= D3DCOMPILE_DEBUG;
 #endif
 
-		result = D3DCompileFromFile(A2W(mPath.c_str()), nullptr,
+		const char* path = mPath.c_str();
+
+		result = D3DCompileFromFile(A2W(path), nullptr,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE, entry, model,
-			compileFlag, 0, &blob, &errBlob);
+			compileFlag, 0, mByteCodes.GetAddressOf(), &errBlob);
 		
 		if (result != S_OK)
 		{
-			if (result == HRESULT_FROM_WIN32(D3D11_ERROR_FILE_NOT_FOUND))
+			if (result == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND))
 			{
 				Debug::Log(mPath + " => invalid directory.");
 				return result;
@@ -83,26 +135,10 @@ namespace NARCO
 				return result;
 			}
 		}
-
-		result = reflect(blob);
-
-		if (result != S_OK)
-		{
-			return result;
-		}
-		return result;
-	}
-
-	template<typename _ShaderTy>
-	inline HRESULT Stage<_ShaderTy>::reflect(ID3DBlob* blob)
-	{
-		HRESULT result;
 		
-		D3D11_SHADER_DESC shaderDesc{};
-
-		result = D3DReflect(blob->GetBufferPointer(),
-			blob->GetBufferSize(), __uuidof(ID3D11ShaderReflection),
-			 reinterpret_cast<void**>(mReflection.GetAddressOf()));
+		result = D3DReflect(mByteCodes->GetBufferPointer(),
+			mByteCodes->GetBufferSize(), __uuidof(ID3D11ShaderReflection),
+			reinterpret_cast<void**>(mReflection.GetAddressOf()));
 
 		if (result != S_OK)
 		{
@@ -110,7 +146,44 @@ namespace NARCO
 			return result;
 		}
 
-		result = mReflection->GetDesc(&shaderDesc);
+		return result;
+	}
+
+	template<typename _ShaderTy>
+	HRESULT Stage<_ShaderTy>::Reflect(SharedPipelineResource<ID3D11ShaderResourceView>* sharedResources)
+	{
+		D3D11_SHADER_DESC shaderDesc{};
+
+		HRESULT result = mReflection->GetDesc(&shaderDesc);
+		if (result != S_OK)
+		{
+			Debug::Log("failed to get shader descriptor.");
+			return result;
+		}
+
+		return result;
+	}
+
+	template<typename _ShaderTy>
+	HRESULT Stage<_ShaderTy>::Reflect(SharedPipelineResource<ID3D11SamplerState>* sharedResources)
+	{
+		D3D11_SHADER_DESC shaderDesc{};
+
+		HRESULT result = mReflection->GetDesc(&shaderDesc);
+		if (result != S_OK)
+		{
+			Debug::Log("failed to get shader descriptor.");
+			return result;
+		}
+		return result;
+	}
+
+	template<typename _ShaderTy>
+	HRESULT Stage<_ShaderTy>::Reflect(SharedPipelineResource<ID3D11Buffer>* sharedResources)
+	{
+		D3D11_SHADER_DESC shaderDesc{};
+
+		HRESULT result = mReflection->GetDesc(&shaderDesc);
 		if (result != S_OK)
 		{
 			Debug::Log("failed to get shader descriptor.");
@@ -127,10 +200,26 @@ namespace NARCO
 
 			if (resourceDesc.Type == D3D_SIT_CBUFFER)
 			{
+				// check same resource on application
+				if (sharedResources->Find(resourceDesc.Name) == true)
+				{
+					long long hash = MakeHash(resourceDesc.Name);
+					auto resource = sharedResources->Map[hash];
+					
+					resource.StageFlags |= mStageFlag;
+
+					mBuffers.emplace_back(resource.Resource.Get());
+
+					continue;
+				}
+
+				SharedResource<ID3D11Buffer> buffer;
 				D3D11_BUFFER_DESC cbufferDesc{};
 				D3D11_SHADER_BUFFER_DESC cbufferShaderDesc{};
 				ID3D11ShaderReflectionConstantBuffer* cbufferShader = mReflection->GetConstantBufferByName(resourceDesc.Name);
 				
+				buffer.Name = resourceDesc.Name;
+
 				result = cbufferShader->GetDesc(&cbufferShaderDesc);
 
 				uint elementCount = cbufferShaderDesc.Variables;
@@ -148,24 +237,20 @@ namespace NARCO
 						D3D11_SHADER_VARIABLE_DESC variableDesc{};
 						
 						result = variable->GetDesc(&variableDesc);
-					
-					//	variableDesc.
-					}
-				}
-
-				//else if (cbufferShaderDesc.Type == D3D_CT_INTERFACE_POINTERS)
-				//{
-				//	for (uint i = 0; i < elementCount; i++)
-				//	{
-				//		auto variable = cbufferShader->GetVariableByIndex(i);
-				//		D3D11_SHADER_VARIABLE_DESC variableDesc{};
-
-				//		result = variable->GetInterfaceSlot(i);
-				//		
-
-				//	}
-				//}
 				
+					}
+
+					result = mDevice->CreateBuffer(&cbufferDesc, nullptr, buffer.Resource.GetAddressOf());
+					if (result != S_OK)
+					{
+						Debug::Log("failed to create constant buffer.");
+						continue;
+					}
+
+					sharedResources->Add(buffer);
+					mBuffers.emplace_back(buffer.Resource.Get());
+
+				}
 			
 			}
 		}
