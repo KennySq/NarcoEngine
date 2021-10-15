@@ -16,7 +16,7 @@ namespace NARCO
 		DXGI_FORMAT_R32G32B32A32_FLOAT, // Albedo
 	};
 	class Mesh;
-	class Shader;
+	class Material;
 	class GBuffer
 	{
 	public:
@@ -30,6 +30,17 @@ namespace NARCO
 
 		void DrawScreen(ID3D11DeviceContext* context, ID3D11RenderTargetView* backBuffer);
 		void ClearBuffer(ID3D11DeviceContext* context, const float* clearColors);
+
+		void Bound(ID3D11DeviceContext* context) const {
+			context->OMSetRenderTargets(mBufferCount, mRenderTargets.data(), mDepth->GetDepthStencilView());
+		}
+
+		void Unbound(ID3D11DeviceContext* context) const
+		{
+			static ID3D11RenderTargetView* nullRTV[] = { nullptr };
+			context->OMSetRenderTargets(1, nullRTV, nullptr);
+		}
+
 	private:
 		ID3D11Device* mDevice;
 
@@ -45,6 +56,6 @@ namespace NARCO
 		uint mHeight;
 
 		Mesh* mScreenQuadMesh;
-		Shader* mScreenQuadShader;
+		Material* mScreenQuadShader;
 	};
 }
