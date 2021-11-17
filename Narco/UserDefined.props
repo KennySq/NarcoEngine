@@ -2,9 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <NarcoDir>C:\Users\odess\Desktop\Projects\NarcoEngine-RPRework\Narco</NarcoDir>
-    <NarcoGUIDir>C:\Users\odess\Desktop\Projects\NarcoEngine-RPRework\Narco_GUI</NarcoGUIDir>
-    <libDX11Dir>C:\Users\odess\Desktop\Projects\NarcoEngine-RPRework\libDX11</libDX11Dir>
+    <NarcoDir>C:\Users\odess\Desktop\Projects\NarcoEngine\Narco</NarcoDir>
+    <NarcoGUIDir>C:\Users\odess\Desktop\Projects\NarcoEngine\Narco_GUI</NarcoGUIDir>
+    <libDX11Dir>C:\Users\odess\Desktop\Projects\NarcoEngine\libDX11</libDX11Dir>
   </PropertyGroup>
   <PropertyGroup>
     <_PropertySheetDisplayName>User Defined</_PropertySheetDisplayName>

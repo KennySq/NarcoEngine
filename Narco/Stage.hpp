@@ -95,6 +95,23 @@ namespace NARCO
 		}
 	}
 
+	template<>
+	inline Stage<ID3D11ComputeShader>::Stage(const char* shaderPath)
+		: mPath(shaderPath), mStageFlag(STAGE_COMPUTE)
+	{
+		HRESULT result;
+		result = compile("comp", "cs_5_0");
+
+		ID3D11ComputeShader** shader = reinterpret_cast<ID3D11ComputeShader**>(mShader.GetAddressOf());
+		result = mDevice->CreateComputeShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), nullptr, shader);
+
+		if (result != S_OK)
+		{
+			Debug::Log("failed to create shader");
+			return;
+		}
+	}
+
 	template<typename _ShaderTy>
 	inline Stage<_ShaderTy>::~Stage()
 	{
