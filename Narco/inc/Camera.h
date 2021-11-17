@@ -21,6 +21,9 @@ namespace NARCO
 		XMMATRIX GetView() const { return mTransform->GetMatrix(); }
 		XMMATRIX GetProjection() const { return XMLoadFloat4x4(&mProjection); }
 
+		XMVECTOR GetPosition() const { return mTransform->GetPosition(); }
+		XMVECTOR GetDirection() const { return mTransform->GetRotation(); }
+
 		Material* RenderMaterial;
 	private:
 		float mFieldOfView;
