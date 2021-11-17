@@ -12,7 +12,7 @@ namespace NARCO
 		STAGE_DOMAIN = 4,
 		STAGE_HULL = 8,
 		STAGE_PIXEL = 16,
-	  //STAGE_COMPUTE?
+		STAGE_COMPUTE = 32,
 	};
 
 	template<typename _ShaderTy>
