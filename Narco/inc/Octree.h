@@ -3,24 +3,46 @@
 
 namespace NARCO
 {
-	template<typename _Ty>
+	struct AABB
+	{
+		AABB(XMFLOAT3 min, XMFLOAT3 max)
+			: Min(min), Max(max)
+		{
+		}
+
+		AABB(XMVECTOR min, XMVECTOR max)
+		{
+			XMStoreFloat3(&Min, min);
+			XMStoreFloat3(&Max, max);
+		}
+
+		XMFLOAT3 Min;
+		XMFLOAT3 Max;
+	};
+
 	struct Octree
 	{
-		template<typename _Ty>
-		struct Node
-		{
-			_Ty Value;
 
-			Node<_Ty>* Lower[8];
-			Node<_Ty>* Higher;
-		};
 
 	public:
-		Octree();
+		Octree(ID3D11Device* device, ID3D11DeviceContext* context, const AABB& rootBound);
+
+		void Run();
+
 	private:
-		Node* mRoot;
+		static constexpr unsigned int ChannelSize = 0x00000040;
+		
+		ID3D11Device* mDevice;
+		ID3D11DeviceContext* mContext;
+
+		AABB* mRoot;
 		unsigned int mCount;
+		unsigned int mDepth;
 	
-		std::unordered_map<size_t, Node<_Ty>*> mMap;
+		std::unordered_map<size_t, AABB*> mMap;
+		ComPtr<ID3D11Texture3D> mTexture;
+		ComPtr<ID3D11UnorderedAccessView> mTextureUAV;
+
+
 	};
 }
