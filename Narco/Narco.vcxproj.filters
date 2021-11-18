@@ -96,7 +96,19 @@
     <ClInclude Include="Stage.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="StageResources.hpp">
+    <ClInclude Include="inc\Narco_Scene.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Stage.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\StageResources.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\SVO.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Octree.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -158,6 +170,12 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="src\SVO.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Octree.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Narco.rc">
@@ -179,6 +197,15 @@
     <None Include="built-in\hlsl\Deferred_FinalPass.hlsl">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="cpp.hint" />
+    <None Include="built-in\hlsl\Light.hlsli" />
+    <None Include="built-in\hlsl\Reserved.hlsli" />
+    <None Include="Deferred_CustomUber_0.hlsl" />
+    <None Include="built-in\hlsl\Deferred_CustomUber_0.hlsl" />
+    <None Include="built-in\hlsl\InitSVO.hlsl">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="built-in\hlsl\ComputeSVO.hlsl">
+      <Filter>리소스 파일</Filter>
+    </None>
   </ItemGroup>
 </Project>
