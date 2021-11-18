@@ -5,6 +5,8 @@
 
 #include"Camera.h"
 
+#include"Octree.h"
+
 namespace NARCO
 {
 	class SVO
@@ -28,8 +30,9 @@ namespace NARCO
 
 		ID3D11Device* const mDevice;
 
-		Stage<ID3D11ComputeShader>* mCompute;
-		
+		Stage<ID3D11ComputeShader>* mInitCS;
+		Stage<ID3D11ComputeShader>* mComputeCS;
+
 		ComPtr<ID3D11Texture2D> mTriangleTexture;
 		ComPtr<ID3D11ShaderResourceView> mTriangleTextureSRV;
 
@@ -45,8 +48,18 @@ namespace NARCO
 		ComPtr<ID3D11UnorderedAccessView> mDebugTextureUAV;
 		ComPtr<ID3D11ShaderResourceView> mDebugTextureSRV;
 
+		struct Edge
+		{
+			unsigned int A;
+			unsigned int B;
+		};
+
+		ComPtr<ID3D11Buffer> mEdgeBuffer;
+		ComPtr<ID3D11UnorderedAccessView> mEdgeBufferUAV;
 
 		ID3D11DeviceContext* const mContext;
+
+		Octree* mOctree;
 		
 		
 	};
