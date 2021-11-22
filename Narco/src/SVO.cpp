@@ -9,8 +9,8 @@ namespace NARCO
 	}
 	void SVO::Load()
 	{
-		mInitCS = new Stage<ID3D11ComputeShader>("built-in/hlsl/InitSVO.hlsl");
-		
+	//	mInitCS = new Stage<ID3D11ComputeShader>("built-in/hlsl/InitSVO.hlsl");
+		mComputeCS = new Stage<ID3D11ComputeShader>("built-in/hlsl/ComputeSVO.hlsl");
 		D3D11_MAPPED_SUBRESOURCE mapped{};
 		ID3D11Buffer* indexBuffer = mMesh->GetIndex();
 		ID3D11Buffer* vertexBuffer = mMesh->GetVertex();
@@ -194,8 +194,8 @@ namespace NARCO
 			{
 				XMMATRIX view;
 				XMMATRIX projection;
-				XMVECTOR viewPosition;
-				XMVECTOR viewDirection;
+				unsigned int currentDepth;
+				unsigned int maxDepth;
 			};
 
 			constantBufferDesc.ByteWidth = sizeof(SVOConstant);
@@ -212,7 +212,7 @@ namespace NARCO
 			XMVECTOR viewDirection = XMVectorSet(0, 0, 0, 0);// = mCamera->GetDirection();
 
 
-			SVOConstant constant = { view, projection,viewPosition, viewDirection };
+			SVOConstant constant = { view, projection, 0, 8 };
 
 			D3D11_SUBRESOURCE_DATA constantSubresource{};
 
@@ -244,38 +244,36 @@ namespace NARCO
 				return;
 			}
 
-			result = mDevice->CreateUnorderedAccessView(mEdgeBuffer.Get(), &edgeBufferUAVDesc, mEdgeBufferUAV.GetAddressOf());
-			if (result != S_OK)
-			{
-				Debug::Log("failed to create edge buffer unordered access view.");
-				return;
-			}
+			//result = mDevice->CreateUnorderedAccessView(mEdgeBuffer.Get(), &edgeBufferUAVDesc, mEdgeBufferUAV.GetAddressOf());
+			//if (result != S_OK)
+			//{
+			//	Debug::Log("failed to create edge buffer unordered access view.");
+			//	return;
+			//}
 
-			ID3D11Buffer* constantBuffers[] = { mConstantBuffer.Get() };
-			ID3D11ShaderResourceView* shaderResources[] = { mVertexBufferSRV.Get(), mTriangleBufferSRV.Get() };
-			ID3D11UnorderedAccessView* unorderedAccesses[] = { mDebugTextureUAV.Get(), mEdgeBufferUAV.Get() };
+		//	ID3D11Buffer* constantBuffers[] = { mConstantBuffer.Get() };
+		//	ID3D11ShaderResourceView* shaderResources[] = { mVertexBufferSRV.Get(), mTriangleBufferSRV.Get() };
+		//	ID3D11UnorderedAccessView* unorderedAccesses[] = { mDebugTextureUAV.Get(), mEdgeBufferUAV.Get() };
 
-			mContext->CSSetShader(mComputeCS->GetShader(), nullptr, 0);
-			mContext->CSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
-			mContext->CSSetShaderResources(0, ARRAYSIZE(shaderResources), shaderResources);
-			mContext->CSSetUnorderedAccessViews(0, ARRAYSIZE(unorderedAccesses), unorderedAccesses, nullptr);
+		//	mContext->CSSetShader(mComputeCS->GetShader(), nullptr, 0);
+		//	mContext->CSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
+		//	mContext->CSSetShaderResources(0, ARRAYSIZE(shaderResources), shaderResources);
+		//	mContext->CSSetUnorderedAccessViews(0, ARRAYSIZE(unorderedAccesses), unorderedAccesses, nullptr);
 
-			mContext->Dispatch(1280 / 32, 720 / 32, 1);
+		////	mContext->Dispatch(1280 / 32, 720 / 30, 1);
 		}
-
-		
 	}
 	void SVO::Compute()
 	{
 		ID3D11Buffer* constantBuffers[] = { mConstantBuffer.Get() };
 		ID3D11ShaderResourceView* shaderResources[] = { mVertexBufferSRV.Get(), mTriangleBufferSRV.Get() };
-		ID3D11UnorderedAccessView* unorderedAccesses[] = { mDebugTextureUAV.Get() };
+		ID3D11UnorderedAccessView* unorderedAccesses[] = { mDebugTextureUAV.Get(), mOctree->GetTextureUAV() };
 
 		mContext->CSSetShader(mComputeCS->GetShader(), nullptr, 0);
 		mContext->CSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
 		mContext->CSSetShaderResources(0, ARRAYSIZE(shaderResources), shaderResources);
 		mContext->CSSetUnorderedAccessViews(0, ARRAYSIZE(unorderedAccesses), unorderedAccesses, nullptr);
-		mContext->Dispatch(1280 / 32, 720 / 30, 1);
-
+		
+		mContext->Dispatch(32, 32, 32);
 	}
 }
