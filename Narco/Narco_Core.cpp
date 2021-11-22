@@ -7,6 +7,7 @@
 
 #include"inc/Material.h"
 
+
 using namespace NARCO;
 
 namespace NARCO
@@ -49,8 +50,10 @@ namespace NARCO
 
 		//skaterLoader.SetPath("x64/Debug/resources/skater/model/skater.fbx");
 		//skaterLoader.Load();
+		Mesh* shibaMesh = shibaLoader.ConvertMesh();
+		mSelectedScene->AddMesh(shibaMesh);
 
-		mSelectedScene->AddMesh(shibaLoader.ConvertMesh());
+
 		//mSelectedScene->AddMesh(dragonLoader.ConvertMesh());
 		//mSelectedScene->AddMesh(skaterLoader.ConvertMesh());
 
@@ -70,16 +73,17 @@ namespace NARCO
 		mainCamera->SetTag("Main Camera");
 
 
-
+		mVoxelOctree = new SVO(device, context, shibaMesh, mainCam);
+		mVoxelOctree->Load();
 
 		mMainCanvas = new GUI_Canvas(mWindowHandle, mHandleInstance, device, context);
 
-		mMainCanvas->AddFrame(new GUI_Frame("File Slot", 300, 300, ImGuiWindowFlags_NoResize));
+		//mMainCanvas->AddFrame(new GUI_Frame("File Slot", 300, 300, ImGuiWindowFlags_NoResize));
 		mMainCanvas->AddFrame(new GUI_Frame("Color Picker", 400, 300, ImGuiWindowFlags_NoResize));
-		mMainCanvas->AddFrame(new GUI_Frame("Asset Browser", 1100, 400, ImGuiWindowFlags_NoResize));
-		mMainCanvas->AddFrame(new GUI_Frame("Inspector", 400, 800, ImGuiFocusedFlags_None));
-		mMainCanvas->AddFrame(new GUI_Frame("Material", 400, 800, ImGuiFocusedFlags_None));
-		mMainCanvas->AddFrame(new GUI_Frame("Hierarchy", 400, 800, ImGuiFocusedFlags_None));
+		//mMainCanvas->AddFrame(new GUI_Frame("Asset Browser", 1100, 400, ImGuiWindowFlags_NoResize));
+		//mMainCanvas->AddFrame(new GUI_Frame("Inspector", 400, 800, ImGuiFocusedFlags_None));
+		//mMainCanvas->AddFrame(new GUI_Frame("Material", 400, 800, ImGuiFocusedFlags_None));
+		//mMainCanvas->AddFrame(new GUI_Frame("Hierarchy", 400, 800, ImGuiFocusedFlags_None));
 	}
 	void Narco_Deferred_Legacy::PreInit()
 	{
@@ -87,12 +91,12 @@ namespace NARCO
 
 		mSelectedScene->awake();
 
-		auto frame = mMainCanvas->GetFrame(0);
-		auto frame2 = mMainCanvas->GetFrame(1);
-		auto frame3 = mMainCanvas->GetFrame(2);
-		auto frame4 = mMainCanvas->GetFrame(3);
-		auto frame5 = mMainCanvas->GetFrame(4);
-		auto frame6 = mMainCanvas->GetFrame(5);
+		//auto frame = mMainCanvas->GetFrame(0);
+		auto frame2 = mMainCanvas->GetFrame(0);
+		//auto frame3 = mMainCanvas->GetFrame(2);
+		//auto frame4 = mMainCanvas->GetFrame(3);
+		//auto frame5 = mMainCanvas->GetFrame(4);
+		//auto frame6 = mMainCanvas->GetFrame(5);
 
 		AssetManager* assetManager = new AssetManager("C:/Users/odess/Desktop/Projects/NarcoEngine/Narco/x64/Debug/resources/app/assets");
 
@@ -103,13 +107,13 @@ namespace NARCO
 
 
 		GameObject* skater = mSelectedScene->GetGameObject(2);
-		frame->AddGUI("FileSlot_01", new GUI_FileSlot(ASSET_IMAGE, device));
+		//frame->AddGUI("FileSlot_01", new GUI_FileSlot(ASSET_IMAGE, device));
 		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
-		frame3->AddGUI("AssetBrowser_01", new GUI_AssetManager(assetManager, device));
-		frame4->AddGUI("Inspector_01", new GUI_GameObject(shiba));
+		//frame3->AddGUI("AssetBrowser_01", new GUI_AssetManager(assetManager, device));
+		//frame4->AddGUI("Inspector_01", new GUI_GameObject(shiba));
 
-		GUI_GameObject* inspector = static_cast<GUI_GameObject*>(frame4->GetGUI("Inspector_01"));
-		frame6->AddGUI("Hierarchy_01", new GUI_Hierarchy(mSelectedScene, inspector));
+		//GUI_GameObject* inspector = static_cast<GUI_GameObject*>(frame4->GetGUI("Inspector_01"));
+		//frame6->AddGUI("Hierarchy_01", new GUI_Hierarchy(mSelectedScene, inspector));
 	}
 	void Narco_Deferred_Legacy::Init()
 	{
@@ -128,7 +132,7 @@ namespace NARCO
 		static ID3D11ShaderResourceView* nullSrv[6] = { nullptr };
 
 		static GUI_Canvas* canvas = mMainCanvas;
-		static GUI_Frame* frame_ColorPicker = canvas->GetFrame(1);
+		static GUI_Frame* frame_ColorPicker = canvas->GetFrame(0);
 		static GUI_ColorPicker* gui_ColorPicker = static_cast<GUI_ColorPicker*>(frame_ColorPicker->GetGUI("ColorPicker_01"));
 
 		clearScreen(gui_ColorPicker->GetColor4());
@@ -148,6 +152,8 @@ namespace NARCO
 
 
 		context->PSSetShaderResources(0, 6, &nullSrv[0]);
+
+		mVoxelOctree->Compute();
 
 		mMainCanvas->Update();
 
