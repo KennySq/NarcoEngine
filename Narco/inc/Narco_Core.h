@@ -14,6 +14,8 @@
 #include"Shiba.h"
 
 
+#include"SVO.h"
+
 #include<GUI_Bundle.h>
 #pragma comment(lib, "Narco_GUI.lib")
 #pragma comment(lib, "libDX11.lib")
@@ -71,6 +73,8 @@ namespace NARCO
 		GBuffer* mGBuffer;
 
 		GUI_Canvas* mMainCanvas;
+
+		SVO* mVoxelOctree;
 		
 	};
 
