@@ -140,6 +140,8 @@ namespace NARCO
 		
 		if (result != S_OK)
 		{
+			std::cout << static_cast<const char*>(errBlob->GetBufferPointer()) << '\n';
+
 			if (result == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND))
 			{
 				Debug::Log(mPath + " => invalid directory.");
