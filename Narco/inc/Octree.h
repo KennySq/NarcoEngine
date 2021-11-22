@@ -26,11 +26,14 @@ namespace NARCO
 
 	public:
 		Octree(ID3D11Device* device, ID3D11DeviceContext* context, const AABB& rootBound);
+		
+		ID3D11UnorderedAccessView* GetTextureUAV() const { return mTextureUAV.Get(); }
+
 
 		void Run();
 
 	private:
-		static constexpr unsigned int ChannelSize = 0x00000040;
+		static constexpr unsigned int ChannelSize = 0x00000020;
 		
 		ID3D11Device* mDevice;
 		ID3D11DeviceContext* mContext;
