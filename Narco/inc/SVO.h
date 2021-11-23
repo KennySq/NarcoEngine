@@ -24,6 +24,8 @@ namespace NARCO
 		void Load();
 		void Compute();
 
+		void VisualizeTexture();
+		ID3D11ShaderResourceView* GetDebugTexture() const { return mDebugTextureSRV.Get(); }
 	private:
 		Mesh* mMesh;
 		Camera* mCamera;
@@ -47,6 +49,13 @@ namespace NARCO
 		ComPtr<ID3D11Texture2D> mDebugTexture;
 		ComPtr<ID3D11UnorderedAccessView> mDebugTextureUAV;
 		ComPtr<ID3D11ShaderResourceView> mDebugTextureSRV;
+
+
+		ComPtr<ID3D11Buffer> mDebugVertexBuffer;
+		ComPtr<ID3D11Buffer> mDebugIndexBuffer;
+		Material* mDebugMaterial;
+		ComPtr<ID3D11ShaderResourceView> mDebugShaderResourceView;
+
 
 		struct Edge
 		{
