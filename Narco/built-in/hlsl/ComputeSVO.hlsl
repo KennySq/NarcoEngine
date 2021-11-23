@@ -1,4 +1,4 @@
-#define MAX_DEPTH 8
+#define MAX_DEPTH 4
 
 cbuffer Constants : register(b0)
 {
@@ -165,12 +165,12 @@ float4 Subdivide(float4 data, out AABB aabb, uint vertexCount, uint depth, uint3
                 float3 p = ReadVertexBuffer[i].mPosition;
 
             if (aabb.Contain(p) == true)
-            {
+            {   
                 if (depth == (MaxDepth - 1)) // leaf depth
                 {
                     float4 vertex = float4(p.x, p.y, p.z, 1.0f);
                     uint3 treeIndex = data.xyz * 31.999f * depth; // mapping to grid (32x32x32)
-                    
+                     
                     OctreeTexture[treeIndex] = vertex;
                     break;
                 }
@@ -193,6 +193,38 @@ float4 Subdivide(float4 data, out AABB aabb, uint vertexCount, uint depth, uint3
     // Do Specific Subdivision;
         }
     return data;
+}
+
+uint3 getChildNode(uint3 GTid, uint depth)
+{
+    return GTid.xyz * depth;
+}
+
+void TagNode(uint depth, uint3 GTid, uint3 DTid, uint3 Gid)
+{
+    float4 value = OctreeTexture[GTid.xyz];
+    uint3 asIndex = value.xyz;
+    
+    if (value.a == 1.0f) // leaf data
+    {
+        if(depth < MAX_DEPTH - 1)
+        {
+            uint3 child = getChildNode(GTid, depth);
+            float4 newValue = float4(child.xyz, 0.5f);
+            
+            OctreeTexture[asIndex] = newValue;
+        }
+        else
+        {
+            float4 newValue = float4(1.0, 0, 0, 1.0f);
+            OctreeTexture[asIndex] = newValue;
+        }
+    }
+    else
+    {
+        return;
+    }
+
 }
 
 [numthreads(8, 8, 8)] // Eaach thread group will cover maximum voxel limit. (eg. 256^3)
@@ -231,6 +263,10 @@ void comp( uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint
     
     for (uint d = 0; d < MAX_DEPTH; d++)
     {
+        if (DTid.x > d)
+        {
+            continue;
+        }
         //if (DTid.x > d) // Preventing 'Out of Range' situation.
         //{
         //    continue;
@@ -238,8 +274,8 @@ void comp( uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint
        
     // check max depth
     // if max depth 
-        
-        treeNode = Subdivide(treeNode, aabb, vertexCount, d, GTid, Gid);
+            TagNode(d, GTid, DTid, Gid);
+       // treeNode = Subdivide(treeNode, aabb, vertexCount, d, GTid, Gid);
        // OctreeTexture[DTid.xyz] = 1.0f;
         //}
     }
