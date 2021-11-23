@@ -28,7 +28,7 @@ namespace NARCO
 
 		const unsigned int GetBufferCount() const { return mBufferCount; }
 
-		void DrawScreen(ID3D11DeviceContext* context, ID3D11RenderTargetView* backBuffer);
+		void DrawScreen(ID3D11DeviceContext* context, ID3D11RenderTargetView* backBuffer, ID3D11ShaderResourceView* debugSrv);
 		void ClearBuffer(ID3D11DeviceContext* context, const float* clearColors);
 
 		void Bound(ID3D11DeviceContext* context) const {
@@ -49,6 +49,8 @@ namespace NARCO
 
 		std::vector<ID3D11RenderTargetView*> mRenderTargets;
 		std::vector<ID3D11ShaderResourceView*> mShaderResources;
+
+		ComPtr<ID3D11SamplerState> mSamplerStateDirect;
 
 		const unsigned int mBufferCount;
 		
