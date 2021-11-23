@@ -28,7 +28,7 @@ namespace NARCO
 		Octree(ID3D11Device* device, ID3D11DeviceContext* context, const AABB& rootBound);
 		
 		ID3D11UnorderedAccessView* GetTextureUAV() const { return mTextureUAV.Get(); }
-
+		ID3D11Texture3D* GetTexture() const { return mTexture.Get(); }
 
 		void Run();
 
