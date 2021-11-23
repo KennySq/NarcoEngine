@@ -27,12 +27,26 @@ namespace NARCO
 
 		mScreenQuadShader = new Material("built-in/hlsl/Deferred_FinalPass.hlsl", STAGE_VERTEX | STAGE_PIXEL);
 		
-	
+		D3D11_SAMPLER_DESC samplerDirectDesc{};
+
+		samplerDirectDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDirectDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDirectDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		samplerDirectDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		samplerDirectDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+		samplerDirectDesc.MaxLOD = 1;
+
+		HRESULT result = mDevice->CreateSamplerState(&samplerDirectDesc, mSamplerStateDirect.GetAddressOf());
+		if (result != S_OK)
+		{
+			Debug::Log("failed to create sampler state direct.");
+			return;
+		}
 	}
 	GBuffer::~GBuffer()
 	{
 	}
-	void GBuffer::DrawScreen(ID3D11DeviceContext* context, ID3D11RenderTargetView* backBuffer)
+	void GBuffer::DrawScreen(ID3D11DeviceContext* context, ID3D11RenderTargetView* backBuffer, ID3D11ShaderResourceView* debugSrv)
 	{
 		static ID3D11Buffer* vertex[] = { mScreenQuadMesh->GetVertex() };
 		static ID3D11Buffer* index = mScreenQuadMesh->GetIndex();
@@ -40,6 +54,9 @@ namespace NARCO
 		static Stage<ID3D11VertexShader>* vertexStage = mScreenQuadShader->GetVertex();
 		static Stage<ID3D11PixelShader>* pixelStage = mScreenQuadShader->GetPixel();
 
+		static ID3D11SamplerState* samplerStates[] = { mSamplerStateDirect.Get() };
+		static ID3D11SamplerState* nullSampler[] = { nullptr };
+	
 		static unsigned int strides[] = { sizeof(Vertex_Quad) };
 		static unsigned int offsets[] = { 0 };
 		
@@ -54,13 +71,16 @@ namespace NARCO
 
 		uint startIndex = 0;
 
-		for (unsigned int i = 0; i < mBufferCount; i++)
+		/*for (unsigned int i = 0; i < mBufferCount; i++)
 		{
 			bufferSRV.push_back(mBuffers[i]->GetShaderResource());
-		}
+		}*/
+
+		bufferSRV.push_back(debugSrv);
 
 		context->VSSetShader(vertexStage->GetShader(), nullptr, 0);
 		context->PSSetShader(pixelStage->GetShader(), nullptr, 0);
+		context->PSSetSamplers(0, 1, samplerStates);
 
 		context->IASetInputLayout(mScreenQuadShader->GetInputLayout());
 		context->IASetVertexBuffers(0, 1, vertex, strides, offsets);
@@ -68,15 +88,17 @@ namespace NARCO
 
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		context->PSSetShaderResources(0, mBufferCount, bufferSRV.data());
+		//context->PSSetShaderResources(0, mBufferCount, bufferSRV.data());
+		context->PSSetShaderResources(0, 1, bufferSRV.data());
 
 		context->OMSetRenderTargets(1, &backBuffer, nullptr);
+
 
 		context->DrawIndexed(6, 0, 0);
 
 		context->PSSetShaderResources(0, 1, nullSrv);
 	//	context->OMSetRenderTargets(1, nullRtv, nullptr);
-
+		context->PSSetSamplers(0, 1, nullSampler);
 		bufferSRV.clear();
 	}
 	void GBuffer::ClearBuffer(ID3D11DeviceContext* context, const float* clearColors)
