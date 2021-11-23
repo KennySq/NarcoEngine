@@ -148,11 +148,11 @@ namespace NARCO
 		}
 
 		D3D11_TEXTURE2D_DESC debugTextureDesc{};
-		debugTextureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		debugTextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		debugTextureDesc.MipLevels = 1;
 		debugTextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-		debugTextureDesc.Width = 1280;
-		debugTextureDesc.Height = 720;
+		debugTextureDesc.Width = 32;
+		debugTextureDesc.Height = 32;
 		debugTextureDesc.ArraySize = 1;
 		debugTextureDesc.Usage = D3D11_USAGE_DEFAULT;
 		debugTextureDesc.SampleDesc.Count = 1;
@@ -261,6 +261,22 @@ namespace NARCO
 		//	mContext->CSSetUnorderedAccessViews(0, ARRAYSIZE(unorderedAccesses), unorderedAccesses, nullptr);
 
 		////	mContext->Dispatch(1280 / 32, 720 / 30, 1);
+
+			//struct DebugVertex
+			//{
+			//	XMFLOAT3 Position;
+			//	XMFLOAT4 Color;
+			//};
+
+			////DebugVertex debugVertices[] =
+			////{
+			////	{{},{} }
+			////}
+
+			//D3D11_BUFFER_DESC debugVertexBufferDesc{};
+			//debugVertexBufferDesc.ByteWidth = sizeof(DebugVertex) * 8;
+			//debugVertexBufferDesc.
+
 		}
 	}
 	void SVO::Compute()
@@ -268,6 +284,9 @@ namespace NARCO
 		ID3D11Buffer* constantBuffers[] = { mConstantBuffer.Get() };
 		ID3D11ShaderResourceView* shaderResources[] = { mVertexBufferSRV.Get(), mTriangleBufferSRV.Get() };
 		ID3D11UnorderedAccessView* unorderedAccesses[] = { mDebugTextureUAV.Get(), mOctree->GetTextureUAV() };
+		ID3D11ShaderResourceView* nullSrv[] = { nullptr };
+		ID3D11UnorderedAccessView* nullUav[] = { nullptr };
+
 
 		mContext->CSSetShader(mComputeCS->GetShader(), nullptr, 0);
 		mContext->CSSetConstantBuffers(0, ARRAYSIZE(constantBuffers), constantBuffers);
@@ -275,5 +294,15 @@ namespace NARCO
 		mContext->CSSetUnorderedAccessViews(0, ARRAYSIZE(unorderedAccesses), unorderedAccesses, nullptr);
 		
 		mContext->Dispatch(32, 32, 32);
+		static D3D11_BOX box = { 0,0,0, 32,32,1 };
+		
+		mContext->CopySubresourceRegion(mDebugTexture.Get(), 0, 0, 0, 0, mOctree->GetTexture(), 0, &box);
+		mContext->CSSetUnorderedAccessViews(0, 1, nullUav, nullptr);
+		mContext->CSSetShaderResources(0, 1, nullSrv);
+	}
+	void SVO::VisualizeTexture()
+	{
+		
+
 	}
 }
