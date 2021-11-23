@@ -144,14 +144,14 @@ namespace NARCO
 		mSelectedScene->update(delta);
 
 		mGBuffer->Unbound(context);
-		context->PSSetShaderResources(0, 6, &nullSrv[0]);
+		context->PSSetShaderResources(0, 1, &nullSrv[0]);
 
 
 
-		mGBuffer->DrawScreen(context, backBuffer[0]);
+		mGBuffer->DrawScreen(context, backBuffer[0], mVoxelOctree->GetDebugTexture());
 
 
-		context->PSSetShaderResources(0, 6, &nullSrv[0]);
+		context->PSSetShaderResources(0, 1, &nullSrv[0]);
 
 		mVoxelOctree->Compute();
 
@@ -170,7 +170,7 @@ namespace NARCO
 		mMainCanvas->Draw();
 
 		context->OMSetRenderTargets(1, nullRtv, nullptr);
-		context->PSSetShaderResources(0, 6, &nullSrv[0]);
+		context->PSSetShaderResources(0, 1, &nullSrv[0]);
 
 
 
