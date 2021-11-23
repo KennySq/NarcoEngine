@@ -33,7 +33,7 @@ namespace NARCO
 		void Run();
 
 	private:
-		static constexpr unsigned int ChannelSize = 0x00000020;
+		static constexpr unsigned int ChannelSize = 256;
 		
 		ID3D11Device* mDevice;
 		ID3D11DeviceContext* mContext;
