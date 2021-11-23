@@ -123,15 +123,15 @@ static const float3 side5 = float3(0.5f, 0.5f, -0.5f);
 static const float3 side6 = float3(-0.5f, -0.5f, -0.5f);
 static const float3 side7 = float3(0.5f, -0.5f, -0.5f);
 
-AABB getAABB(uint3 id, uint depth, AABB parentAABB)
+AABB getAABB(uint3 id, AABB parentAABB)
 {
     AABB tmp;
     
     //float3 min = parentAABB.Min * (side6 * depth);
     //float3 max = parentAABB.Max * (side1 * depth);
     
-    float3 min = parentAABB.Min * 0.5f;
-    float3 max = parentAABB.Max * 0.5f;
+    float3 min = (parentAABB.Min * 0.5f); //* (id + uint3(1, 1, 1));
+    float3 max = (parentAABB.Max * 0.5f); // * (id + uint3(1, 1, 1));
     
     tmp.Min = min;
     tmp.Max = max;
@@ -139,56 +139,60 @@ AABB getAABB(uint3 id, uint depth, AABB parentAABB)
     return tmp;
 }
 
-int3 getChildIndex(uint3 GTid, uint depth)
+// GTid (0 ~ 7)
+// ???  (0 ~ 31)
+float3 getChildIndex(uint3 GTid, uint3 Gid, uint depth)
 {
-    depth = depth + 1;
-    int3 index = int3(GTid.x * depth, GTid.y * depth, GTid.z * depth); // ???
+    float3 inverseS = 1 / float3(32, 32, 32);
+    float M = 256;
+    float3 ND = pow(8, 8);
+    float3 delta = depth;
+    float3 p = M * ND * delta * inverseS;
     
-    return index;
+    return p;
 }
 
-float4 Subdivide(float4 data, out AABB aabb, uint vertexCount, uint depth, uint3 GTid)
+float4 Subdivide(float4 data, out AABB aabb, uint vertexCount, uint depth, uint3 GTid, uint3 Gid)
 {   
-    float4 newIndex = float4(0, 0, 0, 0);
-  //  AABB bound = aabb;
-
         if (data.a == 0.0f)
         {
             return float4(0, 0, 0, 0);
         }
-        else
+        else // when the alpha is 1.0f
         {
             for (uint i = 0; i < vertexCount; i++)
             {
                 float3 p = ReadVertexBuffer[i].mPosition;
 
-                if (aabb.Contain(p))
+            if (aabb.Contain(p) == true)
+            {
+                if (depth == (MaxDepth - 1)) // leaf depth
                 {
-                    if (depth == MaxDepth - 1) // leaf depth
-                    {
-                        newIndex = float4(p.x, p.y, p.z, 1.0f);
-                        OctreeTexture[data.xyz] = newIndex;
-                        break;
-                    }
-                    else
-                    {
-                        int3 child = getChildIndex(GTid, depth + 1);
-                        newIndex = float4(child.x, child.y, child.z, 0.5f);
-                        
-                        AABB newBound;
-                        newBound = getAABB(GTid, depth + 1, aabb);
-                        aabb = newBound;
-                        
-                        OctreeTexture[data.xyz] = newIndex; // Write child index to current node.
-                        break;   
-                    }
+                    float4 vertex = float4(p.x, p.y, p.z, 1.0f);
+                    uint3 treeIndex = data.xyz * 31.999f * depth; // mapping to grid (32x32x32)
+                    
+                    OctreeTexture[treeIndex] = vertex;
+                    break;
                 }
-
+                else // when it's not leaf depth
+                {
+                    float3 child = getChildIndex(GTid, Gid, depth + 1); // child index within the entire tree.
+                    float4 newData = float4(child.x, child.y, child.z, 0.5f);
+                        
+                    AABB childBound = getAABB(child, aabb);
+                    aabb = childBound;
+                        
+                    OctreeTexture[data.xyz] = newData / float4(31.999f, 31.999f, 31.999f, 1.0f); // Write child index to current node.
+                    data = newData;
+                    break;
+                }
             }
+
+        }
         
     // Do Specific Subdivision;
         }
-    return newIndex;
+    return data;
 }
 
 [numthreads(8, 8, 8)] // Eaach thread group will cover maximum voxel limit. (eg. 256^3)
@@ -231,21 +235,13 @@ void comp( uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint
         //{
         //    continue;
         //}
-        
-        if (treeNode.a == 0.5f) // where it's threated as an index
-        {
-            int4 nodeIndex = int4(treeNode.x, treeNode.y, treeNode.z, 0.0f);
-            float4 newNode = OctreeTexture.Load(nodeIndex);
-            treeNode = newNode;
-        }
-        else
-        {
+       
     // check max depth
     // if max depth 
         
-            treeNode = Subdivide(treeNode, aabb, vertexCount, d, DTid);
-
-        }
+        treeNode = Subdivide(treeNode, aabb, vertexCount, d, GTid, Gid);
+       // OctreeTexture[DTid.xyz] = 1.0f;
+        //}
     }
     // if node is leaf... (where x, y, z are threated as contents)
     //      check max depth and do subdivision
