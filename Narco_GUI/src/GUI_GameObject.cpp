@@ -91,30 +91,16 @@ namespace NARCO
 			XMVECTOR originScale = transform->GetScale();
 
 			XMVECTOR position = { mGuiMatrix[0][0], mGuiMatrix[0][1], mGuiMatrix[0][2], 1.0f };
-			XMVECTOR rotation = { XMConvertToRadians(mGuiMatrix[1][0]), XMConvertToRadians(mGuiMatrix[1][1]), XMConvertToRadians(mGuiMatrix[1][2]) };
+			XMVECTOR rotation = { XMConvertToRadians(mGuiMatrix[1][0]), XMConvertToRadians(mGuiMatrix[1][1]), XMConvertToRadians(mGuiMatrix[1][2]), XMConvertToRadians(mGuiMatrix[1][3]) };
 			XMVECTOR scale	  = { mGuiMatrix[2][0], mGuiMatrix[2][1], mGuiMatrix[2][2], 1.0f };
 			
 			//rotation = XMQuaternionRotationRollPitchYaw(rotation.m128_f32[0], rotation.m128_f32[1], rotation.m128_f32[2]);
-			rotation = XMQuaternionRotationRollPitchYaw(mGuiMatrix[1][0], mGuiMatrix[1][1], mGuiMatrix[1][2]);
-			XMMATRIX mat = XMMatrixAffineTransformation(scale, XMQuaternionIdentity(), rotation, position);
+			//XMQuaternionRotationRollPitchYaw(mGuiMatrix[1][0], mGuiMatrix[1][1], mGuiMatrix[1][2]);
+			XMMATRIX mat = XMMatrixAffineTransformation(scale, XMQuaternionIdentity(), XMQuaternionIdentity(), position);
+			//mat *= XMMatrixRotationQuaternion(rotation);
 			
-			
-			auto rot = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(mGuiMatrix[1][0]),
-				XMConvertToRadians(mGuiMatrix[1][1]), XMConvertToRadians(mGuiMatrix[1][2]));
-			XMVECTOR rotToDeg;
-
-			for (uint i = 0; i < 4; i++)
-			{
-				// quaternion to degrees ?
-				rotToDeg.m128_f32[i] = XMConvertToDegrees(rot.m128_f32[i]);
-			}
-			
-			auto q = XMQuaternionRotationMatrix(mat);
-			XMVECTOR qVec;
-			for (int i = 0; i < 4; i++)
-			{
-				qVec.m128_f32[i] = XMConvertToDegrees(q.m128_f32[i]);
-			}
+			//auto rot = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(mGuiMatrix[1][0]),
+			//	XMConvertToRadians(mGuiMatrix[1][1]), XMConvertToRadians(mGuiMatrix[1][2]));
 
 			//for (uint i = 0; i < 3; i++)
 			//{
