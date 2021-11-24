@@ -120,6 +120,7 @@ namespace NARCO
 		mSelectedScene->start();
 
 		mMainCanvas->Start();
+		mVoxelOctree->Compute();
 
 	}
 	void Narco_Deferred_Legacy::Update(float delta)
@@ -153,7 +154,6 @@ namespace NARCO
 
 		context->PSSetShaderResources(0, 1, &nullSrv[0]);
 
-		mVoxelOctree->Compute();
 
 		mMainCanvas->Update();
 
