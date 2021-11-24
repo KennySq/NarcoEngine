@@ -1,4 +1,4 @@
-#define MAX_DEPTH 4
+#define MAX_DEPTH 8
 
 cbuffer Constants : register(b0)
 {
@@ -53,9 +53,9 @@ struct AABB
     
     bool Contain(float3 p)
     {
-        bool criteriaX = p.x > Min.x || p.x < Max.x;
-        bool criteriaY = p.y > Min.y || p.y < Max.y;
-        bool criteriaZ = p.z > Min.z || p.z < Max.z;
+        bool criteriaX = p.x >= Min.x && p.x <= Max.x;
+        bool criteriaY = p.y >= Min.y && p.y <= Max.y;
+        bool criteriaZ = p.z >= Min.z && p.z <= Max.z;
     
         return (criteriaX && criteriaY && criteriaZ);
     }
@@ -97,193 +97,102 @@ RWTexture3D<unorm float4> OctreeTexture : register(u1);   // Tree Indexing Textu
 
 //}
 
-
-void ContainsEdge(AABB node, uint edgeCount, uint dtz)
-{
-    if (dtz < edgeCount)
-    {
-        Edge e = EdgeStream[dtz];
-        
-        //if (node.Contain(e))
-        //{
-        //    Divide(node);
-        //}
-    }
+//AABB getAABB(uint3 id, AABB parentAABB)
+//{
+//    AABB tmp;
     
-    GroupMemoryBarrierWithGroupSync();
+//    //float3 min = parentAABB.Min * (side6 * depth);
+//    //float3 max = parentAABB.Max * (side1 * depth);
+    
+//    float3 min = (parentAABB.Min * 0.5f); //* (id + uint3(1, 1, 1));
+//    float3 max = (parentAABB.Max * 0.5f); // * (id + uint3(1, 1, 1));
+    
+//    tmp.Min = min;
+//    tmp.Max = max;
+    
+//    return tmp;
+//}
+
+//// GTid (0 ~ 7)
+//// ???  (0 ~ 31)
+//float3 getChildIndex(uint3 GTid, uint3 Gid, uint depth)
+//{
+//    float3 inverseS = 1 / float3(32, 32, 32);
+//    float M = 256;
+//    float3 ND = pow(8, 8);
+//    float3 delta = depth;
+//    float3 p = M * ND * delta * inverseS;
+    
+//    return p;
+//}
+
+//uint3 getChildNode(uint3 DTid, uint depth, float3 vertex)
+//{
+//    float n = pow(8, depth);
+//    float3 id = DTid.xyz + frac(vertex * n); // 
+//    return id / 32;
+//}
+
+float3 getChildNode(uint3 index, uint depth, float3 vertex)
+{
+    float3 m = vertex;
+    float n = pow(8, depth);
+    float3 id = index + frac(vertex * n);
+    return id / (32 * 32 * 32);
+    //float s = 1.0f /(32.0f * 32.0f * 32.0f);
+    //float3 p = m * n *   * s;
+    
 }
 
-static const float3 side0 = float3(-0.5f, 0.5f, 0.5f);
-static const float3 side1 = float3(0.5f, 0.5f, 0.5f);
-static const float3 side2 = float3(-0.5f, -0.5f, 0.5f);
-static const float3 side3 = float3(0.5f, -0.5f, 0.5f);
-
-static const float3 side4 = float3(-0.5f, 0.5f, -0.5f);
-static const float3 side5 = float3(0.5f, 0.5f, -0.5f);
-static const float3 side6 = float3(-0.5f, -0.5f, -0.5f);
-static const float3 side7 = float3(0.5f, -0.5f, -0.5f);
-
-AABB getAABB(uint3 id, AABB parentAABB)
+[numthreads(8,8,8)]
+void comp(uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint3 Gid : SV_GroupID, uint Gi : SV_GroupIndex)
 {
-    AABB tmp;
+    OctreeTexture[DTid] = float4(0, 0, 0, 1);
     
-    //float3 min = parentAABB.Min * (side6 * depth);
-    //float3 max = parentAABB.Max * (side1 * depth);
+    uint vertexCount, vertexStride;
+    uint3 globalIndex = DTid;
+    uint3 localIndex = GTid;
+    uint3 localGridIndex = Gid;
     
-    float3 min = (parentAABB.Min * 0.5f); //* (id + uint3(1, 1, 1));
-    float3 max = (parentAABB.Max * 0.5f); // * (id + uint3(1, 1, 1));
-    
-    tmp.Min = min;
-    tmp.Max = max;
-    
-    return tmp;
-}
-
-// GTid (0 ~ 7)
-// ???  (0 ~ 31)
-float3 getChildIndex(uint3 GTid, uint3 Gid, uint depth)
-{
-    float3 inverseS = 1 / float3(32, 32, 32);
-    float M = 256;
-    float3 ND = pow(8, 8);
-    float3 delta = depth;
-    float3 p = M * ND * delta * inverseS;
-    
-    return p;
-}
-
-float4 Subdivide(float4 data, out AABB aabb, uint vertexCount, uint depth, uint3 GTid, uint3 Gid)
-{   
-        if (data.a == 0.0f)
-        {
-            return float4(0, 0, 0, 0);
-        }
-        else // when the alpha is 1.0f
-        {
-            for (uint i = 0; i < vertexCount; i++)
-            {
-                float3 p = ReadVertexBuffer[i].mPosition;
-
-            if (aabb.Contain(p) == true)
-            {   
-                if (depth == (MaxDepth - 1)) // leaf depth
-                {
-                    float4 vertex = float4(p.x, p.y, p.z, 1.0f);
-                    uint3 treeIndex = data.xyz * 31.999f * depth; // mapping to grid (32x32x32)
-                     
-                    OctreeTexture[treeIndex] = vertex;
-                    break;
-                }
-                else // when it's not leaf depth
-                {
-                    float3 child = getChildIndex(GTid, Gid, depth + 1); // child index within the entire tree.
-                    float4 newData = float4(child.x, child.y, child.z, 0.5f);
-                        
-                    AABB childBound = getAABB(child, aabb);
-                    aabb = childBound;
-                        
-                    OctreeTexture[data.xyz] = newData / float4(31.999f, 31.999f, 31.999f, 1.0f); // Write child index to current node.
-                    data = newData;
-                    break;
-                }
-            }
-
-        }
-        
-    // Do Specific Subdivision;
-        }
-    return data;
-}
-
-uint3 getChildNode(uint3 GTid, uint depth)
-{
-    return GTid.xyz * depth;
-}
-
-void TagNode(uint depth, uint3 GTid, uint3 DTid, uint3 Gid)
-{
-    float4 value = OctreeTexture[GTid.xyz];
-    uint3 asIndex = value.xyz;
-    
-    if (value.a == 1.0f) // leaf data
-    {
-        if(depth < MAX_DEPTH - 1)
-        {
-            uint3 child = getChildNode(GTid, depth);
-            float4 newValue = float4(child.xyz, 0.5f);
-            
-            OctreeTexture[asIndex] = newValue;
-        }
-        else
-        {
-            float4 newValue = float4(1.0, 0, 0, 1.0f);
-            OctreeTexture[asIndex] = newValue;
-        }
-    }
-    else
-    {
-        return;
-    }
-
-}
-
-[numthreads(8, 8, 8)] // Eaach thread group will cover maximum voxel limit. (eg. 256^3)
-void comp( uint3 DTid : SV_DispatchThreadID, uint3 GTid : SV_GroupThreadID, uint3 Gid : SV_GroupID, uint Gi : SV_GroupIndex)
-{
-    uint edgeCount;
-    uint edgeStride;
-    
-    uint voxelCount;
-    uint voxelStride;
-    
-    uint vertexCount;
-    uint vertexStride;
-    
-    EdgeStream.GetDimensions(edgeCount, edgeStride);
     ReadVertexBuffer.GetDimensions(vertexCount, vertexStride);
     
-    bool IsRoot = false;
-    
-    // clamp if this dispatch is root.
-    
-    int4 octreeIndex = int4(DTid.x, DTid.y, DTid.z, 0.0f); // (0, 0, 0) are fine... but how about (3, 1, 6) for root dispatch?
-    float4 treeNode = OctreeTexture.Load(octreeIndex);
-    
-    uint3 root;
-    
-    if (DTid.x == 0 && DTid.y == 0 && DTid.z == 0)
+    for (uint i = 0; i < MAX_DEPTH; i++)
     {
-        root = uint3(0, 0, 0);
-        OctreeTexture[root] = float4(0, 0, 0, 1.0f);
-    }
-    
-    AllMemoryBarrierWithGroupSync();
-    
-    AABB aabb = { float3(-1, -1, -1), float3(1, 1, 1) };
-    
-    for (uint d = 0; d < MAX_DEPTH; d++)
-    {
-        if (DTid.x > d)
-        {
-            continue;
-        }
-        //if (DTid.x > d) // Preventing 'Out of Range' situation.
+        //if (DTid.x > i || DTid.y > i || DTid.z > i)
         //{
         //    continue;
         //}
-       
-    // check max depth
-    // if max depth 
-            TagNode(d, GTid, DTid, Gid);
-       // treeNode = Subdivide(treeNode, aabb, vertexCount, d, GTid, Gid);
-       // OctreeTexture[DTid.xyz] = 1.0f;
-        //}
+        
+        float4 value = OctreeTexture[globalIndex];
+        
+        if (value.a == 1.0f)
+        {
+            for (uint v = 0; v < vertexCount; v++)
+            {
+                float3 vertex = ReadVertexBuffer[v].mPosition;
+                if (i < MAX_DEPTH) // not leaf
+                {
+                    float3 child = getChildNode(localGridIndex, i, vertex);
+                    OctreeTexture[globalIndex] = float4(floor(child.xyz), 0.5f);
+                    localIndex = child;
+                
+                 //   break;
+              //  OctreeTexture[index] = float4(1, 1, 1, 1);
+
+                }
+                else // leaf
+                {
+                    OctreeTexture[localIndex] = float4(vertex, 1.0f);
+               // OctreeTexture[index] = float4(1, 1, 0, 1.0f);
+
+                }
+            }
+        }
+        
     }
-    // if node is leaf... (where x, y, z are threated as contents)
-    //      check max depth and do subdivision
-    // if node is not leaf ... (which those are threated as index)
-    //      keep search through the tree.
     
-    AllMemoryBarrierWithGroupSync();
     
+    AllMemoryBarrierWithGroupSync
+    ();
+
 }
