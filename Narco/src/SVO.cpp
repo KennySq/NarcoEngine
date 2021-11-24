@@ -151,8 +151,8 @@ namespace NARCO
 		debugTextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		debugTextureDesc.MipLevels = 1;
 		debugTextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-		debugTextureDesc.Width = 32;
-		debugTextureDesc.Height = 32;
+		debugTextureDesc.Width = 256;
+		debugTextureDesc.Height = 256;
 		debugTextureDesc.ArraySize = 1;
 		debugTextureDesc.Usage = D3D11_USAGE_DEFAULT;
 		debugTextureDesc.SampleDesc.Count = 1;
