@@ -53,7 +53,7 @@ namespace NARCO
 
 		origin *= translation;
 
-		XMStoreFloat4x4(&mMatrix, XMMatrixTranspose(origin));
+		XMStoreFloat4x4(&mMatrix, origin);
 	}
 	void Transform::Rotate(float x, float y, float z)
 	{
@@ -67,7 +67,7 @@ namespace NARCO
 
 		origin *= rot;
 
-		XMStoreFloat4x4(&mMatrix, XMMatrixTranspose(origin));
+		XMStoreFloat4x4(&mMatrix, origin);
 	}
 	void Transform::Rotate(XMVECTOR offset)
 	{
@@ -80,7 +80,7 @@ namespace NARCO
 
 		origin *= rot;
 
-		XMStoreFloat4x4(&mMatrix, XMMatrixTranspose(origin));
+		XMStoreFloat4x4(&mMatrix, origin);
 
 	}
 	void Transform::SetScale(float x, float y, float z)
@@ -111,17 +111,14 @@ namespace NARCO
 
 
 		XMVECTOR translation, rotQuat, scale;
-		XMMATRIX mat = XMLoadFloat4x4(&mMatrix);
-		XMMatrixDecompose(&scale, &rotQuat, &translation, XMMatrixTranspose(mat));
+		XMMATRIX mat = XMMatrixTranspose(XMLoadFloat4x4(&mMatrix));
+		XMMatrixDecompose(&scale, &rotQuat, &translation, mat);
 
 		XMStoreFloat4(&mPosition, translation);
 		XMStoreFloat4(&mRotation, rotQuat);
 		XMStoreFloat4(&mScale, scale);
 		
 		mContext->UpdateSubresource(mBuffer.Get(), 0, nullptr, &mMatrix, 0, 0);
-
-		
-
 	}
 	void Transform::render(float delta)
 	{
