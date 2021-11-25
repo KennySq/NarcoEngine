@@ -43,6 +43,8 @@ namespace NARCO
 		void SetScale(float x, float y, float z);
 		void SetPosition(float x, float y, float z);
 
+		void SetRotation(float x, float y, float z);
+
 		XMMATRIX GetMatrix() const { return XMLoadFloat4x4(&mMatrix); }
 		void SetMatrix(XMMATRIX matrix) { XMStoreFloat4x4(&mMatrix, matrix); }
 		ID3D11Buffer* GetBuffer() const { return mBuffer.Get(); }

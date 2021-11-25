@@ -61,11 +61,15 @@ namespace NARCO
 		float yR = XMConvertToRadians(y);
 		float zR = XMConvertToRadians(z);
 
-		XMMATRIX rot = XMMatrixRotationRollPitchYaw(xR, yR, zR);
-		XMMATRIX origin = XMLoadFloat4x4(&mMatrix);
 		
+		XMVECTOR rotQuat = XMQuaternionRotationRollPitchYaw(xR, yR, zR);
+		XMMATRIX rot = XMMatrixRotationQuaternion(rotQuat);
 
-		origin *= rot;
+		XMMATRIX translation = XMMatrixTranslation(mMatrix._41, mMatrix._42, mMatrix._43);
+
+		XMMATRIX origin = rot;
+
+		origin *= translation;
 
 		XMStoreFloat4x4(&mMatrix, origin);
 	}
@@ -75,10 +79,17 @@ namespace NARCO
 		float yR = XMConvertToRadians(offset.m128_f32[1]);
 		float zR = XMConvertToRadians(offset.m128_f32[2]);
 
-		XMMATRIX rot = XMMatrixRotationRollPitchYaw(xR, yR, zR);
+		XMMATRIX rot;
+		XMMATRIX rotX = XMMatrixRotationX(xR);
+		XMMATRIX rotY = XMMatrixRotationY(yR);
+		XMMATRIX rotZ = XMMatrixRotationZ(zR);
+
+		rot = XMMatrixMultiply(rotX, rotY);
+		rot = XMMatrixMultiply(rot, rotZ);
+
 		XMMATRIX origin = XMLoadFloat4x4(&mMatrix);
 
-		origin *= rot;
+		XMMatrixMultiply(origin, rot);
 
 		XMStoreFloat4x4(&mMatrix, origin);
 
@@ -95,6 +106,27 @@ namespace NARCO
 		mMatrix._42 = y;
 		mMatrix._43 = z;
 	}
+	void Transform::SetRotation(float x, float y, float z)
+	{
+		float xR = XMConvertToRadians(x);
+		float yR = XMConvertToRadians(y);
+		float zR = XMConvertToRadians(z);
+
+		XMMATRIX rotQuat = XMMatrixRotationRollPitchYaw(xR, yR, zR);
+		XMVECTOR outScale, outPosition, outRotation;
+		XMMATRIX origin = XMLoadFloat4x4(&mMatrix);
+
+		if (XMMatrixDecompose(&outScale, &outRotation, &outPosition, origin))
+		{
+			Debug::Log("failed to decompose transform matrix");
+		}
+
+		XMMATRIX rot = XMMatrixRotationQuaternion(-outRotation);
+
+		XMMatrixMultiply(origin, rot);
+
+		XMStoreFloat4x4(&mMatrix, origin);
+	}
 	void Transform::start()
 	{
 	}
@@ -104,21 +136,20 @@ namespace NARCO
 		{
 			static const char* cbufferName = "Constants";
 			static const char* variableName = "gWorld";
-			
-			RenderMaterial->MapConstantBuffer(cbufferName, variableName, RESOURCE_CBUFFER, &mMatrix, sizeof(mMatrix));
-			
+			XMMATRIX loadMat = XMMatrixTranspose(XMLoadFloat4x4(&mMatrix));
+
+			RenderMaterial->MapConstantBuffer(cbufferName, variableName, RESOURCE_CBUFFER, &loadMat, sizeof(loadMat));	
 		}
 
-
 		XMVECTOR translation, rotQuat, scale;
-		XMMATRIX mat = XMMatrixTranspose(XMLoadFloat4x4(&mMatrix));
+		XMMATRIX mat = XMLoadFloat4x4(&mMatrix);
 		XMMatrixDecompose(&scale, &rotQuat, &translation, mat);
 
 		XMStoreFloat4(&mPosition, translation);
 		XMStoreFloat4(&mRotation, rotQuat);
 		XMStoreFloat4(&mScale, scale);
 		
-		mContext->UpdateSubresource(mBuffer.Get(), 0, nullptr, &mMatrix, 0, 0);
+	//	mContext->UpdateSubresource(mBuffer.Get(), 0, nullptr, &loadMat, 0, 0);
 	}
 	void Transform::render(float delta)
 	{
