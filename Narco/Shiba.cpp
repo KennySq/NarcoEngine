@@ -32,16 +32,19 @@ void Shiba::awake()
 
 void Shiba::start()
 {
-	mTransform->Translate(-500, 0, 0.125f);
-	//mTransform->Rotate(0, 0, 0);
+	mTransform->Translate(-5.0f, .0f, 0.0f);
 
 	GameObject::start();
+
+	//mTransform->Rotate(0.0f, 90.0f, 0);
 }
 
 void Shiba::update(float delta)
 {
 
 	GameObject::update(delta);
+	mTransform->Rotate(0.0f, 0.0f, 1.0f);
+
 
 }
 
