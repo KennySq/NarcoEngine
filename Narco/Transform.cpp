@@ -61,17 +61,24 @@ namespace NARCO
 		float yR = XMConvertToRadians(y);
 		float zR = XMConvertToRadians(z);
 
-		
-		XMVECTOR rotQuat = XMQuaternionRotationRollPitchYaw(xR, yR, zR);
-		XMMATRIX rot = XMMatrixRotationQuaternion(rotQuat);
-
 		XMMATRIX translation = XMMatrixTranslation(mMatrix._41, mMatrix._42, mMatrix._43);
+		XMMATRIX origin = XMLoadFloat4x4(&mMatrix);
 
-		XMMATRIX origin = rot;
+		XMVECTOR rotQuat = XMQuaternionRotationMatrix(origin);
+		XMMATRIX previous = XMMatrixRotationQuaternion(rotQuat);
+		XMMATRIX identity = XMMatrixIdentity();
 
-		origin *= translation;
+		XMMATRIX rotX = XMMatrixRotationX(xR);
+		XMMATRIX rotY = XMMatrixRotationY(yR);
+		XMMATRIX rotZ = XMMatrixRotationZ(zR);
 
-		XMStoreFloat4x4(&mMatrix, origin);
+		identity = XMMatrixMultiply(previous, rotX);
+		identity = XMMatrixMultiply(identity, rotY);
+		identity = XMMatrixMultiply(identity, rotZ);
+
+		identity *= translation;
+
+		XMStoreFloat4x4(&mMatrix, identity);
 	}
 	void Transform::Rotate(XMVECTOR offset)
 	{
@@ -84,15 +91,12 @@ namespace NARCO
 		XMMATRIX rotY = XMMatrixRotationY(yR);
 		XMMATRIX rotZ = XMMatrixRotationZ(zR);
 
-		rot = XMMatrixMultiply(rotX, rotY);
-		rot = XMMatrixMultiply(rot, rotZ);
-
 		XMMATRIX origin = XMLoadFloat4x4(&mMatrix);
-
-		XMMatrixMultiply(origin, rot);
+		origin = XMMatrixMultiply(origin, rotX);
+		origin = XMMatrixMultiply(origin, rotY);
+		origin = XMMatrixMultiply(origin, rotZ);
 
 		XMStoreFloat4x4(&mMatrix, origin);
-
 	}
 	void Transform::SetScale(float x, float y, float z)
 	{
@@ -112,18 +116,23 @@ namespace NARCO
 		float yR = XMConvertToRadians(y);
 		float zR = XMConvertToRadians(z);
 
-		XMMATRIX rotQuat = XMMatrixRotationRollPitchYaw(xR, yR, zR);
-		XMVECTOR outScale, outPosition, outRotation;
-		XMMATRIX origin = XMLoadFloat4x4(&mMatrix);
 
-		if (XMMatrixDecompose(&outScale, &outRotation, &outPosition, origin))
-		{
-			Debug::Log("failed to decompose transform matrix");
-		}
+		XMVECTOR rotQuat = XMQuaternionRotationRollPitchYaw(xR, yR, zR);
+		XMMATRIX rot = XMMatrixRotationQuaternion(rotQuat);
 
-		XMMATRIX rot = XMMatrixRotationQuaternion(-outRotation);
+		XMMATRIX translation = XMMatrixTranslation(mMatrix._41, mMatrix._42, mMatrix._43);
 
-		XMMatrixMultiply(origin, rot);
+		XMMATRIX origin = XMMatrixIdentity();
+
+		XMMATRIX rotX = XMMatrixRotationX(xR);
+		XMMATRIX rotY = XMMatrixRotationY(yR);
+		XMMATRIX rotZ = XMMatrixRotationZ(zR);
+
+		origin = XMMatrixMultiply(origin, rotX);
+		origin = XMMatrixMultiply(origin, rotY);
+		origin = XMMatrixMultiply(origin, rotZ);
+
+		origin *= translation;
 
 		XMStoreFloat4x4(&mMatrix, origin);
 	}
