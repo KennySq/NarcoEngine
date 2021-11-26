@@ -1,171 +1,101 @@
 #include"../inc/GUI_Material.h"
-#include<Asset.h>
+
 namespace NARCO
 {
-	GUI_Material::GUI_Material(Material* material, ID3D11Device* device, uint materialIndex)
-		: mMaterial(material), mDevice(device), mMaterialIndex(materialIndex)
-	{
-		
-		
-		
-	}
-	GUI_Material::~GUI_Material()
+	GUI_Material::GUI_Material(ID3D11Device* device)
+		: mDevice(device)
 	{
 	}
-	NARCO_API void GUI_Material::Start()
+	void GUI_Material::Start()
 	{
-		static auto& constRegisters = mMaterial->GetBuffers();
-		static auto& textureRegisters = mMaterial->GetTextures();
-		static auto& unorders = mMaterial->GetUnorders();
+		
+	}
+	void GUI_Material::Update()
+	{
+		ImGui::Text("Material Editor");
 
-		const Shader* shader = mMaterial->GetShader();
-		Reflector* vertRef = shader->GetVertexReflect();
-		
-		
-		static char buf[64] = "";
-		
-		D3D11_BUFFER_DESC bufDesc{};
-
-		for(auto& i : constRegisters)
+		if (mGameObject != nullptr)
 		{
-			auto buffer = i.second->Buffer.Get();
-			auto variables = i.second->VariableNames;
-			buffer->GetDesc(&bufDesc);
-			uint size = bufDesc.ByteWidth;
-
-			// some data (various size)
-			for (auto& j : variables)
+			uint materialCount = mMaterials.size();
+			
+			for (uint i = 0; i < materialCount; i++)
 			{
-				ePropertyDimension dim = j.second.Dimension;
-				uint size = j.second.Size;
-				MaterialInput input;
+				Material* material = mMaterials[i];
+				SharedPipelineResource<ID3D11ShaderResourceView>& shaderResources = material->GetShaderResources();
+				auto& resourceMap = shaderResources.Map;
+				uint resourceCount = resourceMap.size();
 
-				if (dim == DIMENSION_FLOAT4X4)
+				uint resourceIndex = 0;
+				for (auto r : resourceMap)
 				{
-					XMFLOAT4X4* mat = new XMFLOAT4X4();
-					input.Data = mat;
-					input.Size = size;
+					GUI_FileSlot* fileSlot = mTextureSlots[i][resourceIndex];
+
+					fileSlot->Update();
+
+					resourceIndex++;
 				}
-				else if (dim == DIMENSION_FLOAT4)
+			}
+		}
+
+
+	}
+	void GUI_Material::Draw()
+	{
+	}
+	void GUI_Material::End()
+	{
+		uint materialSize = mMaterials.size();
+
+		for (uint i = 0; i < materialSize; i++)
+		{
+			uint slotSize = mTextureSlots[i].size();
+
+			for (uint j = 0; j < slotSize; j++)
+			{
+				mTextureSlots[i][j]->End();
+			}
+		}
+
+	}
+	void GUI_Material::onChangeGameObject()
+	{
+		uint materialSize = mMaterials.size();
+		if (materialSize > 0)
+		{
+			for (uint i = 0; i < materialSize; i++)
+			{
+				if (mTextureSlots.size() == 0)
 				{
-					XMFLOAT4* vec = new XMFLOAT4();
-					input.Data = vec;
-					input.Size = size;
+					break;
 				}
 
-				mConstantVariables.insert_or_assign(j.first, input);
+				uint slotSize = mTextureSlots[i].size();
+
+				for (uint j = 0; j < slotSize; j++)
+				{
+					if (mTextureSlots[i][j] != nullptr)
+					{
+						delete mTextureSlots[i][j];
+					}
+				}
+				
 			}
 
-
-
+			mTextureSlots.resize(0);
 		}
 
-		bTextureLoadOpen = new bool[textureRegisters.size()];
-		for (uint i = 0; i < textureRegisters.size(); i++)
+		for (uint i = 0; i < materialSize; i++)
 		{
-			mGUIFileSlots.emplace_back(GUI_FileSlot(ASSET_IMAGE, mDevice));
-		}
-	}
-	NARCO_API void GUI_Material::Update()
-	{
-		auto& constRegisters = mMaterial->GetBuffers();
-		auto& textureRegisters = mMaterial->GetTextures();
-		auto& unorders = mMaterial->GetUnorders();
-		
-		static char buf[64] = "";
-		static D3D11_BUFFER_DESC bufferDesc{};
-		
+			Material* material = mMaterials[i];
+			uint slotSize = material->GetShaderResources().Map.size();
+			
+			mTextureSlots.push_back(std::vector<GUI_FileSlot*>());
 
-		//for (auto i : constRegisters)
-		//{
-		//	auto variables = i.second->VariableNames;
-		//	auto buffer = i.second->Buffer.Get();
-		//	uint size;
-		//	//const MaterialInput& input = mConstantVariables[buffer];
-		//	
-		//	buffer->GetDesc(&bufferDesc);
-
-		//	for (auto j : variables)
-		//	{
-		//		const MaterialInput& input = mConstantVariables[j.first];
-		//		ePropertyDimension dim = j.second.Dimension;
-
-		//		if (dim == DIMENSION_FLOAT4X4)
-		//		{
-		//			XMFLOAT4X4* mat = reinterpret_cast<XMFLOAT4X4*>(input.Data);
-
-		//			std::string label1 = (j.first + std::string("_0"));
-		//			std::string label2 = (j.first + std::string("_1"));
-		//			std::string label3 = (j.first + std::string("_2"));
-		//			std::string label4 = (j.first + std::string("_3"));
-
-		//			bool changed0 = ImGui::InputFloat4(label1.c_str(), mat->m[0]);
-		//			bool changed1 = ImGui::InputFloat4(label2.c_str(), mat->m[1]);
-		//			bool changed2 = ImGui::InputFloat4(label3.c_str(), mat->m[2]);
-		//			bool changed3 = ImGui::InputFloat4(label4.c_str(), mat->m[3]);
-
-		//			if (changed0 || changed1 || changed2 || changed3)
-		//			{
-		//				mMaterial->UpdateConstant(mat, i.first);
-		//			}
-
-
-		//			ImGui::Separator();
-		//		}
-
-		//	}
-		//		
-		//}
-		uint texIndex = 0;
-		std::string set = std::string("set ") + std::to_string(mMaterialIndex);
-		
-		ImGui::PushID(set.c_str());
-
-		for (auto t : textureRegisters)
-		{
-			ImGui::PushID(texIndex);
-			if (ImGui::Button(t.second->Name))
+			for (uint j = 0; j < slotSize; j++)
 			{
-				bTextureLoadOpen[texIndex] = !bTextureLoadOpen[texIndex];
+				mTextureSlots[i].push_back(new GUI_FileSlot(ASSET_IMAGE, mDevice));
 			}
-			ImGui::NewLine();
-
-			if (bTextureLoadOpen[texIndex] == true)
-			{
-				loadTexture(&mGUIFileSlots[texIndex], t.second);
-			}
-
-			texIndex++;
-
-			ImGui::PopID();
 		}
 
-		ImGui::PopID();
-
-		return;
-	}
-	NARCO_API void GUI_Material::Draw()
-	{
-		return;
-	}
-	NARCO_API void GUI_Material::End()
-	{
-		return;
-	}
-	NARCO_API void GUI_Material::loadTexture(GUI_FileSlot* slot, MaterialProperty* mp)
-	{
-		
-		slot->Update();
-
-		ImGui_Texture* texture = slot->GetImage();
-		if (texture != nullptr)
-		{
-			ID3D11ShaderResourceView* srv = texture->GetSRV();
-			mp->SetSRV(srv);
-		}
-
-		
-
-		return;
 	}
 }
