@@ -107,9 +107,10 @@ namespace NARCO
 		frame2->AddGUI("ColorPicker_01", new GUI_ColorPicker());
 		frame3->AddGUI("AssetBrowser_01", new GUI_AssetManager(assetManager, device));
 		frame4->AddGUI("Inspector_01", new GUI_GameObject(shiba));
-
+		frame5->AddGUI("Material_01", new GUI_Material(device));
 		GUI_GameObject* inspector = static_cast<GUI_GameObject*>(frame4->GetGUI("Inspector_01"));
-		frame6->AddGUI("Hierarchy_01", new GUI_Hierarchy(mSelectedScene, inspector));
+		GUI_Material* materialEditor = static_cast<GUI_Material*>(frame5->GetGUI("Material_01"));
+		frame6->AddGUI("Hierarchy_01", new GUI_Hierarchy(mSelectedScene, inspector, materialEditor));
 	}
 	void Narco_Deferred_Legacy::Init()
 	{
@@ -129,6 +130,7 @@ namespace NARCO
 
 		static GUI_Canvas* canvas = mMainCanvas;
 		static GUI_Frame* frame_ColorPicker = canvas->GetFrame(1);
+		static GUI_Frame* frame_Material = canvas->GetFrame(4);
 		static GUI_ColorPicker* gui_ColorPicker = static_cast<GUI_ColorPicker*>(frame_ColorPicker->GetGUI("ColorPicker_01"));
 
 		clearScreen(gui_ColorPicker->GetColor4());
@@ -141,9 +143,7 @@ namespace NARCO
 
 		mGBuffer->Unbound(context);
 		context->PSSetShaderResources(0, 6, &nullSrv[0]);
-
-
-
+		
 		mGBuffer->DrawScreen(context, backBuffer[0]);
 
 
