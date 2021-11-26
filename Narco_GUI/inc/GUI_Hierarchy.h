@@ -1,7 +1,7 @@
 #pragma once
 #include"IGUI.h"
 #include"GUI_GameObject.h"
-
+#include"GUI_Material.h"
 
 
 namespace NARCO
@@ -11,7 +11,7 @@ namespace NARCO
 	class GUI_Hierarchy : public IGUI
 	{
 	public:
-		NARCO_API GUI_Hierarchy(Scene* scene, GUI_GameObject* inspector);
+		NARCO_API GUI_Hierarchy(Scene* scene, GUI_GameObject* inspector, GUI_Material* material);
 		NARCO_API ~GUI_Hierarchy();
 
 	private:
@@ -25,6 +25,7 @@ namespace NARCO
 		std::vector<GameObject*> mGameObjects;
 
 		GUI_GameObject* mInspector;
+		GUI_Material* mMaterial;
 
 		uint mSelectedItem;
 		uint mIterateItem;
