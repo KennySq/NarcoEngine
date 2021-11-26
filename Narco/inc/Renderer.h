@@ -17,6 +17,8 @@ namespace NARCO
 
 		void UpdateSharedResources(Material* mat);
 
+		Material** const GetMaterials() { return mMaterials.data(); }
+		unsigned int GetMaterialCount() const { return mMaterials.size(); }
 	private:
 		virtual void awake() override;
 		virtual void start() override;
