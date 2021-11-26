@@ -161,6 +161,35 @@ namespace NARCO
 			return result;
 		}
 
+		for (uint i = 0; i < shaderDesc.BoundResources; i++)
+		{
+			D3D11_SHADER_INPUT_BIND_DESC bindDesc{};
+			result = mReflection->GetResourceBindingDesc(i, &bindDesc);
+			if (result != S_OK)
+			{
+				Debug::Log("faield to get bound resource.");
+				return result;
+			}
+			SharedResource<ID3D11ShaderResourceView>* sr = new SharedResource<ID3D11ShaderResourceView>();
+
+			D3D11_RESOURCE_RETURN_TYPE returnType = bindDesc.ReturnType;
+			uint pixelSize = 0;
+
+			sr->Name = bindDesc.Name;
+			
+			if (returnType == D3D11_RETURN_TYPE_FLOAT)
+			{
+				pixelSize = 4;
+			}
+
+			else if (returnType == D3D11_RETURN_TYPE_SINT)
+			{
+				
+			}
+			sharedResources->Add(sr);
+
+		}
+
 		return result;
 	}
 

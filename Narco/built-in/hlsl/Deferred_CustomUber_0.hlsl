@@ -82,8 +82,7 @@ Buffer_Input frag(Pixel_Input input)
     output.mTexcoord = input.mTexcoord.xy;
 
     output.mAlbedo = float4(1, 0, 0, 0);
-
-	
+    
     //output.mNormal = normal;
 	
     return output;
