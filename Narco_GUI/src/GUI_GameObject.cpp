@@ -67,9 +67,13 @@ namespace NARCO
 
 		for (unsigned int i = 0; i < 3; i++)
 		{
-			if (abs(rotation.m128_f32[i]) != 0.00f)
+			if (abs(rotation.m128_f32[i]) > 0.00f)
 			{
-				double r = (double)rotation.m128_f32[i] / (double)sin(angle / 2.0f);
+				float sqrtW = sqrt(1.0f - (w * w));
+				float axis = rotation.m128_f32[i];
+				double r = axis / sqrtW;
+				r = r * sqrtW;
+
 				mGuiMatrix[1][i] = XMConvertToDegrees(r);
 			}
 		}
@@ -91,7 +95,19 @@ namespace NARCO
 		bool bFloat1 = ImGui::InputFloat3(floatList1.c_str(), mGuiMatrix[1], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
 		bool bFloat2 = ImGui::InputFloat3(floatList2.c_str(), mGuiMatrix[2], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
 
-		if (bFloat0 || bFloat1 || bFloat2)
+		if (bFloat0 == true) // position
+		{
+			XMMATRIX mat = transform->GetMatrix();
+
+			mat.r[3].m128_f32[0] = mGuiMatrix[0][0];
+			mat.r[3].m128_f32[1] = mGuiMatrix[0][1];
+			mat.r[3].m128_f32[2] = mGuiMatrix[0][2];
+
+			transform->SetMatrix(mat);
+
+		}
+
+		if (bFloat1 || bFloat2)
 		{
 			XMVECTOR originPosition = transform->GetPosition();
 			XMVECTOR originRotation = transform->GetRotation();
@@ -103,32 +119,33 @@ namespace NARCO
 			
 			XMMATRIX mat = transform->GetMatrix();
 
+			float xR = XMConvertToRadians(mGuiMatrix[1][0]);
+			float yR = XMConvertToRadians(mGuiMatrix[1][1]);
+			float zR = XMConvertToRadians(mGuiMatrix[1][2]);
 
-			float rX = XMConvertToRadians(mGuiMatrix[1][0]);
-			float rY = XMConvertToRadians(mGuiMatrix[1][1]);
-			float rZ = XMConvertToRadians(mGuiMatrix[1][2]);
+			XMVECTOR rotQuat = XMQuaternionRotationRollPitchYaw(xR, yR, zR);
+			XMMATRIX rot = XMMatrixRotationQuaternion(rotQuat);
 
-			XMMATRIX rot = XMMatrixRotationX(rX);
-			rot *= XMMatrixRotationY(rY);
-			rot *= XMMatrixRotationZ(rZ);
+			XMMATRIX translation = XMMatrixTranslation(mat.r[3].m128_f32[0], mat.r[3].m128_f32[1], mat.r[3].m128_f32[2]);
 
-			rot.r[0].m128_f32[0] *= scale.m128_f32[0];
-			rot.r[1].m128_f32[1] *= scale.m128_f32[1];
-			rot.r[2].m128_f32[2] *= scale.m128_f32[2];
+			XMMATRIX origin = XMMatrixIdentity();
 
-			//mat = rot;
+			XMMATRIX rotX = XMMatrixRotationX(xR);
+			XMMATRIX rotY = XMMatrixRotationY(yR);
+			XMMATRIX rotZ = XMMatrixRotationZ(zR);
 
-			mat.r[3].m128_f32[0] = position.m128_f32[0];
-			mat.r[3].m128_f32[1] = position.m128_f32[1];
-			mat.r[3].m128_f32[2] = position.m128_f32[2];
+			origin = XMMatrixMultiply(origin, rotX);
+			origin = XMMatrixMultiply(origin, rotY);
+			origin = XMMatrixMultiply(origin, rotZ);
+
+			origin *= translation;
+
+			transform->SetMatrix(origin);
 
 			//mat.r[0].m128_f32[0] = scale.m128_f32[0];
 			//mat.r[1].m128_f32[1] = scale.m128_f32[1];
 			//mat.r[2].m128_f32[2] = scale.m128_f32[2];
 
-
-
-			transform->SetMatrix(mat);
 		}
 		
 
