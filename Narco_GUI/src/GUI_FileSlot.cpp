@@ -15,6 +15,7 @@ namespace NARCO
 		const char* path = mFilePath.c_str();
 
 		ImGui::Text("File : "); ImGui::SameLine(); ImGui::Text(path);
+		//ImGui::PushID(mSlotName.c_str());
 		if (ImGui::Button("Load") == true)
 		{
 			mbOpenBrowser = !mbOpenBrowser;
@@ -29,9 +30,6 @@ namespace NARCO
 		if (mbOpenBrowser == true)
 		{
 			fileBrowse();
-
-
-
 		}
 	}
 	NARCO_API void GUI_FileSlot::Draw()
@@ -87,7 +85,7 @@ namespace NARCO
 	}
 	NARCO_API bool GUI_FileSlot::fileBrowse()
 	{
-		ImGui::Begin("Browser", &mbOpenBrowser);
+		ImGui::Begin(mSlotName.c_str(), &mbOpenBrowser);
 
 		static auto driveVector = GetDriveStrings();
 		static unsigned int driveCount = driveVector.size();

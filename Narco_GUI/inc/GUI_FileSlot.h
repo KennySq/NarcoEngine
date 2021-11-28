@@ -18,6 +18,8 @@ namespace NARCO
 		PUBLIC_API NARCO_API virtual void Draw() override;
 		PUBLIC_API NARCO_API virtual void End() override;
 		
+		PUBLIC_API NARCO_API void SetSlotName(const std::string& name) { mSlotName = name; }
+
 		PRIVATE_API NARCO_API void loadFile(ID3D11Device* device);
 		PRIVATE_API NARCO_API bool fileBrowse();
 
@@ -26,6 +28,8 @@ namespace NARCO
 		PRIVATE_PROPERTY std::string mFilePath;
 		PRIVATE_PROPERTY bool mbOpenBrowser = false;
 		PRIVATE_PROPERTY std::string mSelectedPath = "C:/";
+
+		PRIVATE_PROPERTY std::string mSlotName;
 
 		PRIVATE_PROPERTY eAssetType mType;
 
