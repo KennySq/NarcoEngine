@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\odess\Desktop\Projects\Narco\inc;C:\Users\odess\Desktop\Projects\Narco_GUI\inc;C:\Users\odess\Desktop\Projects\libdx11\inc;C:\Users\odess\Desktop\Projects\Narco_GUI\imgui;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\odess\Desktop\Projects\Narco\x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\odess\Desktop\Projects\NarcoEngine\Narco\inc;C:\Users\odess\Desktop\Projects\NarcoEngine\Narco_GUI\inc;C:\Users\odess\Desktop\Projects\NarcoEngine\libdx11\inc;C:\Users\odess\Desktop\Projects\NarcoEngine\Narco_GUI\imgui</IncludePath>
+    <LibraryPath>C:\Users\odess\Desktop\Projects\NarcoEngine\Narco\x64\Debug;$(LibraryPath)</LibraryPath>
     <OutDir>..\Narco\x64\Debug\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,6 +127,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -164,11 +165,16 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="inc\GUI_AssetManager.h" />
     <ClInclude Include="inc\GUI_Canvas.h" />
     <ClInclude Include="inc\GUI_ColorPicker.h" />
     <ClInclude Include="inc\GUI_FileSlot.h" />
     <ClInclude Include="inc\GUI_Frame.h" />
+    <ClInclude Include="inc\GUI_GameObject.h" />
+    <ClInclude Include="inc\GUI_Hierarchy.h" />
+    <ClInclude Include="inc\GUI_Material.h" />
     <ClInclude Include="inc\IGUI.h" />
+    <ClInclude Include="inc\ImGui_Texture.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -186,11 +192,19 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\GUI_AssetManager.cpp" />
     <ClCompile Include="src\GUI_Canvas.cpp" />
     <ClCompile Include="src\GUI_ColorPicker.cpp" />
     <ClCompile Include="src\GUI_FileSlot.cpp" />
     <ClCompile Include="src\GUI_Frame.cpp" />
+    <ClCompile Include="src\GUI_GameObject.cpp" />
+    <ClCompile Include="src\GUI_Hierarchy.cpp" />
+    <ClCompile Include="src\GUI_Material.cpp" />
     <ClCompile Include="src\IGUI.cpp" />
+    <ClCompile Include="src\ImGui_Texture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
