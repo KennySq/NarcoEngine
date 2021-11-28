@@ -35,9 +35,9 @@ namespace NARCO
 		uint GetShaderResourceCount() const { return mShaderResources.size(); }
 		uint GetSamplerStateCount() const { return mSamplerStates.size(); }
 
-		ID3D11Buffer* const* GetBufferPointer() const { return mBuffers.data(); }
-		ID3D11ShaderResourceView* const* GetShaderResources() const { return mShaderResources.data(); }
-		ID3D11SamplerState* const* GetSamplerStates() const { return mSamplerStates.data(); }
+		SharedResource<ID3D11Buffer>* const* GetBufferPointer() const { return mBuffers.data(); }
+		SharedResource<ID3D11ShaderResourceView>* const* GetShaderResources() const { return mShaderResources.data(); }
+		SharedResource<ID3D11SamplerState>* const* GetSamplerStates() const { return mSamplerStates.data(); }
 
 		ID3D11ShaderReflection* GetReflection() const { return mReflection.Get(); }
 		ID3DBlob* GetByteCode() const { return mByteCodes.Get(); }
@@ -45,9 +45,9 @@ namespace NARCO
 	private:
 		HRESULT compile(const char* entry, const char* model);
 
-		std::vector<ID3D11Buffer*> mBuffers;
-		std::vector<ID3D11ShaderResourceView*> mShaderResources;
-		std::vector<ID3D11SamplerState*> mSamplerStates;
+		std::vector<SharedResource<ID3D11Buffer>*> mBuffers;
+		std::vector<SharedResource<ID3D11ShaderResourceView>*> mShaderResources;
+		std::vector<SharedResource<ID3D11SamplerState>*> mSamplerStates;
 
 		ComPtr<ID3D11DeviceChild> mShader = nullptr;
 		ComPtr<ID3D11ShaderReflection> mReflection;
