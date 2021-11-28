@@ -24,20 +24,27 @@ namespace NARCO
 				SharedPipelineResource<ID3D11ShaderResourceView>& shaderResources = material->GetShaderResources();
 				auto& resourceMap = shaderResources.Map;
 				uint resourceCount = resourceMap.size();
-
 				uint resourceIndex = 0;
-				for (auto r : resourceMap)
+				
+				for (auto& r : resourceMap)
 				{
 					GUI_FileSlot* fileSlot = mTextureSlots[i][resourceIndex];
 
+					ImGui::PushID(resourceIndex);
 					fileSlot->Update();
+
+					ImGui_Texture* texture = fileSlot->GetImage();
+
+					if (texture != nullptr)
+					{
+						r.second->Resource = texture->GetSRV();
+					}
+					ImGui::PopID();
 
 					resourceIndex++;
 				}
 			}
 		}
-
-
 	}
 	void GUI_Material::Draw()
 	{
@@ -87,13 +94,26 @@ namespace NARCO
 		for (uint i = 0; i < materialSize; i++)
 		{
 			Material* material = mMaterials[i];
+			auto ShaderResources = material->GetShaderResources();
 			uint slotSize = material->GetShaderResources().Map.size();
 			
 			mTextureSlots.push_back(std::vector<GUI_FileSlot*>());
+			auto itr = material->GetShaderResources().Map.begin();
 
 			for (uint j = 0; j < slotSize; j++)
 			{
-				mTextureSlots[i].push_back(new GUI_FileSlot(ASSET_IMAGE, mDevice));
+				GUI_FileSlot* slot = new GUI_FileSlot(ASSET_IMAGE, mDevice);
+				mTextureSlots[i].push_back(slot);
+				
+				long long nameHash = ShaderResources.FindName(itr->second);
+
+				if (nameHash != -1)
+				{
+					slot->SetSlotName(std::to_string(nameHash));
+				}
+
+
+				itr++;
 			}
 		}
 

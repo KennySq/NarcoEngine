@@ -34,6 +34,11 @@ namespace NARCO
 			Material** materials = renderer->GetMaterials();
 			uint materialCount = renderer->GetMaterialCount();
 
+			if (mMaterials.size() > 0)
+			{
+				return;
+			}
+
 			for (uint i = 0; i < materialCount; i++)
 			{
 				mMaterials.push_back(materials[i]);
@@ -41,6 +46,8 @@ namespace NARCO
 
 			onChangeGameObject();
 		}
+
+		NARCO_API GameObject* GetGameObject() const { return mGameObject; }
 
 	private:
 		NARCO_API void onChangeGameObject();
