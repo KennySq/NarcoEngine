@@ -44,9 +44,15 @@ namespace NARCO
 				ImGui::SetItemDefaultFocus();
 				GameObject* gameObject = gameObjects[mSelectedItem];
 
-				mInspector->SetGameObject(gameObject);
-				mMaterial->SetGameObject(gameObject);
+				if (mInspector->GetGameObject() != gameObject)
+				{
+					mInspector->SetGameObject(gameObject);
+				}
 
+				if (mMaterial->GetGameObject() != gameObject)
+				{
+					mMaterial->SetGameObject(gameObject);
+				}
 			}
 
 			ImGui::PopID();
