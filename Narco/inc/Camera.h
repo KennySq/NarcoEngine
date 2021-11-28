@@ -22,6 +22,18 @@ namespace NARCO
 		XMMATRIX GetProjection() const { return XMLoadFloat4x4(&mProjection); }
 
 		Material* RenderMaterial;
+
+		void ChangeFOV(float newFov)
+		{
+			mFieldOfView = XMConvertToRadians(newFov);
+
+			XMMATRIX proj = XMMatrixPerspectiveFovLH(mFieldOfView, mAspectRatio, mNear, mFar);
+			
+			XMStoreFloat4x4(&mProjection, XMMatrixTranspose(proj));
+		}
+
+		float GetFOV() const { return mFieldOfView; }
+
 	private:
 		float mFieldOfView;
 		float mAspectRatio;
