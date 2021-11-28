@@ -2,6 +2,7 @@
 #include"IGUI.h"
 #include<GameObject.h>
 #include<Transform.h>
+#include<Camera.h>
 
 namespace NARCO
 {
@@ -21,9 +22,10 @@ namespace NARCO
 		}
 
 		PUBLIC_API void Refresh();
+		PUBLIC_API GameObject* GetGameObject() const { return mGameObject; }
 
 		PRIVATE_API NARCO_API void guiTransform(Transform* transform);
-
+		PRIVATE_API NARCO_API void guiCamera(Camera* camera);
 
 		PRIVATE_PROPERTY GameObject* mGameObject;
 

@@ -32,6 +32,10 @@ namespace NARCO
 				{
 					guiTransform(static_cast<Transform*>(comp));
 				}
+				else if (id == typeid(Camera).hash_code())
+				{
+					guiCamera(static_cast<Camera*>(comp));
+				}
 			}
 
 
@@ -149,5 +153,17 @@ namespace NARCO
 		}
 		
 
+	}
+	NARCO_API void GUI_GameObject::guiCamera(Camera* camera)
+	{
+		const GameObject* gameObject = camera->GetRoot();
+		ImGui::PushID(gameObject->GetInstanceID());
+		float fov = camera->GetFOV();
+		if (ImGui::SliderFloat("FOV", &fov, 20.0f, 120.0f, "%.2f", 1.0f))
+		{
+			camera->ChangeFOV(fov);
+		}
+		ImGui::PopID();
+		return;
 	}
 }
