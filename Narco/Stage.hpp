@@ -170,24 +170,37 @@ namespace NARCO
 				Debug::Log("faield to get bound resource.");
 				return result;
 			}
-			SharedResource<ID3D11ShaderResourceView>* sr = new SharedResource<ID3D11ShaderResourceView>();
 
-			D3D11_RESOURCE_RETURN_TYPE returnType = bindDesc.ReturnType;
-			uint pixelSize = 0;
+			D3D_RESOURCE_RETURN_TYPE returnType = bindDesc.ReturnType;
+			D3D_SRV_DIMENSION dimension = bindDesc.Dimension;
+			D3D_SHADER_INPUT_TYPE type = bindDesc.Type;
 
-			sr->Name = bindDesc.Name;
+			long long hash = MakeHash(bindDesc.Name);
+			auto resource = sharedResources->Find(bindDesc.Name);
+			if (resource != nullptr)
+			{
+				resource->StageFlags |= mStageFlag;
+
+				mShaderResources.emplace_back(resource);
+
+				continue;
+			}
 			
-			if (returnType == D3D11_RETURN_TYPE_FLOAT)
-			{
-				pixelSize = 4;
-			}
 
-			else if (returnType == D3D11_RETURN_TYPE_SINT)
+			
+			if (type == D3D_SIT_TEXTURE)
 			{
-				
-			}
-			sharedResources->Add(sr);
+				resource = new SharedResource<ID3D11ShaderResourceView>();
 
+				uint pixelSize = 0;
+
+				resource->Name = bindDesc.Name;
+
+				sharedResources->Add(resource);
+				mShaderResources.emplace_back(resource);
+
+				resource->StageFlags |= mStageFlag;
+			}
 		}
 
 		return result;
@@ -230,16 +243,16 @@ namespace NARCO
 
 			if (resourceDesc.Type == D3D_SIT_CBUFFER)
 			{
-				// check same resource on application
+				// check same resource on the stage
 				if (sharedResources->Find(resourceDesc.Name) != nullptr)
 				{
+
 					long long hash = MakeHash(resourceDesc.Name);
 					auto resource = sharedResources->Find(resourceDesc.Name);
 					
 					resource->StageFlags |= mStageFlag;
 
-					mBuffers.emplace_back(resource->Resource.Get());
-
+					mBuffers.emplace_back(resource);
 
 					continue;
 				}
@@ -265,8 +278,6 @@ namespace NARCO
 				{
 					for (uint i = 0; i < elementCount; i++)
 					{
-						
-
 						auto variable = cbufferShader->GetVariableByIndex(i);
 						D3D11_SHADER_VARIABLE_DESC variableDesc{};
 						
@@ -287,7 +298,7 @@ namespace NARCO
 					buffer->StageFlags |= mStageFlag;
 
 					sharedResources->Add(buffer);
-					mBuffers.emplace_back(buffer->Resource.Get());
+					mBuffers.emplace_back(buffer);
 
 				}
 			
