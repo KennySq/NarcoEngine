@@ -47,7 +47,7 @@ namespace NARCO
 			
 			Debug::Log(std::string(typeInfo.name()) + " not found.");
 			
-
+			return nullptr;
 		}
 
 		template<class _Comp>

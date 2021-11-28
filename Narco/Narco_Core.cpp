@@ -98,7 +98,6 @@ namespace NARCO
 
 		GameObject* shiba = mSelectedScene->GetGameObject(0);
 
-
 		GameObject* dragon = mSelectedScene->GetGameObject(1);
 
 

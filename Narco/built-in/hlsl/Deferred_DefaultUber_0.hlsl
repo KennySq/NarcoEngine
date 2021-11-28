@@ -45,7 +45,7 @@ Pixel_Input vert(Vertex_Input input)
 	
     float4 pos = float4(input.mPosition.xyz, 1.0f);
 	
-    output.mPosition = mul(pos.xyzw, gWorld);
+    output.mPosition = mul(pos, gWorld);
 
     output.mWorldPosition = output.mPosition;
 	output.mPosition = mul(output.mPosition, gView);
@@ -58,9 +58,6 @@ Pixel_Input vert(Vertex_Input input)
     output.mTexcoord = input.mTexcoord.xy;
 	
     output.mMaterialID = input.mMaterialID;
-	
-
-	
 	
     return output;
 }
@@ -83,7 +80,7 @@ Buffer_Input frag(Pixel_Input input)
 	
     //output.mAlbedo = albedo;
 
-        output.mAlbedo = albedo;
+    output.mAlbedo = albedo;
 
 	
     //output.mNormal = normal;

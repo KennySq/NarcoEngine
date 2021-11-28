@@ -21,8 +21,6 @@ namespace NARCO
 	GameObject::GameObject(const GameObject& gameObject)
 		: mInstanceID(mInstanceIDCount++), mTag("No Tag")
 	{
-		//mTransform = gameObject.mTransform;
-
 	}
 	GameObject::GameObject(const GameObject&& gameObject)
 		: mInstanceID(mInstanceIDCount++), mTag("No Tag")
