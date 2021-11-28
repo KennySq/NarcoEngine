@@ -35,6 +35,8 @@ namespace NARCO
 		std::vector<_Ty*> Raw;
 
 		SharedResource<_Ty>* Find(const std::string& name);
+		long long FindName(SharedResource<_Ty>* sr);
+
 		void Add(SharedResource<_Ty>* resource);
 
 		ComPtr<ID3D11DeviceChild> Shader;
