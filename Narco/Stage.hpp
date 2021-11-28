@@ -123,6 +123,10 @@ namespace NARCO
 		
 		if (result != S_OK)
 		{
+#ifdef _DEBUG
+			std::cout << reinterpret_cast<const char*>(errBlob->GetBufferPointer()) << '\n';
+#endif
+
 			if (result == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND))
 			{
 				Debug::Log(mPath + " => invalid directory.");
