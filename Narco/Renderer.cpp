@@ -8,9 +8,9 @@ namespace NARCO
 		uint shaderResourceCount;
 		uint samplerCount;
 
-		ID3D11Buffer* const* buffers;
-		ID3D11ShaderResourceView* const* shaderResources;
-		ID3D11SamplerState* const* samplerStates;
+		std::vector<ID3D11Buffer*> buffers;
+		std::vector<ID3D11ShaderResourceView*> shaderResources;
+		std::vector<ID3D11SamplerState*> samplerStates;
 	};
 
 	struct bindStage
@@ -24,9 +24,25 @@ namespace NARCO
 			info.shaderResourceCount = stage->GetShaderResourceCount();
 			info.samplerCount = stage->GetSamplerStateCount();
 
-			info.buffers = stage->GetBufferPointer();
-			info.shaderResources = stage->GetShaderResources();
-			info.samplerStates = stage->GetSamplerStates();
+			auto stageBuffers = stage->GetBufferPointer();
+			auto stageSrv = stage->GetShaderResources();
+			auto stageSamplers = stage->GetSamplerStates();
+
+			for (uint i = 0; i < info.bufferCount; i++)
+			{
+				info.buffers.emplace_back(stageBuffers[i]->Resource.Get());
+			}
+
+			for (uint i = 0; i < info.shaderResourceCount; i++)
+			{
+				info.shaderResources.emplace_back(stageSrv[i]->Resource.Get());
+
+			}
+
+			for (uint i = 0; i < info.samplerCount; i++)
+			{
+				info.samplerStates.emplace_back(stageSamplers[i]->Resource.Get());
+			}
 
 			return info;
 		}
@@ -38,13 +54,7 @@ namespace NARCO
 	Renderer::~Renderer()
 	{
 	}
-	void Renderer::UpdateSharedResources(Material* mat)
-	{
-		//auto buffers = mat->GetConstBuffers();
 
-		
-
-	}
 	void Renderer::awake()
 	{
 		mRenderScene = mRoot->GetScene();
@@ -101,17 +111,17 @@ namespace NARCO
 
 				if (info.bufferCount > 0)
 				{
-					context->VSSetConstantBuffers(0, info.bufferCount, info.buffers);
+					context->VSSetConstantBuffers(0, info.bufferCount, info.buffers.data());
 				}
 
 				if (info.shaderResourceCount > 0)
 				{
-					context->VSSetShaderResources(0, info.shaderResourceCount, info.shaderResources);
+					context->VSSetShaderResources(0, info.shaderResourceCount, info.shaderResources.data());
 				}
 
 				if (info.samplerCount > 0)
 				{
-					context->VSSetSamplers(0, info.samplerCount, info.samplerStates);
+					context->VSSetSamplers(0, info.samplerCount, info.samplerStates.data());
 				}
 
 			}
@@ -124,17 +134,17 @@ namespace NARCO
 
 				if (info.bufferCount > 0)
 				{
-					context->GSSetConstantBuffers(0, info.bufferCount, info.buffers);
+					context->GSSetConstantBuffers(0, info.bufferCount, info.buffers.data());
 				}
 
 				if (info.shaderResourceCount > 0)
 				{
-					context->GSSetShaderResources(0, info.shaderResourceCount, info.shaderResources);
+					context->GSSetShaderResources(0, info.shaderResourceCount, info.shaderResources.data());
 				}
 
 				if (info.samplerCount > 0)
 				{
-					context->GSSetSamplers(0, info.samplerCount, info.samplerStates);
+					context->GSSetSamplers(0, info.samplerCount, info.samplerStates.data());
 				}
 			}
 
@@ -146,17 +156,17 @@ namespace NARCO
 
 				if (info.bufferCount > 0)
 				{
-					context->DSSetConstantBuffers(0, info.bufferCount, info.buffers);
+					context->DSSetConstantBuffers(0, info.bufferCount, info.buffers.data());
 				}
 
 				if (info.shaderResourceCount > 0)
 				{
-					context->DSSetShaderResources(0, info.shaderResourceCount, info.shaderResources);
+					context->DSSetShaderResources(0, info.shaderResourceCount, info.shaderResources.data());
 				}
 
 				if (info.samplerCount > 0)
 				{
-					context->DSSetSamplers(0, info.samplerCount, info.samplerStates);
+					context->DSSetSamplers(0, info.samplerCount, info.samplerStates.data());
 				}
 			}
 
@@ -168,17 +178,17 @@ namespace NARCO
 
 				if (info.bufferCount > 0)
 				{
-					context->HSSetConstantBuffers(0, info.bufferCount, info.buffers);
+					context->HSSetConstantBuffers(0, info.bufferCount, info.buffers.data());
 				}
 
 				if (info.shaderResourceCount > 0)
 				{
-					context->HSSetShaderResources(0, info.shaderResourceCount, info.shaderResources);
+					context->HSSetShaderResources(0, info.shaderResourceCount, info.shaderResources.data());
 				}
 
 				if (info.samplerCount > 0)
 				{
-					context->HSSetSamplers(0, info.samplerCount, info.samplerStates);
+					context->HSSetSamplers(0, info.samplerCount, info.samplerStates.data());
 				}
 			}
 
@@ -190,17 +200,17 @@ namespace NARCO
 
 				if (info.bufferCount > 0)
 				{
-					context->PSSetConstantBuffers(0, info.bufferCount, info.buffers);
+					context->PSSetConstantBuffers(0, info.bufferCount, info.buffers.data());
 				}
 
 				if (info.shaderResourceCount > 0)
 				{
-					context->PSSetShaderResources(0, info.shaderResourceCount, info.shaderResources);
+					context->PSSetShaderResources(0, info.shaderResourceCount, info.shaderResources.data());
 				}
 
 				if (info.samplerCount > 0)
 				{
-					context->PSSetSamplers(0, info.samplerCount, info.samplerStates);
+					context->PSSetSamplers(0, info.samplerCount, info.samplerStates.data());
 				}
 			}
 
