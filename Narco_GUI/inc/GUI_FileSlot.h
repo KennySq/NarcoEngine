@@ -8,7 +8,7 @@ namespace NARCO
 	enum eAssetType;
 	class GUI_FileSlot : public IGUI
 	{
-		PUBLIC_API NARCO_API GUI_FileSlot(eAssetType type, ID3D11Device* device);
+		PUBLIC_API NARCO_API GUI_FileSlot(eAssetType type, ID3D11Device* device, const char* initPath);
 		PUBLIC_API NARCO_API ~GUI_FileSlot();
 
 		PUBLIC_API NARCO_API ImGui_Texture* GetImage() const { return mImage; }
@@ -39,6 +39,8 @@ namespace NARCO
 		PRIVATE_PROPERTY int mItemIndex = 0;
 		PRIVATE_PROPERTY int mBrowserDropSelect = -1;
 		PRIVATE_PROPERTY int mBrowserDropItr = 0;
+
+		PRIVATE_PROPERTY std::string EDITOR_ASSET_PATH;
 
 
 		

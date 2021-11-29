@@ -1,12 +1,12 @@
 #include"GUI_FileSlot.h"
+#include<direct.h>
 #include<Common.h>
 #include<Asset.h>
+
 
 namespace NARCO
 {
 	using namespace std::filesystem;
-	//std::map<std::string, eAssetType> EXTENSION_MAP;
-
 
 	NARCO_API void GUI_FileSlot::Update()
 	{
@@ -15,7 +15,6 @@ namespace NARCO
 		const char* path = mFilePath.c_str();
 
 		ImGui::Text("File : "); ImGui::SameLine(); ImGui::Text(path);
-		//ImGui::PushID(mSlotName.c_str());
 		if (ImGui::Button("Load") == true)
 		{
 			mbOpenBrowser = !mbOpenBrowser;
@@ -36,10 +35,23 @@ namespace NARCO
 	{
 	}
 
-	NARCO_API GUI_FileSlot::GUI_FileSlot(eAssetType type, ID3D11Device* device)
-		: mFilePath(""), mType(type), mDevice(device), mItemIndex(0), mBrowserDropSelect(-1), mBrowserDropItr(0)
+	NARCO_API GUI_FileSlot::GUI_FileSlot(eAssetType type, ID3D11Device* device, const char* initPath)
+		: mSelectedPath(initPath), mFilePath(""), mType(type), mDevice(device), mItemIndex(0), mBrowserDropSelect(-1), mBrowserDropItr(0)
 	{
-		
+		auto lambdaGetDir = []() -> std::string
+		{
+			char tmp[256];
+			_getcwd(tmp, 256);
+
+			return std::string(tmp);
+		};
+
+		EDITOR_ASSET_PATH = lambdaGetDir() + "/x64/Debug/resources/";
+
+		if (mSelectedPath == "")
+		{
+			mSelectedPath = EDITOR_ASSET_PATH;
+		}
 	}
 
 	NARCO_API GUI_FileSlot::~GUI_FileSlot()
@@ -143,9 +155,31 @@ namespace NARCO
 		{
 			if (mSelectedPath.size() > 3)
 			{
-				mSelectedPath = mSelectedPath.substr(0, mSelectedPath.find_last_of('/'));
-				mSelectedPath = mSelectedPath.substr(0, mSelectedPath.find_last_of('/') + 1);
-
+				if (mSelectedPath.find_last_of('/') == std::string::npos)
+				{
+					mSelectedPath = mSelectedPath.substr(0, mSelectedPath.find_last_of('\\'));
+					if (mSelectedPath.find_last_of('/') + 1 != std::string::npos + 1)
+					{
+						mSelectedPath = mSelectedPath.substr(0, mSelectedPath.find_last_of('/') + 1);
+					}
+					else
+					{
+						mSelectedPath = mSelectedPath.substr(0, mSelectedPath.find_last_of('\\') + 1);
+					}
+				}
+				else
+				{
+					mSelectedPath = mSelectedPath.substr(0, mSelectedPath.find_last_of('/'));
+					if (mSelectedPath.find_last_of('/') + 1 != std::string::npos + 1)
+					{
+						mSelectedPath = mSelectedPath.substr(0, mSelectedPath.find_last_of('/') + 1);
+					}
+					else
+					{
+						mSelectedPath = mSelectedPath.substr(0, mSelectedPath.find_last_of('\\') + 1);
+					}
+				}
+				
 				std::cout << mSelectedPath << std::endl;
 			}
 
@@ -160,9 +194,15 @@ namespace NARCO
 			str.str("");
 
 			str << itr->path().filename().string();
-
 			std::string labelString = str.str();
 			const char* label = labelString.c_str();
+
+			int attribute = GetFileAttributes(itr->path().c_str());
+
+			if (attribute & FILE_ATTRIBUTE_HIDDEN)
+			{
+				continue;
+			}
 
 			if (ImGui::Selectable(label, mBrowserDropSelect == mBrowserDropItr))
 			{
@@ -181,9 +221,20 @@ namespace NARCO
 				bool bHovering = ImGui::IsMouseHoveringRect(itemRectMin, itemRectMax);
 				bool bDoubleClick = lamda_bDoubleClick();
 				bool bFile = itr->is_character_file();
+				std::filesystem::file_status pathStatus = status(itr->path());
+				std::filesystem::perms permission = pathStatus.permissions();
 
 				if (bDirectory && bExists && bHovering && bDoubleClick)
 				{
+
+					if (((uint)permission & (uint)perms::group_read) == false &&
+						((uint)permission & (uint)perms::others_read) == false &&
+						((uint)permission & (uint)perms::owner_read) == false)
+					{
+						Debug::Log(std::to_string((uint)permission));
+						Debug::Log("Permission failed!");
+						continue;
+					}
 					mSelectedPath += label;
 					mSelectedPath += '/';
 				}
@@ -207,8 +258,9 @@ namespace NARCO
 					{
 						mFilePath = mSelectedPath;
 						mFilePath += label;
-
+#ifdef _DEBUG
 						std::cout << "Selected File : " << mFilePath << std::endl;
+#endif
 						loadFile(mDevice);
 					}
 
