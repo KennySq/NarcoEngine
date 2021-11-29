@@ -102,7 +102,7 @@ namespace NARCO
 
 			for (uint j = 0; j < slotSize; j++)
 			{
-				GUI_FileSlot* slot = new GUI_FileSlot(ASSET_IMAGE, mDevice);
+				GUI_FileSlot* slot = new GUI_FileSlot(ASSET_IMAGE, mDevice, "");
 				mTextureSlots[i].push_back(slot);
 				
 				long long nameHash = ShaderResources.FindName(itr->second);
