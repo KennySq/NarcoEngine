@@ -5,7 +5,7 @@
 namespace NARCO
 {
 	GBuffer::GBuffer(ID3D11Device* device, uint width, uint height)
-		: mBufferCount(GBufferFormats.size()), mDevice(device), mWidth(width), mHeight(height),
+		: mBufferCount(GBufferSize), mDevice(device), mWidth(width), mHeight(height),
 		mRenderTargets(8), mShaderResources(128)
 	{
 		
@@ -43,14 +43,11 @@ namespace NARCO
 		static unsigned int strides[] = { sizeof(Vertex_Quad) };
 		static unsigned int offsets[] = { 0 };
 		
-		static ID3D11ShaderResourceView* nullSrv[6] = { nullptr };
+		static ID3D11ShaderResourceView* nullSrv[GBufferSize] = { nullptr };
 		static ID3D11RenderTargetView* nullRtv[] = { nullptr };
 
 		static std::vector<ID3D11ShaderResourceView*> bufferSRV;
 		static std::vector<ID3D11ShaderResourceView*> lightSRV;
-
-		//context->OMSetRenderTargets(1, null, nullptr);
-
 
 		uint startIndex = 0;
 
@@ -75,7 +72,6 @@ namespace NARCO
 		context->DrawIndexed(6, 0, 0);
 
 		context->PSSetShaderResources(0, 1, nullSrv);
-	//	context->OMSetRenderTargets(1, nullRtv, nullptr);
 
 		bufferSRV.clear();
 	}

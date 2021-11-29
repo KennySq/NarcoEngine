@@ -6,7 +6,7 @@
 
 namespace NARCO
 {
-	static std::vector<DXGI_FORMAT> GBufferFormats =
+	static DXGI_FORMAT GBufferFormats[] =
 	{
 		DXGI_FORMAT_R32G32B32A32_FLOAT, // Position
 		DXGI_FORMAT_R32G32B32A32_FLOAT, // WorldPosition
@@ -15,6 +15,9 @@ namespace NARCO
 		DXGI_FORMAT_R32G32_FLOAT,		// UV
 		DXGI_FORMAT_R32G32B32A32_FLOAT, // Albedo
 	};
+
+	static constexpr uint GBufferSize = ARRAYSIZE(GBufferFormats);
+
 	class Mesh;
 	class Material;
 	class GBuffer
