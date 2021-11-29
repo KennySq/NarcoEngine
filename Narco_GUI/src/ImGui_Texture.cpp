@@ -74,7 +74,15 @@ ImGui_Texture::ImGui_Texture(ID3D11Device* device, const char* path)
     }
 
     mFileName = path;
+    
+    if (mFileName.find_last_of('/') != std::string::npos)
+    {
+        mFileName = mFileName.substr(mFileName.find_last_of("/"));
+    }
+    else
+    {
+        mFileName = mFileName.substr(mFileName.find_last_of("\\"));
+    }
 
-    mFileName = mFileName.substr(mFileName.find_last_of("/"));
 	
 }
