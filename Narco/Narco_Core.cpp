@@ -40,6 +40,7 @@ namespace NARCO
 		MeshLoader shibaLoader(device);
 		MeshLoader dragonLoader(device);
 		MeshLoader skaterLoader(device);
+		MeshLoader planeLoader(device);
 
 		shibaLoader.SetPath("x64/Debug/resources/shiba/shiba.fbx");
 		shibaLoader.Load();
@@ -50,11 +51,16 @@ namespace NARCO
 		//skaterLoader.SetPath("x64/Debug/resources/skater/model/skater.fbx");
 		//skaterLoader.Load();
 
+		planeLoader.SetPath("x64/Debug/resources/app/assets/models/Backplane.fbx");
+		planeLoader.Load();
+
 		mSelectedScene->AddMesh(shibaLoader.ConvertMesh());
+		mSelectedScene->AddMesh(planeLoader.ConvertMesh());
 		//mSelectedScene->AddMesh(dragonLoader.ConvertMesh());
 		//mSelectedScene->AddMesh(skaterLoader.ConvertMesh());
 
 		GameObject* shiba = mSelectedScene->AddGameObject(new Shiba());
+		GameObject* plane = mSelectedScene->AddGameObject(new ());
 		GameObject* dragon = mSelectedScene->AddGameObject(new Dragon());
 		GameObject* skater = mSelectedScene->AddGameObject(new Skater());
 
@@ -175,8 +181,6 @@ namespace NARCO
 		static ID3D11RenderTargetView* renderTargetView = mDisplay->GetRenderTargetView();
 
 		context->ClearRenderTargetView(renderTargetView, clearColor);
-
-
 	}
 	void Narco_Deferred_Legacy::drawScreen()
 	{
