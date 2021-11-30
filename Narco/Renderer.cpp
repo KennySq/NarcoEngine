@@ -72,6 +72,8 @@ namespace NARCO
 	{
 		static ID3D11DeviceContext* context = mContext;
 		static ID3D11ShaderResourceView* nullSRV[] = { nullptr };
+		static const char* cbufferName = "Constants";
+		static const char* variableName = "gWorld";
 
 
 		auto lamdaBindStage = bindStage{};
@@ -81,6 +83,21 @@ namespace NARCO
 		for (uint i = 0; i < passCount; i++)
 		{
 			Material* material = mMaterials[i];
+
+			XMMATRIX loadMat = XMMatrixTranspose(mRenderTransform->GetMatrix());
+			XMMATRIX viewMat = mRenderCamera->GetView();
+			XMMATRIX projMat = mRenderCamera->GetProjection();
+
+			struct InstanceData
+			{
+				XMMATRIX World;
+				XMMATRIX View;
+				XMMATRIX Projection;
+			};
+
+			InstanceData instData = { loadMat, viewMat, projMat };
+
+			material->MapConstantBuffer(cbufferName, variableName, RESOURCE_CBUFFER, &instData, sizeof(instData));
 
 			mRenderCamera->RenderMaterial = material;
 			mRenderTransform->RenderMaterial = material;
@@ -222,11 +239,10 @@ namespace NARCO
 			context->HSSetShaderResources(0, 1, nullSRV);
 			context->PSSetShaderResources(0, 1, nullSRV);
 		}
-
-
 	}
 	void Renderer::render(float delta)
 	{
+
 	}
 	void Renderer::release()
 	{

@@ -70,19 +70,19 @@ namespace NARCO
 		ID3D11Buffer* view = mTransform->GetBuffer();
 		ID3D11Buffer* proj = mBuffer.Get();
 		
-		if (RenderMaterial != nullptr)
-		{
-			static const char* cbufferName = "Constants";
-			static const char* viewName = "gView";
-			static const char* projName = "gProjection";
+		//if (RenderMaterial != nullptr)
+		//{
+		//	static const char* cbufferName = "Constants";
+		//	static const char* viewName = "gView";
+		//	static const char* projName = "gProjection";
 
-			XMMATRIX view = GetView();
-			XMMATRIX proj = GetProjection();
+		//	XMMATRIX view = GetView();
+		//	XMMATRIX proj = GetProjection();
 
-			RenderMaterial->MapConstantBuffer(cbufferName, viewName, RESOURCE_CBUFFER, &view, sizeof(view));
-			RenderMaterial->MapConstantBuffer(cbufferName, projName, RESOURCE_CBUFFER, &proj, sizeof(proj));
+		//	//RenderMaterial->MapConstantBuffer(cbufferName, viewName, RESOURCE_CBUFFER, &view, sizeof(view));
+		//	//RenderMaterial->MapConstantBuffer(cbufferName, projName, RESOURCE_CBUFFER, &proj, sizeof(proj));
 
-		}
+		//}
 
 		mContext->UpdateSubresource(proj, 0, nullptr, &mProjection, 0, 0);
 		

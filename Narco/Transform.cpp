@@ -122,6 +122,11 @@ namespace NARCO
 
 		XMMATRIX translation = XMMatrixTranslation(mMatrix._41, mMatrix._42, mMatrix._43);
 
+		XMVECTOR outScale, outTranslation, outQuat;
+
+		XMMatrixDecompose(&outScale, &outQuat, &outTranslation, XMLoadFloat4x4(&mMatrix));
+		XMMATRIX scale = XMMatrixScaling(outScale.m128_f32[0], outScale.m128_f32[1], outScale.m128_f32[2]);
+
 		XMMATRIX origin = XMMatrixIdentity();
 
 		XMMATRIX rotX = XMMatrixRotationX(xR);
@@ -133,6 +138,7 @@ namespace NARCO
 		origin = XMMatrixMultiply(origin, rotZ);
 
 		origin *= translation;
+		origin *= scale;
 
 		XMStoreFloat4x4(&mMatrix, origin);
 	}
@@ -141,14 +147,6 @@ namespace NARCO
 	}
 	void Transform::update(float delta)
 	{
-		if (RenderMaterial != nullptr)
-		{
-			static const char* cbufferName = "Constants";
-			static const char* variableName = "gWorld";
-			XMMATRIX loadMat = XMMatrixTranspose(XMLoadFloat4x4(&mMatrix));
-
-			RenderMaterial->MapConstantBuffer(cbufferName, variableName, RESOURCE_CBUFFER, &loadMat, sizeof(loadMat));	
-		}
 
 		XMVECTOR translation, rotQuat, scale;
 		XMMATRIX mat = XMLoadFloat4x4(&mMatrix);
@@ -158,7 +156,6 @@ namespace NARCO
 		XMStoreFloat4(&mRotation, rotQuat);
 		XMStoreFloat4(&mScale, scale);
 		
-	//	mContext->UpdateSubresource(mBuffer.Get(), 0, nullptr, &loadMat, 0, 0);
 	}
 	void Transform::render(float delta)
 	{
