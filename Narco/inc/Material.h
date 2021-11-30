@@ -8,6 +8,7 @@ namespace NARCO
 	{
 	public:
 		Material(const char* shaderPath, uint stageFlags);
+		Material(const Material& material);
 		~Material();
 
 		const std::string& GetShaderPath() const { return mShaderPath; }
@@ -24,6 +25,8 @@ namespace NARCO
 		SharedPipelineResource<ID3D11Buffer>& GetConstBuffers() { return mBuffers; }
 		SharedPipelineResource<ID3D11ShaderResourceView>& GetShaderResources() { return mShaderResources; }
 		SharedPipelineResource<ID3D11SamplerState>& GetSamplerStates() { return mSamplerStates; }
+
+		Material* MakeInstance();
 
 		void MapConstantBuffer(const char* cbufferName, const char* variableName, eResourceType type, void* data, uint size)
 		{
