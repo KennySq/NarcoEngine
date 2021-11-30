@@ -77,7 +77,7 @@ namespace NARCO
 		FbxScene* scene = FbxScene::Create(manager, "Scene");
 		importer->Import(scene);
 
-		fbxsdk::FbxAxisSystem::DirectX.ConvertScene(scene);
+		//fbxsdk::FbxAxisSystem::DirectX.ConvertScene(scene);
 
 		FbxGeometryConverter geometryConverter(manager);
 		geometryConverter.Triangulate(scene, true);
