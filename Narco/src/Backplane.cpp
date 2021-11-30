@@ -19,7 +19,7 @@ namespace NARCO
         Material* defaultUber = scene->GetMaterial("Deferred_DefaultUber_0.hlsl");
 
         renderer->SetMesh(planeMesh);
-        renderer->AddMaterial(defaultUber);
+        renderer->AddMaterial(defaultUber->MakeInstance());
 
         GameObject::awake();
     }

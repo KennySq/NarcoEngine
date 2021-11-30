@@ -24,7 +24,7 @@ void Shiba::awake()
 	Renderer* renderer = AddComponent<Renderer>();
 
 	renderer->SetMesh(mesh_shiba);
-	renderer->AddMaterial(uberMat);
+	renderer->AddMaterial(uberMat->MakeInstance());
 
 
 	GameObject::awake();
