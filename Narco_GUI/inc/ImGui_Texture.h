@@ -12,6 +12,14 @@ class ImGui_Texture
     PUBLIC_API NARCO_API int GetHeight() const { return mHeight; }
     PUBLIC_API NARCO_API const std::string& GetFileName() const { return mFileName; }
 
+    PUBLIC_API NARCO_API ID3D11ShaderResourceView* Migrate()
+    {
+        ID3D11ShaderResourceView* srv = mShaderResourceView.Detach();
+        mShaderResourceView = nullptr;
+
+        return srv;
+    }
+
     PRIVATE_PROPERTY ComPtr<ID3D11ShaderResourceView> mShaderResourceView;
 
     PRIVATE_PROPERTY std::string mFileName;

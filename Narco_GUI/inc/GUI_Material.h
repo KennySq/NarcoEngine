@@ -23,6 +23,8 @@ namespace NARCO
 
 		NARCO_API void SetGameObject(GameObject* gameObject)
 		{
+			mMaterials.clear();
+
 			mGameObject = gameObject;
 			Renderer* renderer = gameObject->GetComponent<Renderer>();
 			if (renderer == nullptr)
@@ -33,11 +35,6 @@ namespace NARCO
 
 			Material** materials = renderer->GetMaterials();
 			uint materialCount = renderer->GetMaterialCount();
-
-			if (mMaterials.size() > 0)
-			{
-				return;
-			}
 
 			for (uint i = 0; i < materialCount; i++)
 			{

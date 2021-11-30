@@ -23,7 +23,6 @@ namespace NARCO
 		if (mImage != nullptr)
 		{
 			ImGui::NewLine();
-			ImGui::Image(mImage->GetSRV(), ImVec2(100, 100));
 		}
 
 		if (mbOpenBrowser == true)

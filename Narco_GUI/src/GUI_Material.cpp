@@ -3,8 +3,12 @@
 namespace NARCO
 {
 	GUI_Material::GUI_Material(ID3D11Device* device)
-		: mDevice(device)
+		: mDevice(device), mTextureSlots(1024)
 	{
+		for (uint i = 0; i < 1024; i++)
+		{
+			mTextureSlots[i].resize(128);
+		}
 	}
 	void GUI_Material::Start()
 	{
@@ -26,6 +30,8 @@ namespace NARCO
 				uint resourceCount = resourceMap.size();
 				uint resourceIndex = 0;
 				
+				mTextureSlots[i].resize(resourceCount);
+
 				for (auto& r : resourceMap)
 				{
 					GUI_FileSlot* fileSlot = mTextureSlots[i][resourceIndex];
@@ -34,11 +40,15 @@ namespace NARCO
 					fileSlot->Update();
 
 					ImGui_Texture* texture = fileSlot->GetImage();
-
 					if (texture != nullptr)
 					{
-						r.second->Resource = texture->GetSRV();
+						ID3D11ShaderResourceView* srv = texture->GetSRV();
+						if (srv != nullptr)
+						{
+							r.second->Resource = texture->Migrate();
+						}
 					}
+
 					ImGui::PopID();
 
 					resourceIndex++;
@@ -67,42 +77,21 @@ namespace NARCO
 	void GUI_Material::onChangeGameObject()
 	{
 		uint materialSize = mMaterials.size();
-		if (materialSize > 0)
-		{
-			for (uint i = 0; i < materialSize; i++)
-			{
-				if (mTextureSlots.size() == 0)
-				{
-					break;
-				}
-
-				uint slotSize = mTextureSlots[i].size();
-
-				for (uint j = 0; j < slotSize; j++)
-				{
-					if (mTextureSlots[i][j] != nullptr)
-					{
-						delete mTextureSlots[i][j];
-					}
-				}
-			}
-
-			mTextureSlots.resize(0);
-		}
-
 		for (uint i = 0; i < materialSize; i++)
 		{
 			Material* material = mMaterials[i];
 			auto ShaderResources = material->GetShaderResources();
 			uint slotSize = material->GetShaderResources().Map.size();
-			
-			mTextureSlots.push_back(std::vector<GUI_FileSlot*>());
 			auto itr = material->GetShaderResources().Map.begin();
 
 			for (uint j = 0; j < slotSize; j++)
 			{
-				GUI_FileSlot* slot = new GUI_FileSlot(ASSET_IMAGE, mDevice, "");
-				mTextureSlots[i].push_back(slot);
+				GUI_FileSlot* slot = mTextureSlots[i][j];
+				if (slot == nullptr)
+				{
+					slot = new GUI_FileSlot(ASSET_IMAGE, mDevice, "");
+					mTextureSlots[i][j] = slot;
+				}
 				
 				long long nameHash = ShaderResources.FindName(itr->second);
 				nameHash += mGameObject->GetInstanceID();
