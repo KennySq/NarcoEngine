@@ -10,6 +10,14 @@ namespace NARCO
 
 	class GameObject : public Super
 	{
+		struct InstanceBuffer
+		{
+			InstanceBuffer(ID3D11Device* device, unsigned int size);
+
+			ComPtr<ID3D11Buffer> Buffer;
+			unsigned int Size;
+		};
+
 		friend Scene;
 
 	public:
@@ -102,6 +110,7 @@ namespace NARCO
 		GameObject* mParent;
 
 		Transform* mTransform;
+		InstanceBuffer* mInstanceBuffer;
 
 		std::vector<GameObject*> mChilds;
 

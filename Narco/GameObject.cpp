@@ -84,4 +84,22 @@ namespace NARCO
 			comp->release();
 		}
 	}
+	GameObject::InstanceBuffer::InstanceBuffer(ID3D11Device* device, unsigned int size)
+		: Size(size)
+	{
+		D3D11_BUFFER_DESC bufferDesc{};
+
+		bufferDesc.ByteWidth = size;
+		bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+
+		HRESULT result = device->CreateBuffer(&bufferDesc, nullptr, Buffer.GetAddressOf());
+	
+		if (result != S_OK)
+		{
+			Debug::Log("failed to create instance buffer");
+			return;
+		}
+	}
 }
