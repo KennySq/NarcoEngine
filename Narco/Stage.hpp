@@ -27,6 +27,14 @@ namespace NARCO
 		}
 	}
 
+	// update here. 2021/11/30 5:48 PM
+	template<typename _ShaderTy>
+	inline Stage<_ShaderTy>::Stage(const Stage& stage)
+		: mPath(stage.mPath), mFileName(stage.mFileName), mShader(stage.mShader)
+	{
+
+	}
+
 	template<>
 	inline Stage<ID3D11GeometryShader>::Stage(const char* shaderPath)
 		: mPath(shaderPath), mStageFlag(STAGE_GEOMETRY)

@@ -20,6 +20,7 @@ namespace NARCO
 	{
 	public:
 		Stage(const char* shaderPath);
+		Stage(const Stage& stage);
 		~Stage();
 
 		_ShaderTy* GetShader() const { return static_cast<_ShaderTy*>(mShader.Get()); }
