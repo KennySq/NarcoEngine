@@ -85,7 +85,6 @@ namespace NARCO
 						delete mTextureSlots[i][j];
 					}
 				}
-				
 			}
 
 			mTextureSlots.resize(0);
@@ -106,12 +105,12 @@ namespace NARCO
 				mTextureSlots[i].push_back(slot);
 				
 				long long nameHash = ShaderResources.FindName(itr->second);
+				nameHash += mGameObject->GetInstanceID();
 
 				if (nameHash != -1)
 				{
 					slot->SetSlotName(std::to_string(nameHash));
 				}
-
 
 				itr++;
 			}
