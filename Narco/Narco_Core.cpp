@@ -2,6 +2,7 @@
 
 #include"inc/Dragon.h"
 #include"inc/Skater.h"
+#include"inc/Backplane.h"
 
 #include"inc/Camera.h"
 
@@ -60,7 +61,7 @@ namespace NARCO
 		//mSelectedScene->AddMesh(skaterLoader.ConvertMesh());
 
 		GameObject* shiba = mSelectedScene->AddGameObject(new Shiba());
-		GameObject* plane = mSelectedScene->AddGameObject(new ());
+		GameObject* plane = mSelectedScene->AddGameObject(new BackPlane());
 		GameObject* dragon = mSelectedScene->AddGameObject(new Dragon());
 		GameObject* skater = mSelectedScene->AddGameObject(new Skater());
 
