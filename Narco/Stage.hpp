@@ -156,20 +156,6 @@ namespace NARCO
 		return result;
 	}
 
-	template<typename _ResourceTy>
-	auto lambdaFindResource = [](std::vector<SharedResource<_ResourceTy>*>& resourceVector, std::string name)
-	{
-		for (uint i = 0; i < resourceVector.size(); i++)
-		{
-			if (resourceVector[i]->Name == name)
-			{
-				return true;
-			}
-		}
-
-		return false;
-	};
-
 	template<typename _ShaderTy>
 	HRESULT Stage<_ShaderTy>::Reflect(SharedPipelineResource<ID3D11ShaderResourceView>* sharedResources)
 	{
