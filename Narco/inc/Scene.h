@@ -4,6 +4,7 @@
 #include"Material.h"
 #include"GameObject.h"
 #include"Prefab.h"
+#include"Light.h"
 
 namespace NARCO
 {
@@ -12,7 +13,7 @@ namespace NARCO
 	class Narco_Deferred_Legacy;
 	typedef unsigned long long SceneID;
 
-	class Scene
+	class Scene : public Super
 	{
 		friend Narco_Deferred_Legacy;
 
@@ -26,6 +27,8 @@ namespace NARCO
 		GameObject* AddGameObject(const char* name);
 		GameObject* GetGameObject(InstanceID iid) const;
 
+		Light* AddLight(Light* light);
+
 		Mesh* AddMesh(Mesh* mesh);
 		Mesh* GetMesh(const char* name) const;
 
@@ -38,6 +41,8 @@ namespace NARCO
 		ID3D11DeviceContext* GetContext() const { return mContext; }
 
 		Narco_Deferred_Legacy* GetRP() const { return mRenderPipeline; }
+
+		bool GenerateLightBuffer();
 	private:
 
 		void awake();
@@ -51,7 +56,11 @@ namespace NARCO
 
 		std::map<InstanceID, GameObject*> mGameObjects;
 		std::vector<GameObject*> mGameObjectList;
-		
+
+		std::vector<Light*> mBakeLights;
+		std::vector<Light*> mRealtimeLights;
+		ComPtr<ID3D11Buffer> mLightBuffer;
+
 		std::map<long long, Material*> mCacheMaterials;
 		std::map<long long, Mesh*> mCacheMeshes;
 

@@ -66,6 +66,29 @@ namespace NARCO
 		return nullptr;
 	}
 
+	Light* Scene::AddLight(Light* light)
+	{
+		eLightMode mode = light->GetMode();
+		eLightType type = light->GetType();
+
+		switch (mode)
+		{
+		case eLightMode::LIGHT_REALTIME:
+
+
+			break;
+		}
+
+		switch (type)
+		{
+		case eLightType::LIGHT_DIRECTIONAL:
+			
+			break;
+		}
+
+		return nullptr;
+	}
+
 	Mesh* Scene::AddMesh(Mesh* mesh)
 	{
 		if (mesh == nullptr)
@@ -122,6 +145,30 @@ namespace NARCO
 		}
 
 		return result->second;
+	}
+	bool Scene::GenerateLightBuffer()
+	{
+		if (mLightBuffer != nullptr)
+		{
+			mLightBuffer.ReleaseAndGetAddressOf();
+		}
+
+		D3D11_BUFFER_DESC bufferDesc{};
+
+		bufferDesc.ByteWidth = sizeof(mRealtimeLights.size());
+		bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		bufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		
+		HRESULT result = mDevice->CreateBuffer(&bufferDesc, nullptr, mLightBuffer.GetAddressOf());
+		if (result != S_OK)
+		{
+			Debug::Log("failed to generate real-time light buffer.");
+			return false;
+		}
+
+		return true;
 	}
 	void Scene::awake()
 	{
