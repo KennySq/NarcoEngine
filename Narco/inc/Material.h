@@ -2,6 +2,8 @@
 #include"Stage.h"
 #include"StageResources.h"
 
+#include"LightHandler.h"
+
 namespace NARCO
 {
 	class Material : public Super
@@ -74,6 +76,8 @@ namespace NARCO
 
 
 	private:
+		static LightHandler* mLightHandler;
+
 		Stage<ID3D11VertexShader>* mVertexStage;
 		Stage<ID3D11GeometryShader>* mGeometryStage;
 		Stage<ID3D11DomainShader>* mDomainStage;
@@ -85,6 +89,8 @@ namespace NARCO
 		SharedPipelineResource<ID3D11Buffer> mBuffers;
 		SharedPipelineResource<ID3D11ShaderResourceView> mShaderResources;
 		SharedPipelineResource<ID3D11SamplerState> mSamplerStates;
+
+		SharedPipelineResource<ID3D11ClassInstance> mClassInstances;
 
 		std::string mShaderPath;
 		std::string mFileName;

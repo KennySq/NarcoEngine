@@ -2,6 +2,8 @@
 
 namespace NARCO
 {
+	LightHandler* Material::mLightHandler = nullptr;
+
 	struct InputLayoutMaker
 	{
 		ComPtr<ID3D11InputLayout> operator()(ID3D11Device* device, Stage<ID3D11VertexShader>* vertexStage)
@@ -149,9 +151,16 @@ namespace NARCO
 
 		if (stageFlags & STAGE_PIXEL)
 		{
-			mPixelStage = new Stage<ID3D11PixelShader>(shaderPath);
+			static const std::vector<std::string> classInstances
+			{
+				"gDirectionalLightInterface",
+				"gPointLightInterface",
+			};
+
+			mPixelStage = new Stage<ID3D11PixelShader>(shaderPath, mLightHandler->GetLinkage());
 			mPixelStage->Reflect(&mBuffers);
 			mPixelStage->Reflect(&mShaderResources);
+			mPixelStage->Reflect(&mClassInstances, mLightHandler->GetLinkage(), "LightConstantsSlot0", classInstances);
 		}
 
 	}
