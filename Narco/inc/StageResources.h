@@ -16,9 +16,9 @@ namespace NARCO
 		SharedResource<_Ty>()
 			: StageFlags(0) {}
 		SharedResource<_Ty>(const SharedResource<_Ty>& other)
-			: Resource(other.Resource), Name(other.Name), StageFlags(other.StageFlags)
+			: Name(other.Name), StageFlags(other.StageFlags)
 		{
-
+			
 		}
 
 		ComPtr<_Ty> Resource;
