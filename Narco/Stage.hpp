@@ -30,7 +30,7 @@ namespace NARCO
 	// update here. 2021/11/30 5:48 PM
 	template<typename _ShaderTy>
 	inline Stage<_ShaderTy>::Stage(const Stage& stage)
-		: mPath(stage.mPath), mFileName(stage.mFileName), mShader(stage.mShader)
+		: mPath(stage.mPath), mFileName(stage.mFileName), mShader(stage.mShader), mReflection(stage.mReflection), mByteCodes(stage.mByteCodes)
 	{
 
 	}
@@ -51,7 +51,6 @@ namespace NARCO
 			return;
 		}
 	}
-
 	template<>
 	inline Stage<ID3D11DomainShader>::Stage(const char* shaderPath)
 		: mPath(shaderPath), mStageFlag(STAGE_DOMAIN)
@@ -68,7 +67,6 @@ namespace NARCO
 			return;
 		}
 	}
-
 	template<>
 	inline Stage<ID3D11HullShader>::Stage(const char* shaderPath)
 		: mPath(shaderPath), mStageFlag(STAGE_HULL)
@@ -85,7 +83,6 @@ namespace NARCO
 			return;
 		}
 	}
-
 	template<>
 	inline Stage<ID3D11PixelShader>::Stage(const char* shaderPath)
 		: mPath(shaderPath), mStageFlag(STAGE_PIXEL)
@@ -102,12 +99,10 @@ namespace NARCO
 			return;
 		}
 	}
-
 	template<typename _ShaderTy>
 	inline Stage<_ShaderTy>::~Stage()
 	{
 	}
-
 	template<typename _ShaderTy>
 	inline HRESULT Stage<_ShaderTy>::compile(const char* entry, const char* model)
 	{
@@ -161,6 +156,20 @@ namespace NARCO
 		return result;
 	}
 
+	template<typename _ResourceTy>
+	auto lambdaFindResource = [](std::vector<SharedResource<_ResourceTy>*>& resourceVector, std::string name)
+	{
+		for (uint i = 0; i < resourceVector.size(); i++)
+		{
+			if (resourceVector[i]->Name == name)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	};
+
 	template<typename _ShaderTy>
 	HRESULT Stage<_ShaderTy>::Reflect(SharedPipelineResource<ID3D11ShaderResourceView>* sharedResources)
 	{
@@ -207,11 +216,13 @@ namespace NARCO
 				uint pixelSize = 0;
 
 				resource->Name = bindDesc.Name;
+				resource->StageFlags |= mStageFlag;
 
 				sharedResources->Add(resource);
+
 				mShaderResources.emplace_back(resource);
 
-				resource->StageFlags |= mStageFlag;
+
 			}
 		}
 
@@ -300,6 +311,7 @@ namespace NARCO
 
 
 					}
+
 
 					result = mDevice->CreateBuffer(&cbufferDesc, nullptr, buffer->Resource.GetAddressOf());
 					if (result != S_OK)

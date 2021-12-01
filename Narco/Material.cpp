@@ -166,36 +166,36 @@ namespace NARCO
 
 		if (mStageFlags & STAGE_VERTEX)
 		{
-			mVertexStage = new Stage<ID3D11VertexShader>(mShaderPath.c_str());
+			mVertexStage = new Stage<ID3D11VertexShader>(*material.mVertexStage);
 			mVertexStage->Reflect(&mBuffers);
 			mVertexStage->Reflect(&mShaderResources);
-			mInputLayout = InputLayoutMaker{}(mDevice, mVertexStage);
+			mInputLayout = material.mInputLayout;
 		}
 
 		if (mStageFlags & STAGE_GEOMETRY)
 		{
-			mGeometryStage = new Stage<ID3D11GeometryShader>(mShaderPath.c_str());
+			mGeometryStage = new Stage<ID3D11GeometryShader>(*material.mGeometryStage);
 			mGeometryStage->Reflect(&mBuffers);
 			mGeometryStage->Reflect(&mShaderResources);
 		}
 
 		if (mStageFlags & STAGE_DOMAIN)
 		{
-			mDomainStage = new Stage<ID3D11DomainShader>(mShaderPath.c_str());
+			mDomainStage = new Stage<ID3D11DomainShader>(*material.mDomainStage);
 			mDomainStage->Reflect(&mBuffers);
 			mDomainStage->Reflect(&mShaderResources);
 		}
 
-		if (mStageFlags & STAGE_GEOMETRY)
+		if (mStageFlags & STAGE_HULL)
 		{
-			mHullStage = new Stage<ID3D11HullShader>(mShaderPath.c_str());
+			mHullStage = new Stage<ID3D11HullShader>(*material.mHullStage);
 			mHullStage->Reflect(&mBuffers);
 			mHullStage->Reflect(&mShaderResources);
 		}
 
 		if (mStageFlags & STAGE_PIXEL)
 		{
-			mPixelStage = new Stage<ID3D11PixelShader>(mShaderPath.c_str());
+			mPixelStage = new Stage<ID3D11PixelShader>(*material.mPixelStage);
 			mPixelStage->Reflect(&mBuffers);
 			mPixelStage->Reflect(&mShaderResources);
 		}
@@ -205,6 +205,8 @@ namespace NARCO
 	Material* Material::MakeInstance()
 	{
 		Material* instance = new Material(*this);
+
+		instance->mFileName += " (Instance)";
 
 		return instance;
 	}
