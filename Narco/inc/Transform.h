@@ -6,26 +6,6 @@
 
 namespace NARCO
 {
-
-	//class ProxyTransform : public MaterialProxy
-	//{
-	//public:
-	//	ProxyTransform(Material* material)
-	//		: mMaterial(material) {	}
-
-
-	//	virtual void Invoke() override;
-	//private:
-
-	//	Material* mMaterial;
-	//	const char* mName;
-	//	const char* mVariable;
-	//	eResourceType mType;
-	//	void* mData;
-	//	uint mSize;
-
-	//};
-
 	class Transform : public Component
 	{
 	public:
