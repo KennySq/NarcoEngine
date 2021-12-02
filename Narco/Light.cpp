@@ -2,6 +2,7 @@
 #include "inc/Light.h"
 #include"Transform.h"
 #include"GameObject.h"
+#include"inc/Scene.h"
 
 namespace NARCO
 {
@@ -35,48 +36,50 @@ namespace NARCO
 	{
 	}
 
-	void Light::awake()
+
+	void DirectionalLight::awake()
 	{
+		static LightHandler* lightHandler = LightHandler::GetInstance();
 		mTransform = mRoot->GetComponent<Transform>();
-		
+		Scene* scene = lightHandler->GetScene();
 
+		scene->AddLight(this);
 	}
 
-	void Light::start()
-	{
-		
-
-	}
-
-	void Light::update(float delta)
-	{
-		static Directional directionLight;
-		static Point pointLight;
-
-		if (mType == LIGHT_DIRECTIONAL)
-		{
-			XMVECTOR rotation = mTransform->GetRotation();
-
-			XMStoreFloat3(&directionLight.Direction, rotation);
-			//mContext->UpdateSubresource(mBuffer.Get(), 0, nullptr, &directionLight, 0, 0);
-		}
-		else if (mType == LIGHT_POINT)
-		{
-			XMVECTOR position = mTransform->GetPosition();
-
-			XMStoreFloat3(&pointLight.Position, position);
-		//	mContext->UpdateSubresource(mBuffer.Get(), 0, nullptr, &pointLight, 0, 0);
-		}
-
-	}
-
-	void Light::render(float delta)
+	void DirectionalLight::start()
 	{
 	}
 
-	void Light::release()
+	void DirectionalLight::update(float delta)
 	{
 	}
 
+	void DirectionalLight::render(float delta)
+	{
+	}
+
+	void DirectionalLight::release()
+	{
+	}
+
+	void PointLight::awake()
+	{
+	}
+
+	void PointLight::start()
+	{
+	}
+
+	void PointLight::update(float delta)
+	{
+	}
+
+	void PointLight::render(float delta)
+	{
+	}
+
+	void PointLight::release()
+	{
+	}
 
 }
