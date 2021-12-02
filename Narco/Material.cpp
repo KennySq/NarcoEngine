@@ -115,10 +115,11 @@ namespace NARCO
 		}
 	};
 
-	Material::Material(const char* shaderPath, uint stageFlags)
+	Material::Material(const char* shaderPath, uint stageFlags, bool bLit)
 		: mShaderPath(shaderPath), mStageFlags(stageFlags)
 	{
 		mFileName = mShaderPath.substr(mShaderPath.find_last_of('/') + 1);
+		mLightHandler = LightHandler::GetInstance();
 
 		if (stageFlags & STAGE_VERTEX)
 		{
@@ -160,7 +161,11 @@ namespace NARCO
 			mPixelStage = new Stage<ID3D11PixelShader>(shaderPath, mLightHandler->GetLinkage());
 			mPixelStage->Reflect(&mBuffers);
 			mPixelStage->Reflect(&mShaderResources);
-			mPixelStage->Reflect(&mClassInstances, mLightHandler->GetLinkage(), "LightConstantsSlot0", classInstances);
+			if (bLit == true)
+			{
+				mPixelStage->Reflect(&mClassInstances, mLightHandler->GetLinkage(), "gLightInstanceSlot", classInstances);
+			}
+
 		}
 
 	}

@@ -1,5 +1,7 @@
 
 #include "inc/Light.h"
+#include"Transform.h"
+#include"GameObject.h"
 
 namespace NARCO
 {
@@ -32,6 +34,7 @@ namespace NARCO
 	Light::~Light()
 	{
 	}
+
 	void Light::awake()
 	{
 		mTransform = mRoot->GetComponent<Transform>();

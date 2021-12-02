@@ -27,7 +27,7 @@ namespace NARCO
 		// 테스트 코드 영역입니다.
 		mSelectedScene = new Scene("Sample Scene", context, this);
 
-		Material* mat = new Material("built-in/hlsl/Deferred_DefaultUber_0.hlsl", STAGE_VERTEX | STAGE_PIXEL);
+		Material* mat = new Material("built-in/hlsl/Deferred_DefaultUber_0.hlsl", STAGE_VERTEX | STAGE_PIXEL, false);
 		mSelectedScene->AddMaterial(mat);
 
 		//Shader* uberShader = new Shader("built-in/hlsl/Deferred_DefaultUber_0.hlsl", SHADER_VERTEX | SHADER_PIXEL);
@@ -110,6 +110,12 @@ namespace NARCO
 	void Narco_Deferred_Legacy::Init()
 	{
 		mSelectedScene->start();
+
+		XMVECTOR direction = XMVectorSet(500, 500, -500, 1.0f) - XMVectorSet(0, 0, 0, 1.0f);
+		mSelectedScene->AddLight(new DirectionalLight(XMVector3Normalize(direction), 1.0f, Colors::White, eLightType::LIGHT_DIRECTIONAL, LIGHT_REALTIME));
+		mSelectedScene->AddLight(new PointLight(XMVectorSet(0,0,0,1), 1.0f, Colors::White, eLightType::LIGHT_POINT, LIGHT_REALTIME));
+
+		mSelectedScene->GenerateLightBuffer();
 
 		mMainCanvas->Start();
 

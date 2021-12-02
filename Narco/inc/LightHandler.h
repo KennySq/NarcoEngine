@@ -8,32 +8,6 @@ using namespace DirectX;
 
 namespace NARCO
 {
-	class PointLight : public Light
-	{
-	public:
-		XMFLOAT3 Diffuse(XMFLOAT3 normal);
-		XMFLOAT3 Specular(XMFLOAT3 normal, float power);
-	private:
-		XMFLOAT3 mPosition;
-		float mIntensity;
-	};
-
-	class DirectionalLight : public Light
-	{
-	public:
-		XMFLOAT3 Diffuse(XMFLOAT3 normal);
-		XMFLOAT3 Specular(XMFLOAT3 normal, float power);
-
-		virtual void update(float delta) override;
-
-	private:
-		XMFLOAT3 mDirection;
-		float mIntensity;
-		XMFLOAT4 mColor;
-
-
-	};
-
 	class LightHandler : public Super
 	{
 	public:
@@ -51,12 +25,33 @@ namespace NARCO
 
 			return mInstance;
 		}
+		
+		ID3D11Buffer* GetDirectionalLights() const { return mDirectionalLightBuffer.Get(); }
+		ID3D11Buffer* GetPointLights() const { return mPointLightBuffer.Get(); }
 
+		void ReleaseDirectionalLights()
+		{
+			mDirectionalLightBuffer.ReleaseAndGetAddressOf();
+		}
+
+		void ReleasePointLights()
+		{
+			mPointLightBuffer.ReleaseAndGetAddressOf();
+		}
+
+		bool GenerateDirectionals(std::vector<DirectionalLight>& lights);
+		bool GeneratePoints(std::vector<PointLight>& lights);
 	private:
+
 		static LightHandler* mInstance;
 
 		ComPtr<ID3D11ClassLinkage> mLinkage;
+
+		ComPtr<ID3D11Buffer> mPointLightBuffer;
+		ComPtr<ID3D11Buffer> mDirectionalLightBuffer;
 	
+		const uint MAX_DIRECTIONAL_LIGHT = 1024;
+		const uint MAX_POINT_LIGHT = 1024;
 	
 	};
 }

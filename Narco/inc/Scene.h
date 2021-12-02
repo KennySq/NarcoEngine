@@ -59,7 +59,6 @@ namespace NARCO
 
 		std::vector<Light*> mBakeLights;
 		std::vector<Light*> mRealtimeLights;
-		ComPtr<ID3D11Buffer> mLightBuffer;
 
 		std::map<long long, Material*> mCacheMaterials;
 		std::map<long long, Mesh*> mCacheMeshes;

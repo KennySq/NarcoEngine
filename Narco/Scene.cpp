@@ -71,22 +71,16 @@ namespace NARCO
 		eLightMode mode = light->GetMode();
 		eLightType type = light->GetType();
 
-		switch (mode)
+		if (mode == eLightMode::LIGHT_REALTIME)
 		{
-		case eLightMode::LIGHT_REALTIME:
-
-
-			break;
+			mRealtimeLights.emplace_back(light);
+		}
+		else
+		{
+			mBakeLights.emplace_back(light);
 		}
 
-		switch (type)
-		{
-		case eLightType::LIGHT_DIRECTIONAL:
-			
-			break;
-		}
-
-		return nullptr;
+		return light;
 	}
 
 	Mesh* Scene::AddMesh(Mesh* mesh)
@@ -146,26 +140,49 @@ namespace NARCO
 
 		return result->second;
 	}
+
 	bool Scene::GenerateLightBuffer()
 	{
-		if (mLightBuffer != nullptr)
+		static LightHandler* lightHandler = LightHandler::GetInstance();
+
+		if (lightHandler->GetPointLights() != nullptr)
 		{
-			mLightBuffer.ReleaseAndGetAddressOf();
+			lightHandler->ReleasePointLights();
 		}
 
-		D3D11_BUFFER_DESC bufferDesc{};
-
-		bufferDesc.ByteWidth = sizeof(mRealtimeLights.size());
-		bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		bufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		
-		HRESULT result = mDevice->CreateBuffer(&bufferDesc, nullptr, mLightBuffer.GetAddressOf());
-		if (result != S_OK)
+		if (lightHandler->GetDirectionalLights() != nullptr)
 		{
-			Debug::Log("failed to generate real-time light buffer.");
-			return false;
+			lightHandler->ReleaseDirectionalLights();
+		}
+
+		std::vector<PointLight> pointLights;
+		std::vector<DirectionalLight> directionalLights;
+
+		uint lightCount = mRealtimeLights.size();
+
+		for (uint i = 0; i < lightCount; i++)
+		{
+			eLightType type = mRealtimeLights[i]->GetType();
+			if (type == eLightType::LIGHT_POINT)
+			{
+				Light* light = mRealtimeLights[i];
+				pointLights.emplace_back(*reinterpret_cast<PointLight*>(light));
+			}
+			else if (type == eLightType::LIGHT_DIRECTIONAL)
+			{
+				Light* light = mRealtimeLights[i];
+				directionalLights.emplace_back(*reinterpret_cast<DirectionalLight*>(light));
+			}
+		}
+
+		if (directionalLights.size() > 0)
+		{
+			lightHandler->GenerateDirectionals(directionalLights);
+		}
+
+		if (pointLights.size() > 0)
+		{
+			lightHandler->GeneratePoints(pointLights);
 		}
 
 		return true;

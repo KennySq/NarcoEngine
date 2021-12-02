@@ -9,7 +9,7 @@ namespace NARCO
 	class Material : public Super
 	{
 	public:
-		Material(const char* shaderPath, uint stageFlags);
+		Material(const char* shaderPath, uint stageFlags, bool bLit);
 		Material(const Material& material);
 		~Material();
 
