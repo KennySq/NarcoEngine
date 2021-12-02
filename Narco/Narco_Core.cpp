@@ -71,6 +71,9 @@ namespace NARCO
 		mainCam->SetDisplay(mDisplay);
 		mainCamera->SetTag("Main Camera");
 
+		GameObject* directionalLight0 = mSelectedScene->AddGameObject("Light0");
+		directionalLight0->AddComponent<DirectionalLight>();
+
 		mMainCanvas = new GUI_Canvas(mWindowHandle, mHandleInstance, device, context);
 
 		mMainCanvas->AddFrame(new GUI_Frame("Color Picker", 400, 300, ImGuiWindowFlags_NoResize));
@@ -110,10 +113,6 @@ namespace NARCO
 	void Narco_Deferred_Legacy::Init()
 	{
 		mSelectedScene->start();
-
-		XMVECTOR direction = XMVectorSet(500, 500, -500, 1.0f) - XMVectorSet(0, 0, 0, 1.0f);
-		mSelectedScene->AddLight(new DirectionalLight(XMVector3Normalize(direction), 1.0f, Colors::White, eLightType::LIGHT_DIRECTIONAL, LIGHT_REALTIME));
-		mSelectedScene->AddLight(new PointLight(XMVectorSet(0,0,0,1), 1.0f, Colors::White, eLightType::LIGHT_POINT, LIGHT_REALTIME));
 
 		mSelectedScene->GenerateLightBuffer();
 
