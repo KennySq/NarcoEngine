@@ -11,6 +11,8 @@ Texture2D<float4> gAlbedo : register(t5);
 
 #include"Light.hlsli"
 
+
+
 /*	float4 mProjection : SV_Target0;
 	float4 mWorldPosition : SV_Target1;
 	float4 mNormal : SV_Target2;
@@ -52,11 +54,16 @@ float4 frag(Pixel_Input input) : SV_Target0
     float4 albedo = gAlbedo.Sample(defaultSampler, input.mTexcoord);
     
     float3 diffuse = float3(0, 0, 0);
+    float3 specular = float3(0, 0, 0);
     
     diffuse += gDirectionalLightInterface.Diffuse(normal.xyz);
     diffuse += gPointLightInterface.Diffuse(normal.xyz);
     
-    color = albedo;
+    specular += gDirectionalLightInterface.Specular(normal.xyz, 1.0f);
+    specular += gPointLightInterface.Specular(normal.xyz, 1.0f);
+    
+    color = float4(diffuse + specular, 1.0f);
+    
     
     return color;
 }

@@ -43,7 +43,7 @@ namespace NARCO
 
 		ID3D11GeometryShader** shader = reinterpret_cast<ID3D11GeometryShader**>(mShader.GetAddressOf());
 		result = mDevice->CreateGeometryShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), classLinkage, shader);
-		
+
 		if (result != S_OK)
 		{
 			Debug::Log("failed to create shader");
@@ -108,10 +108,10 @@ namespace NARCO
 		USES_CONVERSION;
 
 		HRESULT result;
-		
+
 		DWORD compileFlag = 0;
 
-		ID3DBlob *errBlob = nullptr;
+		ID3DBlob* errBlob = nullptr;
 
 #ifdef _DEBUG
 		compileFlag |= D3DCOMPILE_DEBUG;
@@ -122,7 +122,7 @@ namespace NARCO
 		result = D3DCompileFromFile(A2W(path), nullptr,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE, entry, model,
 			compileFlag, 0, mByteCodes.GetAddressOf(), &errBlob);
-		
+
 		if (result != S_OK)
 		{
 #ifdef _DEBUG
@@ -141,7 +141,7 @@ namespace NARCO
 				return result;
 			}
 		}
-		
+
 		result = D3DReflect(mByteCodes->GetBufferPointer(),
 			mByteCodes->GetBufferSize(), __uuidof(ID3D11ShaderReflection),
 			reinterpret_cast<void**>(mReflection.GetAddressOf()));
@@ -191,9 +191,9 @@ namespace NARCO
 
 				continue;
 			}
-			
 
-			
+
+
 			if (type == D3D_SIT_TEXTURE)
 			{
 				resource = new SharedResource<ID3D11ShaderResourceView>();
@@ -232,23 +232,29 @@ namespace NARCO
 	inline HRESULT Stage<_ShaderTy>::Reflect(SharedPipelineResource<ID3D11ClassInstance>* sharedResources, ID3D11ClassLinkage* linkage, const std::string& variableName, const std::vector<std::string>& classInstances)
 	{
 		uint interfaceCount = mReflection->GetNumInterfaceSlots();
-		ID3D11ShaderReflectionVariable* variable = mReflection->GetVariableByName(variableName);
-		for (uint i = 0; i < classInstances.size(); i++)
+
+		if (interfaceCount < 0)
 		{
-			linkage->GetClassInstance(classInstances[i], i, //备泅何 )
+			return E_FAIL;
 		}
+
+		ID3D11ShaderReflectionVariable* variable = mReflection->GetVariableByName(variableName.c_str());
+		SharedResource<ID3D11ClassInstance>* sr = new SharedResource<ID3D11ClassInstance>();
+
+		sr->Name = variableName;
+		sr->StageFlags |= mStageFlag;
+		sr->Instances = static_cast<ID3D11ClassInstance**>(malloc(sizeof(ID3D11ClassInstance*) * interfaceCount));
+		sr->mInstanceCount = interfaceCount;
+
+		mClassInstances = sr;
+
 		for (uint i = 0; i < interfaceCount; i++)
 		{
 			uint interfaceSlot = variable->GetInterfaceSlot(i);
-			mClassInstances.emplace_back(ID3D11ClassInstance());
 
-			mClassInstances[i] = 
+			linkage->GetClassInstance(classInstances[i].c_str(), i, &mClassInstances->Instances[i]);//备泅何 )
 
-			
-			
-			
 		}
-
 
 		return S_OK;
 	}
@@ -282,7 +288,7 @@ namespace NARCO
 
 					long long hash = MakeHash(resourceDesc.Name);
 					auto resource = sharedResources->Find(resourceDesc.Name);
-					
+
 					resource->StageFlags |= mStageFlag;
 
 					mBuffers.emplace_back(resource);
@@ -294,7 +300,7 @@ namespace NARCO
 				D3D11_BUFFER_DESC cbufferDesc{};
 				D3D11_SHADER_BUFFER_DESC cbufferShaderDesc{};
 				ID3D11ShaderReflectionConstantBuffer* cbufferShader = mReflection->GetConstantBufferByName(resourceDesc.Name);
-				
+
 				buffer->Name = resourceDesc.Name;
 
 				result = cbufferShader->GetDesc(&cbufferShaderDesc);
@@ -306,22 +312,18 @@ namespace NARCO
 				cbufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 				cbufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 
-
 				if (cbufferShaderDesc.Type == D3D_CT_CBUFFER)
 				{
 					for (uint i = 0; i < elementCount; i++)
 					{
 						auto variable = cbufferShader->GetVariableByIndex(i);
 						D3D11_SHADER_VARIABLE_DESC variableDesc{};
-						
+
 						result = variable->GetDesc(&variableDesc);
 						long long hash = MakeHash(variableDesc.Name);
 
 						variableOffsets.insert_or_assign(hash, variableDesc.StartOffset);
-
-
 					}
-
 
 					result = mDevice->CreateBuffer(&cbufferDesc, nullptr, buffer->Resource.GetAddressOf());
 					if (result != S_OK)
@@ -335,7 +337,7 @@ namespace NARCO
 					mBuffers.emplace_back(buffer);
 
 				}
-			
+
 			}
 		}
 

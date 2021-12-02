@@ -27,6 +27,26 @@ namespace NARCO
 		uint StageFlags;
 	};
 
+	template<>
+	struct SharedResource<ID3D11ClassInstance>
+	{
+		SharedResource()
+			: StageFlags(0) {}
+		SharedResource(const SharedResource<ID3D11ClassInstance>& other)
+			: Name(other.Name), StageFlags(other.StageFlags)
+		{
+
+		}
+
+		ID3D11ClassInstance** Instances;
+		uint mInstanceCount;
+
+		std::string Name;
+
+		uint StageFlags;
+	};
+
+
 	template<typename _Ty>
 	struct SharedPipelineResource
 	{

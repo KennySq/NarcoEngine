@@ -21,8 +21,16 @@ class PointLight : Light
     
     float4 mColor;
     
-    float3 Diffuse(float3 normal);
-    float3 Specular(float3 normal, float power);
+    float3 Diffuse(float3 normal)
+    {
+        return mPosition;
+
+    }
+    float3 Specular(float3 normal, float power)
+    {
+        return mPosition;
+
+    }
 };
 
 class DirectionalLight : Light
@@ -32,16 +40,23 @@ class DirectionalLight : Light
     
     float4 mColor;
     
-    float3 Diffuse(float3 normal);
-    float3 Specular(float3 normal, float power);
+    float3 Diffuse(float3 normal)
+    {
+        return mDirection;
+
+    }
+    float3 Specular(float3 normal, float power)
+    {
+        return mDirection;
+
+    }
 };
 
-Light gDirectionalLightInterface;
-Light gPointLightInterface;
-//Material gMaterialInterface;
-
-cbuffer LightConstantsSlot0 : register(b1)
+cbuffer gLightInstanceSlot
 {
     PointLight gPointLight;
     DirectionalLight gDirectionalLight;
+    
 }
+Light gDirectionalLightInterface;
+Light gPointLightInterface;
