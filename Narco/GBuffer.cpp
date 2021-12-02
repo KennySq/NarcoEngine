@@ -67,6 +67,15 @@ namespace NARCO
 		uint classInstanceCount = pixelStage->GetClassInstances()->mInstanceCount;
 		SharedResource<ID3D11Buffer>* const* buffers = pixelStage->GetBufferPointer();
 		
+		std::vector<ID3D11Buffer*> psBuffer;
+
+		uint psBufferCount = pixelStage->GetBufferCount();
+
+		for (unsigned int i = 0; i < psBufferCount; i++)
+		{
+			psBuffer.emplace_back(buffers[i]->Resource.Get());
+		}
+
 		context->VSSetShader(vertexStage->GetShader(), nullptr, 0);
 		context->PSSetShader(pixelStage->GetShader(), classInstances, classInstanceCount);
 
@@ -76,7 +85,7 @@ namespace NARCO
 
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		context->PSSetConstantBuffers(0, pixelStage->GetBufferCount(),  );
+		context->PSSetConstantBuffers(0, pixelStage->GetBufferCount(), psBuffer.data());
 		context->PSSetShaderResources(0, mBufferCount, bufferSRV.data());
 
 		context->OMSetRenderTargets(1, &backBuffer, nullptr);
@@ -92,8 +101,6 @@ namespace NARCO
 		for (unsigned int i = 0; i < mBufferCount; i++)
 		{
 			context->ClearRenderTargetView(mBuffers[i]->GetRenderTarget(), clearColors);
-
-
 		}
 		context->ClearDepthStencilView(mDepth->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
