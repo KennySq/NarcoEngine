@@ -51,59 +51,81 @@ namespace NARCO
 
 		uint mSize;
 
-		// Component을(를) 통해 상속됨
+	};
+
+	class DirectionalLight : public Light
+	{
+	public:
+		struct Raw
+		{
+			XMFLOAT3 Direction;
+			float Intensity;
+
+			XMFLOAT4 Color;
+		};
+
+		DirectionalLight()
+			: Light(LIGHT_DIRECTIONAL, LIGHT_REALTIME)
+		{
+			XMVECTOR direction = XMVectorSet(500, 500, -500, 1.0f) - XMVectorSet(0, 0, 0, 1.0f);
+
+			Raw.Intensity = 1.0f;
+
+			XMStoreFloat3(&Raw.Direction, direction);
+			XMStoreFloat4(&Raw.Color, Colors::White);
+		}
+
+		DirectionalLight(const DirectionalLight& other)
+			: Light(other.mType, other.mMode), Raw(other.Raw)
+		{
+
+		}
+
 		virtual void awake() override;
 		virtual void start() override;
 		virtual void update(float delta) override;
 		virtual void render(float delta) override;
 		virtual void release() override;
 
-	};
-
-	class DirectionalLight : public Light
-	{
-	public:
-		DirectionalLight(XMVECTOR direction, float intensity, XMVECTOR color, eLightType type, eLightMode mode)
-			: Light(type, mode), Intensity(intensity)
-		{
-			XMStoreFloat3(&Direction, direction);
-			XMStoreFloat4(&Color, color);
-		}
-
-		DirectionalLight(const DirectionalLight& other)
-			: Light(other.mType, other.mMode), Intensity(other.Intensity), Direction(other.Direction), Color(other.Color)
-		{
-
-		}
-
 		~DirectionalLight() {}
-
-		XMFLOAT3 Direction;
-		float Intensity;
-
-		XMFLOAT4 Color;
+		
+		Raw Raw;
 	};
 
 	class PointLight : public Light
 	{
 	public:
-		PointLight(XMVECTOR position, float intensity, XMVECTOR color, eLightType type, eLightMode mode)
-			: Light(type, mode), Intensity(intensity)
+		struct Raw
 		{
-			XMStoreFloat3(&Position, position);
-			XMStoreFloat4(&Color, color);
+			XMFLOAT3 Position;
+			float Intensity;
+
+			XMFLOAT4 Color;
+		};
+
+		PointLight()
+			: Light(LIGHT_POINT, LIGHT_REALTIME)
+		{
+			XMVECTOR position = XMVectorSet(0, 0, 0, 1.0f);
+			
+			XMStoreFloat3(&Raw.Position, position);
+			XMStoreFloat4(&Raw.Color, Colors::White);
 		}
 		
 		PointLight(const PointLight& other)
-			: Light(other.mType, other.mMode), Intensity(other.Intensity), Position(other.Position), Color(other.Color)
+			: Light(other.mType, other.mMode), Raw(other.Raw)
 		{
 
 		}
 		~PointLight() {}
 
-		XMFLOAT3 Position;
-		float Intensity;
+		virtual void awake() override;
+		virtual void start() override;
+		virtual void update(float delta) override;
+		virtual void render(float delta) override;
+		virtual void release() override;
 
-		XMFLOAT4 Color;
+		Raw Raw;
+
 	};
 }

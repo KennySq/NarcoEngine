@@ -27,13 +27,13 @@ namespace NARCO
 		GameObject* AddGameObject(const char* name);
 		GameObject* GetGameObject(InstanceID iid) const;
 
-		Light* AddLight(Light* light);
-
 		Mesh* AddMesh(Mesh* mesh);
 		Mesh* GetMesh(const char* name) const;
 
 		Material* AddMaterial(Material* mat);
 		Material* GetMaterial(const char* name) const;
+
+		Light* AddLight(Light* light);
 
 		GameObject* const* GetGameObjects() { return mGameObjectList.data(); }
 		uint GetGameObjectCount() const { return mGameObjectList.size(); }

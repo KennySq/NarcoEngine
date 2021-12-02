@@ -8,6 +8,7 @@ using namespace DirectX;
 
 namespace NARCO
 {
+	class Scene;
 	class LightHandler : public Super
 	{
 	public:
@@ -29,6 +30,11 @@ namespace NARCO
 		ID3D11Buffer* GetDirectionalLights() const { return mDirectionalLightBuffer.Get(); }
 		ID3D11Buffer* GetPointLights() const { return mPointLightBuffer.Get(); }
 
+		void OnChangeScene(Scene* newScene)
+		{
+			mCurrentScene = newScene;
+		}
+
 		void ReleaseDirectionalLights()
 		{
 			mDirectionalLightBuffer.ReleaseAndGetAddressOf();
@@ -39,8 +45,7 @@ namespace NARCO
 			mPointLightBuffer.ReleaseAndGetAddressOf();
 		}
 
-		bool GenerateDirectionals(std::vector<DirectionalLight>& lights);
-		bool GeneratePoints(std::vector<PointLight>& lights);
+		Scene* GetScene() { return mCurrentScene; }
 	private:
 
 		static LightHandler* mInstance;
@@ -49,7 +54,9 @@ namespace NARCO
 
 		ComPtr<ID3D11Buffer> mPointLightBuffer;
 		ComPtr<ID3D11Buffer> mDirectionalLightBuffer;
-	
+
+		Scene* mCurrentScene;
+
 		const uint MAX_DIRECTIONAL_LIGHT = 1024;
 		const uint MAX_POINT_LIGHT = 1024;
 	
