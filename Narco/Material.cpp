@@ -154,8 +154,8 @@ namespace NARCO
 		{
 			static const std::vector<std::string> classInstances
 			{
-				"gDirectionalLightInterface",
-				"gPointLightInterface",
+				"gPointLight",
+				"gDirectionalLight",
 			};
 
 			mPixelStage = new Stage<ID3D11PixelShader>(shaderPath, mLightHandler->GetLinkage());
