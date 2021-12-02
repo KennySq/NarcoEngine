@@ -39,7 +39,7 @@ namespace NARCO
 	}
 	GameObject* Scene::AddGameObject(const char* name)
 	{
-		
+
 		InstanceID id = MakeHash(name);
 
 		if (mGameObjects.find(id) != mGameObjects.end())
@@ -64,23 +64,6 @@ namespace NARCO
 		}
 
 		return nullptr;
-	}
-
-	Light* Scene::AddLight(Light* light)
-	{
-		eLightMode mode = light->GetMode();
-		eLightType type = light->GetType();
-
-		if (mode == eLightMode::LIGHT_REALTIME)
-		{
-			mRealtimeLights.emplace_back(light);
-		}
-		else
-		{
-			mBakeLights.emplace_back(light);
-		}
-
-		return light;
 	}
 
 	Mesh* Scene::AddMesh(Mesh* mesh)
@@ -141,6 +124,28 @@ namespace NARCO
 		return result->second;
 	}
 
+	Light* Scene::AddLight(Light* light)
+	{
+		if (light == nullptr)
+		{
+			Debug::Log("invalid argument.");
+			return nullptr;
+		}
+
+		eLightType type = light->GetType();
+
+		if (type == LIGHT_REALTIME)
+		{
+			mRealtimeLights.emplace_back(light);
+		}
+		else if (type == LIGHT_BAKE)
+		{
+			mBakeLights.emplace_back(light);
+		}
+
+		return light;
+	}
+
 	bool Scene::GenerateLightBuffer()
 	{
 		static LightHandler* lightHandler = LightHandler::GetInstance();
@@ -189,6 +194,10 @@ namespace NARCO
 	}
 	void Scene::awake()
 	{
+		static LightHandler* lightHandler = LightHandler::GetInstance();
+
+		lightHandler->OnChangeScene(this);
+
 		for (auto i : mGameObjects)
 		{
 			Prefab* prefab = reinterpret_cast<Prefab*>(i.second);
@@ -223,7 +232,7 @@ namespace NARCO
 			GameObject* inst = i.second;
 
 			inst->update(delta);
-			
+
 		}
 
 	}
