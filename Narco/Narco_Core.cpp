@@ -114,7 +114,7 @@ namespace NARCO
 	{
 		mSelectedScene->start();
 
-		mSelectedScene->GenerateLightBuffer();
+		mSelectedScene->updateLightBuffer();
 
 		mMainCanvas->Start();
 
