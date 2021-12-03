@@ -154,8 +154,8 @@ namespace NARCO
 		{
 			static const std::vector<std::string> classInstances
 			{
-				"gPointLight",
-				"gDirectionalLight",
+				"gPointLightInstances",
+				"gDirectionalLightInstances",
 			};
 
 			mPixelStage = new Stage<ID3D11PixelShader>(shaderPath, mLightHandler->GetLinkage());
@@ -176,6 +176,35 @@ namespace NARCO
 	Material::Material(const Material& material)
 		: mStageFlags(material.mStageFlags), mShaderPath(material.mShaderPath)
 	{
+		if (this != nullptr)
+		{
+			if (mVertexStage != nullptr)
+			{
+				delete mVertexStage;
+			}
+
+			if (mGeometryStage != nullptr)
+			{
+				delete mGeometryStage;
+			}
+
+			if (mDomainStage != nullptr)
+			{
+				delete mDomainStage;
+			}
+
+			if (mHullStage != nullptr)
+			{
+				delete mHullStage;
+			}
+
+			if (mPixelStage != nullptr)
+			{
+				delete mPixelStage;
+			}
+		}
+
+
 		mFileName = mShaderPath.substr(mShaderPath.find_last_of('/') + 1);
 
 		if (mStageFlags & STAGE_VERTEX)
