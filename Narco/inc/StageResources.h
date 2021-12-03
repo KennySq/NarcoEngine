@@ -14,11 +14,18 @@ namespace NARCO
 	struct SharedResource
 	{
 		SharedResource<_Ty>()
-			: StageFlags(0) {}
+			: StageFlags(0), Resource(nullptr) {}
 		SharedResource<_Ty>(const SharedResource<_Ty>& other)
 			: Name(other.Name), StageFlags(other.StageFlags)
 		{
 			
+		}
+		~SharedResource<_Ty>()
+		{
+			if (Resource != nullptr)
+			{
+				Resource.ReleaseAndGetAddressOf();
+			}
 		}
 
 		ComPtr<_Ty> Resource;
@@ -31,11 +38,19 @@ namespace NARCO
 	struct SharedResource<ID3D11ClassInstance>
 	{
 		SharedResource()
-			: StageFlags(0) {}
+			: StageFlags(0), Instances(nullptr) {}
 		SharedResource(const SharedResource<ID3D11ClassInstance>& other)
 			: Name(other.Name), StageFlags(other.StageFlags)
 		{
 
+		}
+		
+		~SharedResource()
+		{
+			if (Instances != nullptr)
+			{
+				delete Instances;
+			}
 		}
 
 		ID3D11ClassInstance** Instances;
