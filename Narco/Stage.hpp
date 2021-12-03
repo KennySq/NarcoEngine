@@ -101,6 +101,29 @@ namespace NARCO
 	template<typename _ShaderTy>
 	inline Stage<_ShaderTy>::~Stage()
 	{
+		uint bufferCount = mBuffers.size();
+		for (uint i = 0; i < bufferCount; i++)
+		{
+			delete mBuffers[i];
+		}
+
+		uint shaderResourceCount = mShaderResources.size();
+		for (uint i = 0; i < shaderResourceCount; i++)
+		{
+			delete mShaderResources[i];
+		}
+
+		uint samplerCount = mSamplerStates.size();
+		for (uint i = 0; i < samplerCount; i++)
+		{
+			delete mSamplerStates[i];
+		}
+
+		if (mClassInstances != nullptr)
+		{
+			delete mClassInstances;
+		}
+
 	}
 	template<typename _ShaderTy>
 	inline HRESULT Stage<_ShaderTy>::compile(const char* entry, const char* model)
@@ -192,8 +215,6 @@ namespace NARCO
 				continue;
 			}
 
-
-
 			if (type == D3D_SIT_TEXTURE)
 			{
 				resource = new SharedResource<ID3D11ShaderResourceView>();
@@ -206,7 +227,6 @@ namespace NARCO
 				sharedResources->Add(resource);
 
 				mShaderResources.emplace_back(resource);
-
 
 			}
 		}
@@ -285,7 +305,6 @@ namespace NARCO
 				// check same resource on the stage
 				if (sharedResources->Find(resourceDesc.Name) != nullptr)
 				{
-
 					long long hash = MakeHash(resourceDesc.Name);
 					auto resource = sharedResources->Find(resourceDesc.Name);
 
