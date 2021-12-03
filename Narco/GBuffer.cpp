@@ -25,7 +25,7 @@ namespace NARCO
 	
 		mScreenQuadMesh = new Mesh("SCREEN_QUAD", device, PRIMITIVE_QUAD);
 
-		mScreenQuadShader = new Material("built-in/hlsl/Deferred_FinalPass.hlsl", STAGE_VERTEX | STAGE_PIXEL, true);
+		mScreenQuadShader = new Material("built-in/hlsl/Deferred_FinalPass.hlsl", STAGE_VERTEX | STAGE_PIXEL, false);
 		
 	
 	}
@@ -36,10 +36,10 @@ namespace NARCO
 	{
 		static LightHandler* lightHandler = LightHandler::GetInstance();
 
-		ID3D11Buffer* directionalLights = lightHandler->GetDirectionalLights();
-		ID3D11Buffer* pointLights = lightHandler->GetPointLights();
+		//ID3D11Buffer* directionalLights = lightHandler->GetDirectionalLights();
+		//ID3D11Buffer* pointLights = lightHandler->GetPointLights();
 
-		ID3D11Buffer* lightBuffers[] = { directionalLights, pointLights };
+		//ID3D11Buffer* lightBuffers[] = { directionalLights, pointLights };
 
 		static ID3D11Buffer* vertex[] = { mScreenQuadMesh->GetVertex() };
 		static ID3D11Buffer* index = mScreenQuadMesh->GetIndex();
@@ -77,7 +77,8 @@ namespace NARCO
 		}
 
 		context->VSSetShader(vertexStage->GetShader(), nullptr, 0);
-		context->PSSetShader(pixelStage->GetShader(), classInstances, classInstanceCount);
+		//context->PSSetShader(pixelStage->GetShader(), classInstances, classInstanceCount);
+		context->PSSetShader(pixelStage->GetShader(), nullptr, 0);
 
 		context->IASetInputLayout(mScreenQuadShader->GetInputLayout());
 		context->IASetVertexBuffers(0, 1, vertex, strides, offsets);
