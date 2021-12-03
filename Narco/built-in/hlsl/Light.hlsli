@@ -29,7 +29,6 @@ class PointLight : Light
     float3 Specular(float3 normal, float power)
     {
         return mPosition;
-
     }
 };
 
@@ -52,8 +51,13 @@ class DirectionalLight : Light
     }
 };
 
-cbuffer gLightBuffer : register(b1)
+// these resources are scene-level shared resources
+cbuffer gPointLightBuffer : register(b1)
 {
-    PointLight gPointLightInstances[1024];
-    DirectionalLight gDirectionalLightInstances[1024];
+    PointLight gPointLights[2048];
+}
+
+cbuffer gDirectionalLightBuffer : register(b2)
+{
+    DirectionalLight gDirectionalLightInstances[1024];   
 }
