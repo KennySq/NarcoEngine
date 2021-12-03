@@ -27,22 +27,9 @@ namespace NARCO
 			return mInstance;
 		}
 		
-		ID3D11Buffer* GetDirectionalLights() const { return mDirectionalLightBuffer.Get(); }
-		ID3D11Buffer* GetPointLights() const { return mPointLightBuffer.Get(); }
-
 		void OnChangeScene(Scene* newScene)
 		{
 			mCurrentScene = newScene;
-		}
-
-		void ReleaseDirectionalLights()
-		{
-			mDirectionalLightBuffer.ReleaseAndGetAddressOf();
-		}
-
-		void ReleasePointLights()
-		{
-			mPointLightBuffer.ReleaseAndGetAddressOf();
 		}
 
 		Scene* GetScene() { return mCurrentScene; }
@@ -51,9 +38,6 @@ namespace NARCO
 		static LightHandler* mInstance;
 
 		ComPtr<ID3D11ClassLinkage> mLinkage;
-
-		ComPtr<ID3D11Buffer> mPointLightBuffer;
-		ComPtr<ID3D11Buffer> mDirectionalLightBuffer;
 
 		Scene* mCurrentScene;
 

@@ -42,7 +42,6 @@ namespace NARCO
 
 		Narco_Deferred_Legacy* GetRP() const { return mRenderPipeline; }
 
-		bool GenerateLightBuffer();
 	private:
 
 		void awake();
@@ -50,6 +49,8 @@ namespace NARCO
 		void update(float delta);
 		void render(float delta);
 		void release();
+
+		bool updateLightBuffer();
 
 		std::string mName;
 		SceneID mSceneID;

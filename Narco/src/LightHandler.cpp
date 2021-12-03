@@ -12,11 +12,7 @@ namespace NARCO
 			return;
 		}
 
-		D3D11_BUFFER_DESC directionalDesc{};
-
-		directionalDesc.ByteWidth = sizeof(DirectionalLight::Raw) * 1024;
 		// update from here, 2021/12/02 5:44 PM
-
 
 	}
 	LightHandler::~LightHandler()

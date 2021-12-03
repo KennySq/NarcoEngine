@@ -146,19 +146,9 @@ namespace NARCO
 		return light;
 	}
 
-	bool Scene::GenerateLightBuffer()
+	bool Scene::updateLightBuffer()
 	{
 		static LightHandler* lightHandler = LightHandler::GetInstance();
-
-		if (lightHandler->GetPointLights() != nullptr)
-		{
-			lightHandler->ReleasePointLights();
-		}
-
-		if (lightHandler->GetDirectionalLights() != nullptr)
-		{
-			lightHandler->ReleaseDirectionalLights();
-		}
 
 		std::vector<PointLight> pointLights;
 		std::vector<DirectionalLight> directionalLights;
@@ -180,15 +170,7 @@ namespace NARCO
 			}
 		}
 
-		if (directionalLights.size() > 0)
-		{
-			lightHandler->GenerateDirectionals(directionalLights);
-		}
 
-		if (pointLights.size() > 0)
-		{
-			lightHandler->GeneratePoints(pointLights);
-		}
 
 		return true;
 	}
