@@ -122,7 +122,7 @@ namespace NARCO
 
 			if (vertex != nullptr)
 			{
-				auto info = lamdaBindStage(vertex);
+				stageInfo info = lamdaBindStage(vertex);
 
 				context->VSSetShader(vertex->GetShader(), nullptr, 0);
 
