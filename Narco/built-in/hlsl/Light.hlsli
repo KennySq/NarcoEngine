@@ -52,11 +52,8 @@ class DirectionalLight : Light
     }
 };
 
-cbuffer gLightInstanceSlot
+cbuffer gLightBuffer : register(b1)
 {
-    PointLight gPointLight;
-    DirectionalLight gDirectionalLight;
-    
+    PointLight gPointLightInstances[1024];
+    DirectionalLight gDirectionalLightInstances[1024];
 }
-Light gDirectionalLightInterface;
-Light gPointLightInterface;
