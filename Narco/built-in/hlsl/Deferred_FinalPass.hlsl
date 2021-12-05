@@ -53,12 +53,8 @@ float4 frag(Pixel_Input input) : SV_Target0
     
     float3 diffuse = float3(0, 0, 0);
     float3 specular = float3(0, 0, 0);
+
     
-    //diffuse += gDirectionalLightInterface.Diffuse(normal.xyz);
-    //diffuse += gPointLightInterface.Diffuse(normal.xyz);
-    
-    //specular += gDirectionalLightInterface.Specular(normal.xyz, 1.0f);
-    //specular += gPointLightInterface.Specular(normal.xyz, 1.0f);
     
     color = albedo;
     

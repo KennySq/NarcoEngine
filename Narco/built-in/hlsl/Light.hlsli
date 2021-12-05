@@ -1,20 +1,4 @@
-
-interface Light
-{
-    float3 Diffuse(float3 normal);
-    float3 Specular(float3 normal, float power);
-};
-
-interface Material
-{
-    float GetMetallic();
-    float GetRoughness();
-    float3 GetSpecular();
-  
-    float3 GetAlbedo(float2 uv);
-};
-
-class PointLight : Light
+class PointLight
 {
     float3 mPosition;
     float mIntensity;
@@ -24,7 +8,6 @@ class PointLight : Light
     float3 Diffuse(float3 normal)
     {
         return mPosition;
-
     }
     float3 Specular(float3 normal, float power)
     {
@@ -32,7 +15,7 @@ class PointLight : Light
     }
 };
 
-class DirectionalLight : Light
+class DirectionalLight
 {
     float3 mDirection;
     float mIntensity;

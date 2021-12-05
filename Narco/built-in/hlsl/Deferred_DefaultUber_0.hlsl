@@ -85,5 +85,5 @@ Buffer_Input frag(Pixel_Input input)
 	
     //output.mNormal = normal;
 	
-        return output;
+    return output;
 };
