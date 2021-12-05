@@ -18,7 +18,7 @@ namespace NARCO
 	}
 
 	template<>
-	inline Stage<ID3D11VertexShader>::Stage(const char* shaderPath, ID3D11ClassLinkage* classLinkage)
+	inline Stage<ID3D11VertexShader>::Stage(const char* shaderPath)
 		: mPath(shaderPath), mStageFlag(STAGE_VERTEX)
 	{
 		HRESULT result;
@@ -26,7 +26,7 @@ namespace NARCO
 		result = compile("vert", "vs_5_0");
 
 		ID3D11VertexShader** shader = reinterpret_cast<ID3D11VertexShader**>(mShader.GetAddressOf());
-		result = mDevice->CreateVertexShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), classLinkage, shader);
+		result = mDevice->CreateVertexShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), nullptr, shader);
 
 		if (result != S_OK)
 		{
@@ -35,14 +35,14 @@ namespace NARCO
 		}
 	}
 	template<>
-	inline Stage<ID3D11GeometryShader>::Stage(const char* shaderPath, ID3D11ClassLinkage* classLinkage)
+	inline Stage<ID3D11GeometryShader>::Stage(const char* shaderPath)
 		: mPath(shaderPath), mStageFlag(STAGE_GEOMETRY)
 	{
 		HRESULT result;
 		compile("geom", "gs_5_0");
 
 		ID3D11GeometryShader** shader = reinterpret_cast<ID3D11GeometryShader**>(mShader.GetAddressOf());
-		result = mDevice->CreateGeometryShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), classLinkage, shader);
+		result = mDevice->CreateGeometryShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), nullptr, shader);
 
 		if (result != S_OK)
 		{
@@ -51,14 +51,14 @@ namespace NARCO
 		}
 	}
 	template<>
-	inline Stage<ID3D11DomainShader>::Stage(const char* shaderPath, ID3D11ClassLinkage* classLinkage)
+	inline Stage<ID3D11DomainShader>::Stage(const char* shaderPath)
 		: mPath(shaderPath), mStageFlag(STAGE_DOMAIN)
 	{
 		HRESULT result;
 		result = compile("doma", "ds_5_0");
 
 		ID3D11DomainShader** shader = reinterpret_cast<ID3D11DomainShader**>(mShader.GetAddressOf());
-		result = mDevice->CreateDomainShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), classLinkage, shader);
+		result = mDevice->CreateDomainShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), nullptr, shader);
 
 		if (result != S_OK)
 		{
@@ -67,14 +67,14 @@ namespace NARCO
 		}
 	}
 	template<>
-	inline Stage<ID3D11HullShader>::Stage(const char* shaderPath, ID3D11ClassLinkage* classLinkage)
+	inline Stage<ID3D11HullShader>::Stage(const char* shaderPath)
 		: mPath(shaderPath), mStageFlag(STAGE_HULL)
 	{
 		HRESULT result;
 		result = compile("hull", "hs_5_0");
 
 		ID3D11HullShader** shader = reinterpret_cast<ID3D11HullShader**>(mShader.GetAddressOf());
-		result = mDevice->CreateHullShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), classLinkage, shader);
+		result = mDevice->CreateHullShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), nullptr, shader);
 
 		if (result != S_OK)
 		{
@@ -83,14 +83,14 @@ namespace NARCO
 		}
 	}
 	template<>
-	inline Stage<ID3D11PixelShader>::Stage(const char* shaderPath, ID3D11ClassLinkage* classLinkage)
+	inline Stage<ID3D11PixelShader>::Stage(const char* shaderPath)
 		: mPath(shaderPath), mStageFlag(STAGE_PIXEL)
 	{
 		HRESULT result;
 		result = compile("frag", "ps_5_0");
 
 		ID3D11PixelShader** shader = reinterpret_cast<ID3D11PixelShader**>(mShader.GetAddressOf());
-		result = mDevice->CreatePixelShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), classLinkage, shader);
+		result = mDevice->CreatePixelShader(mByteCodes->GetBufferPointer(), mByteCodes->GetBufferSize(), nullptr, shader);
 
 		if (result != S_OK)
 		{
@@ -246,37 +246,6 @@ namespace NARCO
 			return result;
 		}
 		return result;
-	}
-
-	template<typename _ShaderTy>
-	inline HRESULT Stage<_ShaderTy>::Reflect(SharedPipelineResource<ID3D11ClassInstance>* sharedResources, ID3D11ClassLinkage* linkage, const std::string& variableName, const std::vector<std::string>& classInstances)
-	{
-		uint interfaceCount = mReflection->GetNumInterfaceSlots();
-
-		if (interfaceCount < 0)
-		{
-			return E_FAIL;
-		}
-
-		ID3D11ShaderReflectionVariable* variable = mReflection->GetVariableByName(variableName.c_str());
-		SharedResource<ID3D11ClassInstance>* sr = new SharedResource<ID3D11ClassInstance>();
-
-		sr->Name = variableName;
-		sr->StageFlags |= mStageFlag;
-		sr->Instances = static_cast<ID3D11ClassInstance**>(malloc(sizeof(ID3D11ClassInstance*) * interfaceCount));
-		sr->mInstanceCount = interfaceCount;
-
-		mClassInstances = sr;
-
-		for (uint i = 0; i < interfaceCount; i++)
-		{
-			uint interfaceSlot = variable->GetInterfaceSlot(i);
-
-			linkage->GetClassInstance(classInstances[i].c_str(), i, &mClassInstances->Instances[i]);//±¸ÇöºÎ )
-
-		}
-
-		return S_OK;
 	}
 
 	template<typename _ShaderTy>

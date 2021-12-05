@@ -124,62 +124,32 @@ namespace NARCO
 		return result->second;
 	}
 
-	Light* Scene::AddLight(Light* light)
+	void Scene::UpdateLight()
 	{
-		if (light == nullptr)
-		{
-			Debug::Log("invalid argument.");
-			return nullptr;
-		}
+		uint lightCount = mLights.size();
 
-		eLightType type = light->GetType();
-
-		if (type == LIGHT_REALTIME)
-		{
-			mRealtimeLights.emplace_back(light);
-		}
-		else if (type == LIGHT_BAKE)
-		{
-			mBakeLights.emplace_back(light);
-		}
-
-		return light;
-	}
-
-	bool Scene::updateLightBuffer()
-	{
-		static LightHandler* lightHandler = LightHandler::GetInstance();
-
-		std::vector<PointLight> pointLights;
-		std::vector<DirectionalLight> directionalLights;
-
-		uint lightCount = mRealtimeLights.size();
-
+		std::vector<const Light::DirectionalLight&> directionalLights;
+		std::vector<const Light::PointLight&> pointLights;
+		
 		for (uint i = 0; i < lightCount; i++)
 		{
-			eLightType type = mRealtimeLights[i]->GetType();
-			if (type == eLightType::LIGHT_POINT)
+			eLightType type = mLights[i]->GetType();
+			if (type == LIGHT_DIRECTIONAL)
 			{
-				Light* light = mRealtimeLights[i];
-				pointLights.emplace_back(*reinterpret_cast<PointLight*>(light));
+				directionalLights.emplace_back(mLights[i]->GetDirectional());
 			}
-			else if (type == eLightType::LIGHT_DIRECTIONAL)
+			else if(type == LIGHT_POINT)
 			{
-				Light* light = mRealtimeLights[i];
-				directionalLights.emplace_back(*reinterpret_cast<DirectionalLight*>(light));
+				pointLights.emplace_back(mLights[i]->GetPoint());
 			}
 		}
 
-
-
-		return true;
+		mContext->UpdateSubresource(mDirectionalBuffer.Get(), 0, nullptr, directionalLights.data(), 0, 0);
+		mContext->UpdateSubresource(mPointBuffer.Get(), 0, nullptr, pointLights.data(), 0, 0);
 	}
+
 	void Scene::awake()
 	{
-		static LightHandler* lightHandler = LightHandler::GetInstance();
-
-		lightHandler->OnChangeScene(this);
-
 		for (auto i : mGameObjects)
 		{
 			Prefab* prefab = reinterpret_cast<Prefab*>(i.second);

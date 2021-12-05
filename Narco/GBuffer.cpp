@@ -8,8 +8,6 @@ namespace NARCO
 		: mBufferCount(GBufferSize), mDevice(device), mWidth(width), mHeight(height),
 		mRenderTargets(8), mShaderResources(128)
 	{
-		
-
 		for (unsigned int i = 0; i < mBufferCount; i++)
 		{
 			D3DTexture2D* buffer = new D3DTexture2D(device, GBufferFormats[i],
@@ -34,13 +32,6 @@ namespace NARCO
 	}
 	void GBuffer::DrawScreen(ID3D11DeviceContext* context, ID3D11RenderTargetView* backBuffer)
 	{
-		static LightHandler* lightHandler = LightHandler::GetInstance();
-
-		//ID3D11Buffer* directionalLights = lightHandler->GetDirectionalLights();
-		//ID3D11Buffer* pointLights = lightHandler->GetPointLights();
-
-		//ID3D11Buffer* lightBuffers[] = { directionalLights, pointLights };
-
 		static ID3D11Buffer* vertex[] = { mScreenQuadMesh->GetVertex() };
 		static ID3D11Buffer* index = mScreenQuadMesh->GetIndex();
 
@@ -63,8 +54,6 @@ namespace NARCO
 			bufferSRV.push_back(mBuffers[i]->GetShaderResource());
 		}
 
-		ID3D11ClassInstance** classInstances = pixelStage->GetClassInstances()->Instances;
-		uint classInstanceCount = pixelStage->GetClassInstances()->mInstanceCount;
 		SharedResource<ID3D11Buffer>* const* buffers = pixelStage->GetBufferPointer();
 		
 		std::vector<ID3D11Buffer*> psBuffer;

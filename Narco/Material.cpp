@@ -2,7 +2,6 @@
 
 namespace NARCO
 {
-	LightHandler* Material::mLightHandler = nullptr;
 
 	struct InputLayoutMaker
 	{
@@ -119,7 +118,6 @@ namespace NARCO
 		: mShaderPath(shaderPath), mStageFlags(stageFlags)
 	{
 		mFileName = mShaderPath.substr(mShaderPath.find_last_of('/') + 1);
-		mLightHandler = LightHandler::GetInstance();
 
 		if (stageFlags & STAGE_VERTEX)
 		{
@@ -158,13 +156,9 @@ namespace NARCO
 				"gDirectionalLightInstances",
 			};
 
-			mPixelStage = new Stage<ID3D11PixelShader>(shaderPath, mLightHandler->GetLinkage());
+			mPixelStage = new Stage<ID3D11PixelShader>(shaderPath);
 			mPixelStage->Reflect(&mBuffers);
 			mPixelStage->Reflect(&mShaderResources);
-			if (bLit == true)
-			{
-				mPixelStage->Reflect(&mClassInstances, mLightHandler->GetLinkage(), "gLightInstanceSlot", classInstances);
-			}
 
 		}
 

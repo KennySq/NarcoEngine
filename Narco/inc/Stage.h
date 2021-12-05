@@ -19,7 +19,7 @@ namespace NARCO
 	class Stage : public Super
 	{
 	public:
-		Stage(const char* shaderPath, ID3D11ClassLinkage* classLinkage = nullptr);
+		Stage(const char* shaderPath);
 		Stage(const Stage& stage);
 		~Stage();
 
@@ -31,7 +31,6 @@ namespace NARCO
 		HRESULT Reflect(SharedPipelineResource<ID3D11Buffer>* sharedResources);
 		HRESULT Reflect(SharedPipelineResource<ID3D11ShaderResourceView>* sharedResources);
 		HRESULT Reflect(SharedPipelineResource<ID3D11SamplerState>* sharedResources);
-		HRESULT Reflect(SharedPipelineResource<ID3D11ClassInstance>* sharedResources, ID3D11ClassLinkage* linkage, const std::string& variableName, const std::vector<std::string>& classInstances);
 
 		uint GetBufferCount() const { return mBuffers.size(); }
 		uint GetShaderResourceCount() const { return mShaderResources.size(); }

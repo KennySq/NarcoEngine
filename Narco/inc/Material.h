@@ -2,8 +2,6 @@
 #include"Stage.h"
 #include"StageResources.h"
 
-#include"LightHandler.h"
-
 namespace NARCO
 {
 	class Material : public Super
@@ -76,8 +74,6 @@ namespace NARCO
 
 
 	private:
-		static LightHandler* mLightHandler;
-
 		Stage<ID3D11VertexShader>* mVertexStage;
 		Stage<ID3D11GeometryShader>* mGeometryStage;
 		Stage<ID3D11DomainShader>* mDomainStage;

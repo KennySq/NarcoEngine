@@ -4,6 +4,7 @@
 #include"Material.h"
 #include"GameObject.h"
 #include"Prefab.h"
+
 #include"Light.h"
 
 namespace NARCO
@@ -33,14 +34,14 @@ namespace NARCO
 		Material* AddMaterial(Material* mat);
 		Material* GetMaterial(const char* name) const;
 
-		Light* AddLight(Light* light);
-
 		GameObject* const* GetGameObjects() { return mGameObjectList.data(); }
 		uint GetGameObjectCount() const { return mGameObjectList.size(); }
 
 		ID3D11DeviceContext* GetContext() const { return mContext; }
 
 		Narco_Deferred_Legacy* GetRP() const { return mRenderPipeline; }
+
+		void UpdateLight();
 
 	private:
 
@@ -50,25 +51,21 @@ namespace NARCO
 		void render(float delta);
 		void release();
 
-		bool updateLightBuffer();
-
 		std::string mName;
 		SceneID mSceneID;
 
 		std::map<InstanceID, GameObject*> mGameObjects;
 		std::vector<GameObject*> mGameObjectList;
 
-		std::vector<Light*> mBakeLights;
-		std::vector<Light*> mRealtimeLights;
-
 		std::map<long long, Material*> mCacheMaterials;
 		std::map<long long, Mesh*> mCacheMeshes;
 
+		std::vector<Light*> mLights;
+		
+		ComPtr<ID3D11Buffer> mDirectionalBuffer;
+		ComPtr<ID3D11Buffer> mPointBuffer;
+
 		ID3D11DeviceContext* mContext;
 		Narco_Deferred_Legacy* mRenderPipeline;
-
-		// GameObject List
-		// Cached Materials
-		// 
 	};
 }
