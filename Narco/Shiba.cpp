@@ -15,7 +15,7 @@ Shiba::~Shiba()
 
 void Shiba::awake()
 {
-	const Scene* scene = GetScene();
+	Scene* scene = GetScene();
 
 	Mesh* mesh_shiba = scene->GetMesh("shiba.fbx");
 

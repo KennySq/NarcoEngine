@@ -28,7 +28,7 @@ namespace NARCO
 
 		virtual ~GameObject();
 
-		const Scene* GetScene() const { return mScene; }
+		Scene* GetScene() const { return mScene; }
 
 		uint GetInstanceID() const { return mInstanceID; }
 

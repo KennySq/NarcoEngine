@@ -14,7 +14,7 @@ Skater::~Skater()
 
 void Skater::awake()
 {
-	const Scene* scene = GetScene();
+	Scene* scene = GetScene();
 
 	Mesh* mesh = scene->GetMesh("skater.fbx");
 	

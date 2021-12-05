@@ -13,7 +13,7 @@ namespace NARCO
     }
     void BackPlane::awake()
     {
-        const Scene* scene = GetScene();
+        Scene* scene = GetScene();
         Renderer* renderer = AddComponent<Renderer>();
         Mesh* planeMesh = scene->GetMesh("Backplane.fbx");
         Material* defaultUber = scene->GetMaterial("Deferred_DefaultUber_0.hlsl");

@@ -32,6 +32,6 @@ namespace NARCO
 		Camera* mRenderCamera;
 		Transform* mRenderTransform;
 
-		const Scene* mRenderScene;
+		Scene* mRenderScene;
 	};
 }

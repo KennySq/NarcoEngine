@@ -11,7 +11,7 @@ namespace NARCO
 	}
 	void Dragon::awake()
 	{
-		const Scene* scene = GetScene();
+		Scene* scene = GetScene();
 
 		Mesh* mesh = scene->GetMesh("dragon-high.fbx");
 
