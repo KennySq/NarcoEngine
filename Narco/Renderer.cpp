@@ -108,6 +108,12 @@ namespace NARCO
 			Stage<ID3D11HullShader>* hull = material->GetHull();
 			Stage<ID3D11PixelShader>* pixel = material->GetPixel();
 
+			if (mMesh == nullptr)
+			{
+				Debug::Log("no mesh found. " + mName);
+				return;
+			}
+
 			uint indexCount = mMesh->GetIndexCount();
 			uint strides[] = { mMesh->GetStride() };
 			uint offsets[] = { 0 };
